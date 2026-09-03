@@ -1,0 +1,377 @@
+/* src/components/Header/Header.css */
+
+.header {
+	position: sticky;
+	top: 0;
+
+	z-index: 900;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	width: 100%;
+	min-height: 72px;
+
+	padding: 12px 24px;
+
+	background-color: #ffffff;
+
+	border-bottom: 1px solid #e5e7eb;
+
+	box-sizing: border-box;
+}
+
+/* =========================
+   PARTE IZQUIERDA
+   ========================= */
+
+.header__left {
+	display: flex;
+	align-items: center;
+
+	gap: 14px;
+
+	min-width: 0;
+}
+
+/* =========================
+   BOTÓN MENÚ
+   ========================= */
+
+.header__menu-button {
+	display: none;
+
+	align-items: center;
+	justify-content: center;
+
+	width: 40px;
+	height: 40px;
+
+	padding: 0;
+
+	color: #5b35d5;
+
+	background-color: #f5f2ff;
+
+	border: none;
+	border-radius: 10px;
+
+	font-size: 22px;
+
+	cursor: pointer;
+
+	transition:
+		background-color 0.2s ease,
+		transform 0.2s ease;
+}
+
+.header__menu-button:hover {
+	background-color: #ebe5ff;
+}
+
+.header__menu-button:active {
+	transform: scale(0.96);
+}
+
+/* =========================
+   TÍTULO
+   ========================= */
+
+.header__titles {
+	display: flex;
+	flex-direction: column;
+
+	gap: 2px;
+
+	min-width: 0;
+}
+
+.header__title {
+	margin: 0;
+
+	color: #171b34;
+
+	font-size: 22px;
+	font-weight: 700;
+
+	line-height: 1.2;
+}
+
+.header__subtitle {
+	margin: 0;
+
+	color: #7b8190;
+
+	font-size: 13px;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* =========================
+   PARTE DERECHA
+   ========================= */
+
+.header__right {
+	display: flex;
+	align-items: center;
+
+	gap: 14px;
+}
+
+/* =========================
+   NOTIFICACIONES
+   ========================= */
+
+.header__notification {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 42px;
+	height: 42px;
+
+	padding: 0;
+
+	color: #5f6472;
+
+	background-color: #f7f8fc;
+
+	border: 1px solid #e5e7eb;
+	border-radius: 50%;
+
+	font-size: 19px;
+
+	cursor: pointer;
+
+	transition:
+		color 0.2s ease,
+		background-color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.header__notification:hover {
+	color: #5b35d5;
+
+	background-color: #f5f2ff;
+
+	border-color: #d9d0ff;
+}
+
+/* Badge */
+
+.header__notification-badge {
+	position: absolute;
+
+	top: -3px;
+	right: -3px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 18px;
+	height: 18px;
+
+	padding: 0 4px;
+
+	color: #ffffff;
+
+	background-color: #dc3545;
+
+	border: 2px solid #ffffff;
+	border-radius: 10px;
+
+	font-size: 10px;
+	font-weight: 700;
+
+	box-sizing: border-box;
+}
+
+/* =========================
+   PERFIL
+   ========================= */
+
+.header__profile {
+	display: flex;
+	align-items: center;
+
+	gap: 10px;
+
+	padding: 5px 8px;
+
+	background-color: transparent;
+
+	border: none;
+	border-radius: 10px;
+
+	cursor: pointer;
+
+	transition: background-color 0.2s ease;
+}
+
+.header__profile:hover {
+	background-color: #f7f8fc;
+}
+
+/* =========================
+   AVATAR
+   ========================= */
+
+.header__avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 42px;
+	height: 42px;
+
+	flex-shrink: 0;
+
+	overflow: hidden;
+
+	background-color: #5b35d5;
+
+	border-radius: 50%;
+}
+
+/* Foto */
+
+.header__avatar-image {
+	width: 100%;
+	height: 100%;
+
+	object-fit: cover;
+}
+
+/* Inicial */
+
+.header__avatar-initial {
+	color: #ffffff;
+
+	font-size: 16px;
+	font-weight: 700;
+}
+
+/* =========================
+   INFORMACIÓN USUARIO
+   ========================= */
+
+.header__user-info {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+
+	gap: 2px;
+}
+
+.header__user-name {
+	max-width: 160px;
+
+	color: #171b34;
+
+	font-size: 14px;
+	font-weight: 600;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.header__user-role {
+	color: #7b8190;
+
+	font-size: 11px;
+	text-transform: capitalize;
+}
+
+/* =========================
+   ACCESIBILIDAD
+   ========================= */
+
+.header button:focus-visible {
+	outline: 3px solid rgba(91, 53, 213, 0.25);
+	outline-offset: 2px;
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 1024px) {
+	.header {
+		padding: 12px 18px;
+	}
+
+	.header__user-name {
+		max-width: 120px;
+	}
+}
+
+/* =========================
+   MÓVIL
+   ========================= */
+
+@media (max-width: 767px) {
+	.header {
+		min-height: 64px;
+
+		padding: 10px 16px;
+	}
+
+	.header__menu-button {
+		display: flex;
+	}
+
+	.header__title {
+		font-size: 18px;
+	}
+
+	.header__subtitle {
+		display: none;
+	}
+
+	.header__user-info {
+		display: none;
+	}
+
+	.header__profile {
+		padding: 0;
+	}
+
+	.header__avatar {
+		width: 38px;
+		height: 38px;
+	}
+
+	.header__notification {
+		width: 38px;
+		height: 38px;
+	}
+
+	.header__right {
+		gap: 8px;
+	}
+}
+
+/* =========================
+   MÓVILES PEQUEÑOS
+   ========================= */
+
+@media (max-width: 400px) {
+	.header {
+		padding: 10px 12px;
+	}
+
+	.header__left {
+		gap: 8px;
+	}
+
+	.header__title {
+		font-size: 16px;
+	}
+}
