@@ -1,0 +1,255 @@
+/* src/components/ReadingCard/ReadingCard.css */
+
+.reading-card {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	overflow: hidden;
+
+	background-color: #ffffff;
+
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+
+	box-shadow: 0 4px 14px rgba(23, 27, 52, 0.06);
+
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.reading-card:hover {
+	transform: translateY(-4px);
+
+	border-color: #d9d0ff;
+
+	box-shadow: 0 10px 25px rgba(23, 27, 52, 0.12);
+}
+
+/* =========================
+   IMAGEN
+   ========================= */
+
+.reading-card__image-container {
+	position: relative;
+
+	width: 100%;
+	height: 180px;
+
+	overflow: hidden;
+
+	background-color: #f5f2ff;
+}
+
+.reading-card__image {
+	width: 100%;
+	height: 100%;
+
+	object-fit: cover;
+
+	transition: transform 0.3s ease;
+}
+
+.reading-card:hover .reading-card__image {
+	transform: scale(1.03);
+}
+
+/* Placeholder cuando no hay imagen */
+
+.reading-card__image-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 100%;
+	height: 100%;
+
+	color: #5b35d5;
+
+	background: linear-gradient(135deg, #f5f2ff, #ebe5ff);
+
+	font-size: 48px;
+}
+
+/* =========================
+   CATEGORÍA
+   ========================= */
+
+.reading-card__category {
+	position: absolute;
+
+	top: 12px;
+	left: 12px;
+
+	padding: 5px 10px;
+
+	color: #5b35d5;
+
+	background-color: rgba(255, 255, 255, 0.94);
+
+	border-radius: 20px;
+
+	font-size: 11px;
+	font-weight: 700;
+
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   CONTENIDO
+   ========================= */
+
+.reading-card__content {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+
+	padding: 18px;
+}
+
+/* =========================
+   TÍTULO
+   ========================= */
+
+.reading-card__title {
+	margin: 0 0 8px;
+
+	color: #171b34;
+
+	font-size: 18px;
+	font-weight: 700;
+
+	line-height: 1.3;
+}
+
+/* =========================
+   DESCRIPCIÓN
+   ========================= */
+
+.reading-card__description {
+	display: -webkit-box;
+
+	margin: 0 0 14px;
+
+	overflow: hidden;
+
+	color: #6b7280;
+
+	font-size: 13px;
+
+	line-height: 1.5;
+
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+/* =========================
+   INFORMACIÓN
+   ========================= */
+
+.reading-card__info {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+
+	gap: 14px;
+
+	margin-bottom: 16px;
+}
+
+.reading-card__info-item {
+	display: flex;
+	align-items: center;
+
+	gap: 5px;
+
+	color: #6b7280;
+
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.reading-card__info-item svg {
+	color: #5b35d5;
+
+	font-size: 15px;
+}
+
+/* =========================
+   PROGRESO
+   ========================= */
+
+.reading-card__progress {
+	margin-bottom: 16px;
+}
+
+.reading-card__progress-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	margin-bottom: 6px;
+
+	color: #6b7280;
+
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.reading-card__progress-track {
+	width: 100%;
+	height: 6px;
+
+	overflow: hidden;
+
+	background-color: #ebecef;
+
+	border-radius: 10px;
+}
+
+.reading-card__progress-bar {
+	height: 100%;
+
+	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+
+	border-radius: 10px;
+
+	transition: width 0.3s ease;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 767px) {
+	.reading-card__image-container {
+		height: 160px;
+	}
+
+	.reading-card__content {
+		padding: 16px;
+	}
+
+	.reading-card__title {
+		font-size: 16px;
+	}
+}
+
+/* =========================
+   REDUCIR ANIMACIONES
+   ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+	.reading-card,
+	.reading-card__image,
+	.reading-card__progress-bar {
+		transition: none;
+	}
+
+	.reading-card:hover {
+		transform: none;
+	}
+}
