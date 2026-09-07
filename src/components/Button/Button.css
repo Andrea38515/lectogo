@@ -1,0 +1,149 @@
+/* src/components/Button/Button.css */
+
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	gap: 8px;
+
+	border: none;
+	border-radius: 8px;
+
+	font-family: inherit;
+	font-weight: 600;
+
+	cursor: pointer;
+
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.15s ease,
+		box-shadow 0.2s ease;
+}
+
+/* =========================
+   VARIANTES
+   ========================= */
+
+/* Botón principal */
+
+.button--primary {
+	background-color: #5b35d5;
+	color: #ffffff;
+}
+
+.button--primary:hover {
+	background-color: #4b28bd;
+}
+
+.button--primary:active {
+	transform: scale(0.98);
+}
+
+/* Botón secundario */
+
+.button--secondary {
+	background-color: #ffffff;
+	color: #5b35d5;
+
+	border: 1px solid #5b35d5;
+}
+
+.button--secondary:hover {
+	background-color: #f2efff;
+}
+
+/* Botón de éxito */
+
+.button--success {
+	background-color: #22a06b;
+	color: #ffffff;
+}
+
+.button--success:hover {
+	background-color: #198754;
+}
+
+/* Botón de peligro */
+
+.button--danger {
+	background-color: #dc3545;
+	color: #ffffff;
+}
+
+.button--danger:hover {
+	background-color: #bb2d3b;
+}
+
+/* Botón tipo texto */
+
+.button--text {
+	background-color: transparent;
+	color: #5b35d5;
+
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.button--text:hover {
+	background-color: #f2efff;
+}
+
+/* =========================
+   TAMAÑOS
+   ========================= */
+
+.button--small {
+	min-height: 32px;
+
+	padding: 6px 12px;
+
+	font-size: 13px;
+}
+
+.button--medium {
+	min-height: 40px;
+
+	padding: 10px 18px;
+
+	font-size: 14px;
+}
+
+.button--large {
+	min-height: 48px;
+
+	padding: 12px 24px;
+
+	font-size: 16px;
+}
+
+/* =========================
+   ANCHO COMPLETO
+   ========================= */
+
+.button--full-width {
+	width: 100%;
+}
+
+/* =========================
+   ESTADO DESHABILITADO
+   ========================= */
+
+.button:disabled {
+	opacity: 0.55;
+
+	cursor: not-allowed;
+
+	transform: none;
+}
+
+/* =========================
+   ACCESIBILIDAD
+   ========================= */
+
+.button:focus-visible {
+	outline: 3px solid rgba(91, 53, 213, 0.25);
+	outline-offset: 2px;
+}
