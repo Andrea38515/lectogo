@@ -1,0 +1,28 @@
+.student-layout {
+	min-height: 100vh;
+
+	background-color: #f7f8fc;
+}
+
+.student-layout__main {
+	min-height: 100vh;
+
+	margin-left: 260px;
+}
+
+.student-layout__content {
+	padding: 24px;
+}
+
+/* Móvil */
+
+@media (max-width: 767px) {
+	.student-layout__main {
+		margin-left: 0;
+	}
+
+	.student-layout__content {
+		padding: 16px;
+		padding-bottom: 90px;
+	}
+}
