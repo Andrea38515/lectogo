@@ -1,0 +1,643 @@
+/* =========================================
+   LECTOGO - LOGIN
+   ========================================= */
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: #f8f9ff;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 1120px;
+  min-height: 650px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(51, 34, 120, 0.12);
+}
+
+/* =========================================
+   PANEL DE MARCA
+   ========================================= */
+
+.login-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f0ebff 0%, #f8f5ff 50%, #ffffff 100%);
+}
+
+.login-brand::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(93, 48, 216, 0.06);
+  top: -120px;
+  left: -100px;
+}
+
+.login-brand::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 166, 0, 0.07);
+  bottom: -90px;
+  right: -70px;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 430px;
+  text-align: center;
+}
+
+/* =========================================
+   LOGO
+   ========================================= */
+
+.brand-logo,
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 35px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+}
+
+.brand-lecto {
+  color: #4b25c7;
+  font-size: 42px;
+}
+
+.brand-go {
+  color: #f39a17;
+  font-size: 42px;
+}
+
+.brand-book {
+  margin-left: 10px;
+  font-size: 34px;
+  filter: drop-shadow(0 4px 6px rgba(75, 37, 199, 0.15));
+}
+
+.login-brand h1 {
+  margin: 0 0 15px;
+  color: #1c2050;
+  font-size: 31px;
+  line-height: 1.2;
+  font-weight: 750;
+}
+
+.login-brand p {
+  max-width: 350px;
+  margin: 0 auto;
+  color: #656982;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   MASCOTA
+   ========================================= */
+
+.mascot-wrapper {
+  position: relative;
+  width: 270px;
+  height: 250px;
+  margin: 35px auto 0;
+}
+
+.mascot {
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  transform: translateX(-50%);
+  width: 145px;
+  height: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eee9ff;
+  font-size: 105px;
+  filter: drop-shadow(0 15px 20px rgba(62, 39, 135, 0.15));
+}
+
+.books {
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  font-size: 46px;
+}
+
+.books span:nth-child(1) {
+  transform: rotate(-8deg);
+}
+
+.books span:nth-child(2) {
+  transform: translateY(-5px);
+}
+
+.books span:nth-child(3) {
+  transform: rotate(8deg);
+}
+
+.spark {
+  position: absolute;
+  color: #f3a21a;
+  font-size: 24px;
+  animation: sparkle 2s infinite ease-in-out;
+}
+
+.spark-1 {
+  top: 20px;
+  left: 25px;
+}
+
+.spark-2 {
+  top: 75px;
+  right: 15px;
+  animation-delay: 0.6s;
+}
+
+.spark-3 {
+  bottom: 55px;
+  left: 15px;
+  color: #7652df;
+  animation-delay: 1s;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   PANEL FORMULARIO
+   ========================================= */
+
+.login-form-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  background: #ffffff;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 410px;
+}
+
+.mobile-logo {
+  display: none;
+}
+
+.login-header {
+  margin-bottom: 30px;
+}
+
+.login-header h2 {
+  margin: 0 0 8px;
+  color: #202052;
+  font-size: 32px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+}
+
+.login-header p {
+  margin: 0;
+  color: #7a7d96;
+  font-size: 15px;
+}
+
+/* =========================================
+   ERROR
+   ========================================= */
+
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  border: 1px solid #ffcaca;
+  border-radius: 10px;
+  background: #fff4f4;
+  color: #c53636;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.error-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e34b4b;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* =========================================
+   FORMULARIO
+   ========================================= */
+
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 21px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #30335a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  z-index: 2;
+  color: #7760d9;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 50px;
+  padding: 0 45px 0 44px;
+  border: 1px solid #dedfeb;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #292b4f;
+  font-family: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.input-wrapper input::placeholder {
+  color: #a7a9b8;
+}
+
+.input-wrapper input:hover {
+  border-color: #bcb8d7;
+}
+
+.input-wrapper input:focus {
+  border-color: #6339d8;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 57, 216, 0.1);
+}
+
+.input-wrapper input:disabled {
+  cursor: not-allowed;
+  background: #f5f5f8;
+}
+
+/* =========================================
+   MOSTRAR CONTRASEÑA
+   ========================================= */
+
+.password-toggle {
+  position: absolute;
+  right: 13px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #777a91;
+  cursor: pointer;
+  font-size: 17px;
+  border-radius: 6px;
+}
+
+.password-toggle:hover {
+  background: #f2efff;
+  color: #5833c8;
+}
+
+.password-toggle:disabled {
+  cursor: not-allowed;
+}
+
+/* =========================================
+   RECUPERAR CONTRASEÑA
+   ========================================= */
+
+.forgot-password {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -5px;
+  margin-bottom: 22px;
+}
+
+.forgot-password a {
+  color: #5c34d1;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.forgot-password a:hover {
+  color: #3f1caa;
+  text-decoration: underline;
+}
+
+/* =========================================
+   BOTÓN LOGIN
+   ========================================= */
+
+.login-button {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6033d5, #4b22bd);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(87, 45, 202, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(87, 45, 202, 0.28);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   SPINNER
+   ========================================= */
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   REGISTRO
+   ========================================= */
+
+.register-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 25px;
+  color: #7a7d96;
+  font-size: 14px;
+}
+
+.register-section a {
+  color: #5930cd;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.register-section a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.login-footer {
+  margin: 25px auto 0;
+  max-width: 360px;
+  color: #a0a2b1;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* =========================================
+   RESPONSIVE - TABLET
+   ========================================= */
+
+@media (max-width: 900px) {
+  .login-page {
+    padding: 20px;
+  }
+
+  .login-container {
+    max-width: 760px;
+    min-height: 600px;
+  }
+
+  .login-brand {
+    padding: 35px;
+  }
+
+  .login-form-section {
+    padding: 35px;
+  }
+
+  .brand-lecto,
+  .brand-go {
+    font-size: 35px;
+  }
+
+  .brand-book {
+    font-size: 29px;
+  }
+
+  .login-brand h1 {
+    font-size: 25px;
+  }
+
+  .mascot-wrapper {
+    transform: scale(0.85);
+    margin-top: 20px;
+  }
+}
+
+/* =========================================
+   RESPONSIVE - MÓVIL
+   ========================================= */
+
+@media (max-width: 700px) {
+  .login-page {
+    min-height: 100vh;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  .login-container {
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-brand {
+    display: none;
+  }
+
+  .login-form-section {
+    min-height: 100vh;
+    padding: 30px 24px;
+    align-items: flex-start;
+  }
+
+  .login-card {
+    max-width: 440px;
+    margin: 0 auto;
+    padding-top: 30px;
+  }
+
+  .mobile-logo {
+    display: flex;
+    margin-bottom: 42px;
+  }
+
+  .mobile-logo .brand-lecto,
+  .mobile-logo .brand-go {
+    font-size: 34px;
+  }
+
+  .mobile-logo .brand-book {
+    font-size: 28px;
+  }
+
+  .login-header h2 {
+    font-size: 28px;
+  }
+
+  .login-header {
+    margin-bottom: 25px;
+  }
+}
+
+/* =========================================
+   MÓVILES PEQUEÑOS
+   ========================================= */
+
+@media (max-width: 400px) {
+  .login-form-section {
+    padding: 25px 18px;
+  }
+
+  .login-card {
+    padding-top: 15px;
+  }
+
+  .mobile-logo {
+    margin-bottom: 32px;
+  }
+
+  .mobile-logo .brand-lecto,
+  .mobile-logo .brand-go {
+    font-size: 31px;
+  }
+
+  .login-header h2 {
+    font-size: 25px;
+  }
+
+  .input-wrapper input {
+    height: 48px;
+  }
+
+  .login-button {
+    min-height: 48px;
+  }
+}
+
+/* =========================================
+   ACCESIBILIDAD
+   ========================================= */
+
+.login-button:focus-visible,
+.password-toggle:focus-visible,
+.forgot-password a:focus-visible,
+.register-section a:focus-visible {
+  outline: 3px solid rgba(99, 57, 216, 0.3);
+  outline-offset: 3px;
+}
