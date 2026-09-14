@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "../pages/auth/Login";
-import StudentDashboard from "../pages/estudiante/StudentDashboard";
-import TeacherDashboard from "../pages/docente/TeacherDashboard";
-import AdminDashboard from "../pages/admin/AdminDashboard";
+import Login from "../pages/auth/Login/Login";
+import StudentDashboard from "../pages/estudiante/StudentDashboard/StudentDashboard";
+import TeacherDashboard from "../pages/docente/TeacherDashboard/TeacherDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard/AdminDashboard";
 
 function AppRouter() {
 	return (
