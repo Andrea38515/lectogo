@@ -1,0 +1,208 @@
+.reading-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+}
+
+.reading-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--secondary-light);
+}
+
+/* Imagen */
+
+.reading-card__image {
+  position: relative;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--primary-soft);
+}
+
+.reading-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reading-card__icon {
+  font-size: 4rem;
+}
+
+/* Dificultad */
+
+.reading-card__difficulty {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 5px 10px;
+  border-radius: var(--radius-round);
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Contenido */
+
+.reading-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.reading-card__category {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: var(--radius-round);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.reading-card__title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.reading-card__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Información */
+
+.reading-card__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Progreso */
+
+.reading-card__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reading-card__progress-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.reading-card__progress-bar {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: var(--radius-round);
+  background: var(--surface-secondary);
+}
+
+.reading-card__progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+/* Botón */
+
+.reading-card__button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 11px 15px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--surface);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.reading-card__button:hover {
+  background: var(--primary-hover);
+}
+
+.reading-card__button span {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.reading-card__button:hover span {
+  transform: translateX(4px);
+}
+
+.reading-card__button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .reading-card__image {
+    height: 160px;
+  }
+
+  .reading-card__content {
+    padding: 16px;
+  }
+
+  .reading-card__title {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reading-card__image {
+    height: 145px;
+  }
+
+  .reading-card__icon {
+    font-size: 3.2rem;
+  }
+
+  .reading-card__content {
+    padding: 14px;
+  }
+
+  .reading-card__info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
