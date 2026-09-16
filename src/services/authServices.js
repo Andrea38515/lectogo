@@ -60,11 +60,18 @@ export const register = async ({ nombre, correo, password }) => {
 };
 
 export const login = async (correo, password) => {
-	try {
-		return await authRepository.signIn(correo, password);
-	} catch (error) {
+	const credential = await authRepository.signIn(correo, password).catch((error) => {
 		throw new Error(mapAuthError(error.code), { cause: error });
+	});
+
+	const perfil = await usuariosRepository.getUserById(credential.user.uid);
+
+	if (!perfil) {
+		await authRepository.signOutUser();
+		throw new Error("No existe información de tu cuenta. Contactá al administrador.");
 	}
+
+	return perfil;
 };
 
 export const logout = () => {
