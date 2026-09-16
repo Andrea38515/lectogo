@@ -1,0 +1,274 @@
+/* src/components/LevelBadge/LevelBadge.css */
+
+.level-badge {
+	display: flex;
+	align-items: flex-start;
+
+	gap: 16px;
+
+	width: 100%;
+
+	padding: 18px;
+
+	background: linear-gradient(135deg, #ffffff, #f7f4ff);
+
+	border: 1px solid #ded6ff;
+	border-radius: 16px;
+
+	box-shadow: 0 4px 14px rgba(23, 27, 52, 0.07);
+
+	box-sizing: border-box;
+}
+
+/* =========================
+   ICONO
+   ========================= */
+
+.level-badge__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 68px;
+	height: 68px;
+
+	flex-shrink: 0;
+
+	color: #ffffff;
+
+	background: linear-gradient(135deg, #5b35d5, #7c5cff);
+
+	border-radius: 50%;
+
+	font-size: 30px;
+
+	box-shadow: 0 6px 16px rgba(91, 53, 213, 0.24);
+}
+
+/* =========================
+   CONTENIDO
+   ========================= */
+
+.level-badge__content {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+
+	min-width: 0;
+}
+
+/* =========================
+   CABECERA
+   ========================= */
+
+.level-badge__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	gap: 16px;
+
+	margin-bottom: 14px;
+}
+
+.level-badge__label {
+	display: block;
+
+	margin-bottom: 2px;
+
+	color: #7b8190;
+
+	font-size: 11px;
+	font-weight: 600;
+
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.level-badge__name {
+	margin: 0;
+
+	color: #171b34;
+
+	font-size: 18px;
+	font-weight: 700;
+}
+
+/* =========================
+   XP
+   ========================= */
+
+.level-badge__xp {
+	flex-shrink: 0;
+
+	padding: 5px 10px;
+
+	color: #5b35d5;
+
+	background-color: #eee9ff;
+
+	border-radius: 20px;
+
+	font-size: 12px;
+	font-weight: 700;
+}
+
+/* =========================
+   PROGRESO
+   ========================= */
+
+.level-badge__progress {
+	width: 100%;
+}
+
+.level-badge__progress-info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: 10px;
+
+	margin-bottom: 6px;
+
+	color: #6b7280;
+
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.level-badge__progress-track {
+	width: 100%;
+	height: 8px;
+
+	overflow: hidden;
+
+	background-color: #e8e9ee;
+
+	border-radius: 20px;
+}
+
+.level-badge__progress-bar {
+	height: 100%;
+
+	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+
+	border-radius: 20px;
+
+	transition: width 0.3s ease;
+}
+
+/* =========================
+   XP RESTANTE
+   ========================= */
+
+.level-badge__remaining {
+	display: flex;
+	align-items: center;
+
+	gap: 6px;
+
+	margin-top: 10px;
+
+	color: #6b7280;
+
+	font-size: 11px;
+}
+
+.level-badge__remaining svg {
+	color: #5b35d5;
+
+	font-size: 14px;
+}
+
+/* =========================
+   NIVEL COMPLETADO
+   ========================= */
+
+.level-badge__completed {
+	display: flex;
+	align-items: center;
+
+	gap: 6px;
+
+	margin-top: 10px;
+
+	color: #16a34a;
+
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* =========================
+   TAMAÑOS
+   ========================= */
+
+.level-badge--small {
+	padding: 14px;
+}
+
+.level-badge--small .level-badge__icon {
+	width: 52px;
+	height: 52px;
+
+	font-size: 22px;
+}
+
+.level-badge--small .level-badge__name {
+	font-size: 15px;
+}
+
+.level-badge--large {
+	padding: 24px;
+}
+
+.level-badge--large .level-badge__icon {
+	width: 84px;
+	height: 84px;
+
+	font-size: 38px;
+}
+
+.level-badge--large .level-badge__name {
+	font-size: 22px;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 600px) {
+	.level-badge {
+		gap: 12px;
+
+		padding: 14px;
+	}
+
+	.level-badge__icon {
+		width: 54px;
+		height: 54px;
+
+		font-size: 24px;
+	}
+
+	.level-badge__name {
+		font-size: 15px;
+	}
+
+	.level-badge__header {
+		margin-bottom: 10px;
+	}
+
+	.level-badge__progress-info {
+		font-size: 10px;
+	}
+}
+
+/* =========================
+   REDUCIR ANIMACIONES
+   ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+	.level-badge__progress-bar {
+		transition: none;
+	}
+}
