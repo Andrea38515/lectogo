@@ -1,0 +1,130 @@
+/* src/components/BottomNavigation/BottomNavigation.css */
+
+.bottom-navigation {
+	position: fixed;
+
+	bottom: 0;
+	left: 0;
+
+	z-index: 1000;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+
+	width: 100%;
+	height: 70px;
+
+	padding: 6px 8px;
+
+	background-color: #ffffff;
+
+	border-top: 1px solid #e5e7eb;
+
+	box-shadow: 0 -4px 16px rgba(23, 27, 52, 0.08);
+
+	box-sizing: border-box;
+}
+
+/* =========================
+   ITEM
+   ========================= */
+
+.bottom-navigation__item {
+	position: relative;
+
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	gap: 4px;
+
+	height: 100%;
+
+	color: #7b8190;
+
+	text-decoration: none;
+
+	border-radius: 10px;
+
+	transition:
+		color 0.2s ease,
+		background-color 0.2s ease,
+		transform 0.2s ease;
+}
+
+/* =========================
+   ICONO
+   ========================= */
+
+.bottom-navigation__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-size: 21px;
+
+	transition: transform 0.2s ease;
+}
+
+/* =========================
+   TEXTO
+   ========================= */
+
+.bottom-navigation__label {
+	font-size: 10px;
+	font-weight: 600;
+
+	white-space: nowrap;
+}
+
+/* =========================
+   HOVER
+   ========================= */
+
+.bottom-navigation__item:hover {
+	color: #5b35d5;
+
+	background-color: #f5f2ff;
+}
+
+/* =========================
+   ACTIVO
+   ========================= */
+
+.bottom-navigation__item--active {
+	color: #5b35d5;
+}
+
+.bottom-navigation__item--active .bottom-navigation__icon {
+	transform: translateY(-2px);
+}
+
+/* Indicador superior */
+
+.bottom-navigation__item--active::before {
+	content: "";
+
+	position: absolute;
+
+	top: -6px;
+
+	width: 28px;
+	height: 3px;
+
+	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+
+	border-radius: 0 0 4px 4px;
+}
+
+/* =========================
+   TABLET Y ESCRITORIO
+   ========================= */
+
+@media (min-width: 768px) {
+	.bottom-navigation {
+		display: none;
+	}
+}
