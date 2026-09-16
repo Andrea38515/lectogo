@@ -1,0 +1,89 @@
+:root {
+	/* Tipografía */
+	--font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial, sans-serif;
+
+	--font-size-xs: 0.75rem;
+	--font-size-sm: 0.875rem;
+	--font-size-base: 1rem;
+	--font-size-lg: 1.125rem;
+	--font-size-xl: 1.25rem;
+	--font-size-2xl: 1.5rem;
+	--font-size-3xl: 2rem;
+
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	--line-height-tight: 1.2;
+	--line-height-base: 1.5;
+
+	/* Color de marca */
+	--color-primary: #5b35d5;
+	--color-primary-hover: #4b28b8;
+	--color-primary-light: #ede9fe;
+
+	--color-secondary: #ff9f1c;
+	--color-secondary-light: #fff1dc;
+
+	/* Estados semánticos */
+	--color-success: #16a34a;
+	--color-success-light: #dcfce7;
+
+	--color-warning: var(--color-secondary);
+	--color-warning-light: var(--color-secondary-light);
+
+	--color-danger: #dc2626;
+	--color-danger-light: #fee2e2;
+
+	--color-info: #2563eb;
+	--color-info-light: #dbeafe;
+
+	/* Neutros */
+	--color-background: #f7f8fc;
+	--color-surface: #ffffff;
+	--color-text: #171b34;
+	--color-text-secondary: #6b7280;
+	--color-text-muted: #94a3b8;
+	--color-border: #e5e7eb;
+
+	/* Sidebar de navegación (fondo oscuro) */
+	--color-sidebar-background: #12142a;
+	--color-sidebar-text: #a5adc7;
+	--color-sidebar-text-active: #ffffff;
+	--color-sidebar-item-active: var(--color-primary);
+
+	/* Espaciado (escala base 4px) */
+	--spacing-xs: 0.25rem;
+	--spacing-sm: 0.5rem;
+	--spacing-md: 1rem;
+	--spacing-lg: 1.5rem;
+	--spacing-xl: 2rem;
+	--spacing-2xl: 3rem;
+
+	/* Bordes */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	--radius-full: 9999px;
+
+	/* Sombras */
+	--shadow-sm: 0 1px 2px rgba(23, 27, 52, 0.06);
+	--shadow-md: 0 4px 12px rgba(23, 27, 52, 0.08);
+	--shadow-lg: 0 8px 24px rgba(23, 27, 52, 0.12);
+
+	/* Transiciones */
+	--transition-fast: 150ms ease;
+	--transition-base: 250ms ease;
+
+	/* Breakpoints (documental — las media queries no pueden leer variables CSS) */
+	--breakpoint-tablet: 768px;
+	--breakpoint-desktop: 1024px;
+
+	/* Capas */
+	--z-index-dropdown: 100;
+	--z-index-sidebar: 200;
+	--z-index-modal: 300;
+	--z-index-toast: 400;
+}

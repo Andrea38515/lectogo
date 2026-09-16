@@ -1,0 +1,65 @@
+/* Mobile-first: por defecto se muestra la barra de navegación inferior y se oculta el sidebar */
+
+.container {
+	width: 100%;
+	padding: 0 var(--spacing-md);
+}
+
+.app-layout {
+	display: flex;
+	flex-direction: column;
+}
+
+.sidebar {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.bottom-navigation {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		justify-content: space-around;
+		background-color: var(--color-surface);
+		border-top: 1px solid var(--color-border);
+		z-index: var(--z-index-sidebar);
+	}
+}
+
+/* Tablet: aparece el sidebar, se oculta la barra inferior (DDS 5.1) */
+
+@media (min-width: 768px) {
+	.container {
+		padding: 0 var(--spacing-lg);
+	}
+
+	.app-layout {
+		flex-direction: row;
+	}
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		width: 220px;
+		min-height: 100vh;
+	}
+
+	.bottom-navigation {
+		display: none;
+	}
+}
+
+/* Escritorio */
+
+@media (min-width: 1024px) {
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.sidebar {
+		width: 260px;
+	}
+}
