@@ -1,4 +1,3 @@
-import React from "react";
 import "./FeedbackPanel.css";
 
 const FeedbackPanel = ({
