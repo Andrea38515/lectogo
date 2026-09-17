@@ -1,46 +1,38 @@
 import "./SearchBar.css";
 
-const SearchBar = ({
+function SearchBar({
   value = "",
   onChange,
-  placeholder = "Buscar...",
+  placeholder = "Buscar por palabra clave...",
   onClear,
-  disabled = false,
-}) => {
-  const handleChange = (event) => {
-    onChange?.(event.target.value);
-  };
-
+}) {
   const handleClear = () => {
     if (onClear) {
       onClear();
-    } else {
-      onChange?.("");
+    } else if (onChange) {
+      onChange("");
     }
   };
 
   return (
     <div className="search-bar">
-      <span className="search-bar__icon" aria-hidden="true">
+      <span className="search-bar-icon" aria-hidden="true">
         🔎
       </span>
 
       <input
         type="text"
-        className="search-bar__input"
         value={value}
-        onChange={handleChange}
+        onChange={(event) => onChange?.(event.target.value)}
         placeholder={placeholder}
-        disabled={disabled}
         aria-label="Buscar"
       />
 
       {value && (
         <button
           type="button"
-          className="search-bar__clear"
+          className="search-bar-clear"
           onClick={handleClear}
-          disabled={disabled}
           aria-label="Limpiar búsqueda"
         >
           ×
@@ -48,6 +40,5 @@ const SearchBar = ({
       )}
     </div>
   );
-};
+}
 
-export default SearchBar;
