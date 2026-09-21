@@ -1,28 +1,26 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /usuarios/{uid} {
-      allow read: if request.auth != null &&
-        (request.auth.uid == uid ||
-         get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == "administrador");
 
-      allow create: if request.auth != null &&
-        request.auth.uid == uid &&
-        request.resource.data.keys().hasOnly([
-          "uid", "nombre", "correo", "rol", "institucion", "fotoUrl",
-          "xp", "nivel", "rachaActual", "ultimaActividadEn", "creadoEn"
-        ]) &&
-        request.resource.data.uid == uid &&
-        request.resource.data.correo == request.auth.token.email &&
-        request.resource.data.rol == "estudiante" &&
-        request.resource.data.xp == 0 &&
-        request.resource.data.nivel == 1 &&
-        request.resource.data.rachaActual == 0;
+    match /usuarios/{uid} {
+
+      allow read: if request.auth != null &&
+        (
+          request.auth.uid == uid ||
+          get(
+            /databases/$(database)/documents/usuarios/$(request.auth.uid)
+          ).data.rol == "administrador"
+        );
 
       allow update: if request.auth != null &&
         request.auth.uid == uid &&
         request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(["nombre", "institucion", "fotoUrl"]);
+          .hasOnly([
+            "nombre",
+            "institucion",
+            "fotoUrl"
+          ]);
     }
 
     match /{document=**} {
