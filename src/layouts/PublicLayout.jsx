@@ -1,68 +1,31 @@
-import { Link, Outlet } from "react-router-dom";
+import React from "react";
+import { Outlet } from "react-router-dom";
+
 import "./PublicLayout.css";
 
-const PublicLayout = () => {
+const PublicLayout = ({ children }) => {
   return (
     <div className="public-layout">
-      <header className="public-layout__header">
-        <div className="public-layout__container">
-          <Link to="/" className="public-layout__logo">
-            <div className="public-layout__logo-icon">F</div>
+      <div className="public-layout-background">
+        <div className="public-decoration public-decoration-one"></div>
+        <div className="public-decoration public-decoration-two"></div>
+        <div className="public-decoration public-decoration-three"></div>
+      </div>
 
-            <div className="public-layout__logo-text">
-              <strong>FocUsly</strong>
-              <span>Aprende y crece</span>
-            </div>
-          </Link>
-
-          <nav className="public-layout__nav">
-            <Link
-              to="/"
-              className="public-layout__nav-link"
-            >
-              Inicio
-            </Link>
-
-            <Link
-              to="/login"
-              className="public-layout__nav-link"
-            >
-              Iniciar sesión
-            </Link>
-
-            <Link
-              to="/registro"
-              className="public-layout__button"
-            >
-              Registrarse
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="public-layout__main">
-        <Outlet />
+      <main className="public-layout-main">
+        {children ? children : <Outlet />}
       </main>
 
-      <footer className="public-layout__footer">
-        <div className="public-layout__container public-layout__footer-content">
-          <div>
-            <strong>FocUsly</strong>
-            <p>
-              Una forma más sencilla y dinámica de aprender.
-            </p>
-          </div>
+      <footer className="public-layout-footer">
+        <div className="public-layout-logo">
+          <span className="public-layout-logo-icon">📖</span>
 
-          <div className="public-layout__footer-links">
-            <Link to="/">Inicio</Link>
-            <Link to="/login">Iniciar sesión</Link>
-            <Link to="/registro">Registrarse</Link>
-          </div>
-
-          <span className="public-layout__copyright">
-            © {new Date().getFullYear()} FocUsly
-          </span>
+          <span className="public-layout-logo-text">LectoGo</span>
         </div>
+
+        <p>Aprende, lee y descubre nuevas historias.</p>
+
+        <small>© {new Date().getFullYear()} LectoGo</small>
       </footer>
     </div>
   );
