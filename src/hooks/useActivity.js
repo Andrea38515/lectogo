@@ -1,89 +1,62 @@
+import { useCallback, useEffect, useState } from "react";
+
+import { useAuth } from "./useAuth";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+	getActividadesAsignadas,
+} from "../repositories/actividadesRepository";
+import { getLecturaById } from "../repositories/lecturasRepository";
 
-import actividadesRepository from "../repositories/actividadesRepository";
+const useActivity = () => {
+	const { user } = useAuth();
 
-/**
- * Hook para gestionar las actividades.
- */
-const useActivity = (params = {}) => {
-  const queryClient = useQueryClient();
+	const [activities, setActivities] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-  // Obtener actividades
-  const activitiesQuery = useQuery({
-    queryKey: ["activities", params],
-    queryFn: () => actividadesRepository.getAll(params),
-  });
+	const fetchActivities = useCallback(async () => {
+		if (!user?.uid) {
+			setActivities([]);
+			setIsLoading(false);
+			return;
+		}
 
-  // Crear actividad
-  const createActivityMutation = useMutation({
-    mutationFn: (data) =>
-      actividadesRepository.create(data),
+		setIsLoading(true);
+		setError(null);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["activities"],
-      });
-    },
-  });
+		try {
+			const asignadas = await getActividadesAsignadas(user.uid);
 
-  // Actualizar actividad
-  const updateActivityMutation = useMutation({
-    mutationFn: ({ id, data }) =>
-      actividadesRepository.update(id, data),
+			const conLectura = await Promise.all(
+				asignadas.map(async (actividad) => {
+					const lectura = await getLecturaById(actividad.lecturaId);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["activities"],
-      });
-    },
-  });
+					return {
+						...actividad,
+						titulo: lectura?.titulo || "Actividad",
+						categoria: lectura?.categoriaId || "General",
+					};
+				}),
+			);
 
-  // Eliminar actividad
-  const deleteActivityMutation = useMutation({
-    mutationFn: (id) =>
-      actividadesRepository.delete(id),
+			setActivities(conLectura);
+		} catch (err) {
+			setError(err);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [user]);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["activities"],
-      });
-    },
-  });
+	useEffect(() => {
+		fetchActivities();
+	}, [fetchActivities]);
 
-  return {
-    // Consulta
-    activities: activitiesQuery.data ?? [],
-    isLoading: activitiesQuery.isLoading,
-    isFetching: activitiesQuery.isFetching,
-    isError: activitiesQuery.isError,
-    error: activitiesQuery.error,
-    refetch: activitiesQuery.refetch,
-
-    // Crear
-    createActivity: createActivityMutation.mutate,
-    createActivityAsync:
-      createActivityMutation.mutateAsync,
-    isCreating: createActivityMutation.isPending,
-    createError: createActivityMutation.error,
-
-    // Actualizar
-    updateActivity: updateActivityMutation.mutate,
-    updateActivityAsync:
-      updateActivityMutation.mutateAsync,
-    isUpdating: updateActivityMutation.isPending,
-    updateError: updateActivityMutation.error,
-
-    // Eliminar
-    deleteActivity: deleteActivityMutation.mutate,
-    deleteActivityAsync:
-      deleteActivityMutation.mutateAsync,
-    isDeleting: deleteActivityMutation.isPending,
-    deleteError: deleteActivityMutation.error,
-  };
+	return {
+		activities,
+		isLoading,
+		error,
+		refetch: fetchActivities,
+	};
 };
 
 export default useActivity;
+export { useActivity };

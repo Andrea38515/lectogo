@@ -13,6 +13,22 @@ service cloud.firestore {
           ).data.rol == "administrador"
         );
 
+      // El cliente crea este doc en el registro porque todavía no existe
+      // la Cloud Function onUserCreate (Sprint 1-01 [01], sin implementar).
+      // Cuando esa función exista, este allow create debe retirarse otra vez.
+      allow create: if request.auth != null &&
+        request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly([
+          "uid", "nombre", "correo", "rol", "institucion", "fotoUrl",
+          "xp", "nivel", "rachaActual", "ultimaActividadEn", "creadoEn"
+        ]) &&
+        request.resource.data.uid == uid &&
+        request.resource.data.correo == request.auth.token.email &&
+        request.resource.data.rol == "estudiante" &&
+        request.resource.data.xp == 0 &&
+        request.resource.data.nivel == 1 &&
+        request.resource.data.rachaActual == 0;
+
       allow update: if request.auth != null &&
         request.auth.uid == uid &&
         request.resource.data.diff(resource.data).affectedKeys()

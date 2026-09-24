@@ -1,175 +1,119 @@
-import { useMemo, useState } from "react";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  getLibrary,
-  createLibraryResource,
-  updateLibraryResource,
-  deleteLibraryResource,
-} from "../api/library.api";
+import { getLecturas } from "../repositories/lecturasRepository";
+import { getAllCategorias } from "../repositories/categoriasRepository";
 
-/**
- * Normaliza el texto para que la búsqueda
- * ignore mayúsculas, minúsculas y tildes.
- */
 const normalizeText = (text = "") => {
-  return String(text)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+	return String(text)
+		.normalize("NFD")
+		.replace(/[̀-ͯ]/g, "")
+		.toLowerCase()
+		.trim();
 };
 
-/**
- * Hook principal para gestionar la biblioteca.
- */
 export const useLibrary = () => {
-  const queryClient = useQueryClient();
+	const [lecturas, setLecturas] = useState([]);
+	const [categoriasMap, setCategoriasMap] = useState({});
+	const [isLoading, setIsLoading] = useState(true);
+	const [isError, setIsError] = useState(false);
+	const [search, setSearch] = useState("");
+	const [category, setCategory] = useState("Todos");
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("Todos");
+	const fetchLibrary = useCallback(async () => {
+		setIsLoading(true);
+		setIsError(false);
 
-  // Obtener recursos de la biblioteca
-  const libraryQuery = useQuery({
-    queryKey: ["library"],
-    queryFn: getLibrary,
-  });
+		try {
+			const [lecturasData, categoriasData] = await Promise.all([
+				getLecturas({}),
+				getAllCategorias(),
+			]);
 
-  const resources = libraryQuery.data ?? [];
+			setCategoriasMap(
+				Object.fromEntries(categoriasData.map((c) => [c.id, c.nombre])),
+			);
+			setLecturas(lecturasData);
+		} catch {
+			setIsError(true);
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
 
-  /**
-   * Obtener categorías disponibles
-   */
-  const categories = useMemo(() => {
-    const uniqueCategories = [
-      ...new Set(
-        resources
-          .map((resource) => resource.category)
-          .filter(Boolean)
-      ),
-    ];
+	useEffect(() => {
+		fetchLibrary();
+	}, [fetchLibrary]);
 
-    return ["Todos", ...uniqueCategories];
-  }, [resources]);
+	// Solo lecturas publicadas: borradores no son biblioteca pública/estudiante.
+	const resources = useMemo(() => {
+		return lecturas
+			.filter((lectura) => lectura.estado === "publicada")
+			.map((lectura) => ({
+				id: lectura.id,
+				title: lectura.titulo,
+				description: (lectura.contenido || "").slice(0, 140),
+				category: categoriasMap[lectura.categoriaId] || "General",
+				author: "LectoGo",
+				icon: "📖",
+				type: lectura.nivelDificultad || "Lectura",
+				featured: false,
+			}));
+	}, [lecturas, categoriasMap]);
 
-  /**
-   * Buscar recursos por palabra clave
-   */
-  const filteredResources = useMemo(() => {
-    const searchText = normalizeText(search);
+	const categories = useMemo(() => {
+		const unique = [
+			...new Set(resources.map((resource) => resource.category).filter(Boolean)),
+		];
 
-    return resources.filter((resource) => {
-      const matchesCategory =
-        category === "Todos" ||
-        resource.category === category;
+		return ["Todos", ...unique];
+	}, [resources]);
 
-      const matchesSearch =
-        !searchText ||
-        normalizeText(resource.title).includes(searchText) ||
-        normalizeText(resource.description).includes(searchText) ||
-        normalizeText(resource.content).includes(searchText) ||
-        normalizeText(resource.author).includes(searchText) ||
-        normalizeText(resource.category).includes(searchText);
+	const filteredResources = useMemo(() => {
+		const searchText = normalizeText(search);
 
-      return matchesCategory && matchesSearch;
-    });
-  }, [resources, search, category]);
+		return resources.filter((resource) => {
+			const matchesCategory =
+				category === "Todos" || resource.category === category;
 
-  /**
-   * Recursos destacados
-   */
-  const featuredResources = useMemo(() => {
-    return resources.filter((resource) => resource.featured);
-  }, [resources]);
+			const matchesSearch =
+				!searchText ||
+				normalizeText(resource.title).includes(searchText) ||
+				normalizeText(resource.description).includes(searchText) ||
+				normalizeText(resource.author).includes(searchText) ||
+				normalizeText(resource.category).includes(searchText);
 
-  // Crear recurso
-  const createResourceMutation = useMutation({
-    mutationFn: createLibraryResource,
+			return matchesCategory && matchesSearch;
+		});
+	}, [resources, search, category]);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["library"],
-      });
-    },
-  });
+	const featuredResources = useMemo(
+		() => resources.filter((resource) => resource.featured),
+		[resources],
+	);
 
-  // Actualizar recurso
-  const updateResourceMutation = useMutation({
-    mutationFn: ({ id, data }) =>
-      updateLibraryResource(id, data),
+	const clearFilters = () => {
+		setSearch("");
+		setCategory("Todos");
+	};
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["library"],
-      });
-    },
-  });
+	return {
+		resources,
+		filteredResources,
+		featuredResources,
+		categories,
 
-  // Eliminar recurso
-  const deleteResourceMutation = useMutation({
-    mutationFn: deleteLibraryResource,
+		isLoading,
+		isFetching: isLoading,
+		isError,
+		error: isError ? new Error("No se pudo cargar la biblioteca") : null,
+		refetch: fetchLibrary,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["library"],
-      });
-    },
-  });
-
-  /**
-   * Limpiar búsqueda y categoría
-   */
-  const clearFilters = () => {
-    setSearch("");
-    setCategory("Todos");
-  };
-
-  return {
-    // Consulta
-    resources,
-    filteredResources,
-    featuredResources,
-    categories,
-
-    isLoading: libraryQuery.isLoading,
-    isFetching: libraryQuery.isFetching,
-    isError: libraryQuery.isError,
-    error: libraryQuery.error,
-    refetch: libraryQuery.refetch,
-
-    // Búsqueda
-    search,
-    setSearch,
-
-    // Categoría
-    category,
-    setCategory,
-
-    // Limpiar filtros
-    clearFilters,
-
-    // Crear
-    createResource: createResourceMutation.mutate,
-    createResourceAsync: createResourceMutation.mutateAsync,
-    isCreating: createResourceMutation.isPending,
-    createError: createResourceMutation.error,
-
-    // Actualizar
-    updateResource: updateResourceMutation.mutate,
-    updateResourceAsync: updateResourceMutation.mutateAsync,
-    isUpdating: updateResourceMutation.isPending,
-    updateError: updateResourceMutation.error,
-
-    // Eliminar
-    deleteResource: deleteResourceMutation.mutate,
-    deleteResourceAsync: deleteResourceMutation.mutateAsync,
-    isDeleting: deleteResourceMutation.isPending,
-    deleteError: deleteResourceMutation.error,
-  };
+		search,
+		setSearch,
+		category,
+		setCategory,
+		clearFilters,
+	};
 };
 
 export default useLibrary;

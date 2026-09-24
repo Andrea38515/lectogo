@@ -1,3 +1,5 @@
+import { serverTimestamp } from "firebase/firestore";
+
 import * as authRepository from "../repositories/authRepository";
 import * as usuariosRepository from "../repositories/usuariosRepository";
 
@@ -21,24 +23,6 @@ export const mapAuthError = (code) => {
   }
 };
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const getUserProfileWithRetry = async (uid, intentos = 5, espera = 300) => {
-  for (let intento = 0; intento < intentos; intento += 1) {
-    const perfil = await usuariosRepository.getUserById(uid);
-
-    if (perfil) {
-      return perfil;
-    }
-
-    if (intento < intentos - 1) {
-      await sleep(espera);
-    }
-  }
-
-  return null;
-};
-
 export const register = async ({ nombre, correo, password }) => {
   const credential = await authRepository
     .signUp(correo, password)
@@ -46,29 +30,34 @@ export const register = async ({ nombre, correo, password }) => {
       throw new Error(mapAuthError(error.code), { cause: error });
     });
 
-  const uid = credential.user.uid;
+  const perfil = {
+    uid: credential.user.uid,
+    nombre,
+    correo,
+    rol: "estudiante",
+    institucion: "",
+    fotoUrl: "",
+    xp: 0,
+    nivel: 1,
+    rachaActual: 0,
+    ultimaActividadEn: null,
+    creadoEn: new Date(),
+  };
 
   try {
-    // El documento usuarios/{uid} lo crea exclusivamente
-    // el trigger onUserCreate en el servidor.
-    const perfil = await getUserProfileWithRetry(uid);
-
-    if (!perfil) {
-      throw new Error(
-        "Tu cuenta fue creada, pero el perfil todavía no está disponible.",
-      );
-    }
+    // El cliente crea este doc porque todavía no existe la Cloud Function
+    // onUserCreate (Sprint 1-01 [01]); firestore.rules exige que rol/xp/
+    // nivel/rachaActual salgan siempre con estos valores iniciales fijos.
+    await usuariosRepository.createUser(credential.user.uid, {
+      ...perfil,
+      creadoEn: serverTimestamp(),
+    });
 
     return perfil;
   } catch (error) {
-    // Si el usuario de Auth ya fue creado pero el perfil
-    // todavía no está disponible, no se crea ningún documento
-    // desde el cliente.
     await authRepository.deleteCurrentUser().catch(() => {});
 
-    throw new Error(error.message || "No se pudo completar el registro.", {
-      cause: error,
-    });
+    throw new Error(mapAuthError(error.code), { cause: error });
   }
 };
 

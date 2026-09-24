@@ -1,63 +1,56 @@
-import api from "../api/api";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 
-/**
- * Repositorio para gestionar las actividades.
- * Centraliza todas las operaciones relacionadas
- * con el recurso /activities.
- */
+import { db } from "../config/firebase";
 
-const actividadesRepository = {
-  /**
-   * Obtener todas las actividades.
-   */
-  async getAll(params = {}) {
-    const response = await api.get("/api/v1/activities", {
-      params,
-    });
+const ACTIVIDADES_COLLECTION = "actividades";
 
-    return response.data;
-  },
+export const getActividadesAsignadas = async (uid) => {
+	if (!uid) {
+		return [];
+	}
 
-  /**
-   * Obtener una actividad por su ID.
-   */
-  async getById(id) {
-    const response = await api.get(`/api/v1/activities/${id}`);
+	const actividadesRef = collection(db, ACTIVIDADES_COLLECTION);
+	const consulta = query(
+		actividadesRef,
+		where("estudiantesAsignados", "array-contains", uid),
+	);
 
-    return response.data;
-  },
+	const snapshot = await getDocs(consulta);
 
-  /**
-   * Crear una nueva actividad.
-   */
-  async create(data) {
-    const response = await api.post("/api/v1/activities", data);
+	return snapshot.docs.map((actividadDoc) => {
+		const data = actividadDoc.data();
 
-    return response.data;
-  },
-
-  /**
-   * Actualizar una actividad.
-   */
-  async update(id, data) {
-    const response = await api.put(
-      `/api/v1/activities/${id}`,
-      data
-    );
-
-    return response.data;
-  },
-
-  /**
-   * Eliminar una actividad.
-   */
-  async delete(id) {
-    const response = await api.delete(
-      `/api/v1/activities/${id}`
-    );
-
-    return response.data;
-  },
+		return {
+			id: actividadDoc.id,
+			lecturaId: data.lecturaId || null,
+			docenteId: data.docenteId || null,
+			estudiantesAsignados: data.estudiantesAsignados || [],
+			estado: data.estado || null,
+			fechaLimite: data.fechaLimite || null,
+		};
+	});
 };
 
-export default actividadesRepository;
+export const getActividadById = async (id) => {
+	if (!id) {
+		return null;
+	}
+
+	const actividadRef = doc(db, ACTIVIDADES_COLLECTION, id);
+	const snapshot = await getDoc(actividadRef);
+
+	if (!snapshot.exists()) {
+		return null;
+	}
+
+	const data = snapshot.data();
+
+	return {
+		id: snapshot.id,
+		lecturaId: data.lecturaId || null,
+		docenteId: data.docenteId || null,
+		estudiantesAsignados: data.estudiantesAsignados || [],
+		estado: data.estado || null,
+		fechaLimite: data.fechaLimite || null,
+	};
+};
