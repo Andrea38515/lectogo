@@ -4,6 +4,8 @@ import { useAuth } from "../../hooks/useAuth";
 import * as userService from "../../services/userService";
 import * as storageService from "../../services/storageService";
 import { esPasswordSegura } from "../../utils/validators";
+import Input from "../../components/Input/Input";
+import Button from "../../components/Button/Button";
 import "./Profile.css";
 
 function Profile() {
@@ -98,24 +100,22 @@ function Profile() {
 			<form className="profile-form" onSubmit={handleSubmitDatos}>
 				<h2>Mi perfil</h2>
 
-				<label>
-					Nombre
-					<input
-						type="text"
-						value={nombre}
-						onChange={(e) => setNombre(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Nombre"
+					name="nombre"
+					value={nombre}
+					onChange={(e) => setNombre(e.target.value)}
+					disabled={guardandoDatos}
+					required
+				/>
 
-				<label>
-					Institución
-					<input
-						type="text"
-						value={institucion}
-						onChange={(e) => setInstitucion(e.target.value)}
-					/>
-				</label>
+				<Input
+					label="Institución"
+					name="institucion"
+					value={institucion}
+					onChange={(e) => setInstitucion(e.target.value)}
+					disabled={guardandoDatos}
+				/>
 
 				<label>
 					Foto de perfil
@@ -129,50 +129,50 @@ function Profile() {
 				{datosError && <p className="profile-error">{datosError}</p>}
 				{datosExito && <p className="profile-success">{datosExito}</p>}
 
-				<button type="submit" disabled={guardandoDatos}>
+				<Button type="submit" disabled={guardandoDatos}>
 					{guardandoDatos ? "Guardando..." : "Guardar cambios"}
-				</button>
+				</Button>
 			</form>
 
 			<form className="profile-form" onSubmit={handleSubmitPassword}>
 				<h2>Cambiar contraseña</h2>
 
-				<label>
-					Contraseña actual
-					<input
-						type="password"
-						value={currentPassword}
-						onChange={(e) => setCurrentPassword(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Contraseña actual"
+					name="currentPassword"
+					type="password"
+					value={currentPassword}
+					onChange={(e) => setCurrentPassword(e.target.value)}
+					disabled={guardandoPassword}
+					required
+				/>
 
-				<label>
-					Contraseña nueva
-					<input
-						type="password"
-						value={newPassword}
-						onChange={(e) => setNewPassword(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Contraseña nueva"
+					name="newPassword"
+					type="password"
+					value={newPassword}
+					onChange={(e) => setNewPassword(e.target.value)}
+					disabled={guardandoPassword}
+					required
+				/>
 
-				<label>
-					Confirmar contraseña nueva
-					<input
-						type="password"
-						value={confirmNewPassword}
-						onChange={(e) => setConfirmNewPassword(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Confirmar contraseña nueva"
+					name="confirmNewPassword"
+					type="password"
+					value={confirmNewPassword}
+					onChange={(e) => setConfirmNewPassword(e.target.value)}
+					disabled={guardandoPassword}
+					required
+				/>
 
 				{passwordError && <p className="profile-error">{passwordError}</p>}
 				{passwordExito && <p className="profile-success">{passwordExito}</p>}
 
-				<button type="submit" disabled={guardandoPassword}>
+				<Button type="submit" disabled={guardandoPassword}>
 					{guardandoPassword ? "Guardando..." : "Cambiar contraseña"}
-				</button>
+				</Button>
 			</form>
 		</main>
 	);

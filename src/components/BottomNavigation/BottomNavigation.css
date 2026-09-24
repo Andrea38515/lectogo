@@ -17,9 +17,9 @@
 
 	padding: 6px 8px;
 
-	background-color: #ffffff;
+	background-color: var(--color-surface);
 
-	border-top: 1px solid #e5e7eb;
+	border-top: 1px solid var(--color-border);
 
 	box-shadow: 0 -4px 16px rgba(23, 27, 52, 0.08);
 
@@ -43,11 +43,11 @@
 
 	height: 100%;
 
-	color: #7b8190;
+	color: var(--color-text-secondary);
 
 	text-decoration: none;
 
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	transition:
 		color 0.2s ease,
@@ -85,9 +85,9 @@
    ========================= */
 
 .bottom-navigation__item:hover {
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #f5f2ff;
+	background-color: var(--color-primary-light);
 }
 
 /* =========================
@@ -95,7 +95,7 @@
    ========================= */
 
 .bottom-navigation__item--active {
-	color: #5b35d5;
+	color: var(--color-primary);
 }
 
 .bottom-navigation__item--active .bottom-navigation__icon {
@@ -114,7 +114,7 @@
 	width: 28px;
 	height: 3px;
 
-	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+	background: linear-gradient(90deg, var(--color-primary), var(--color-primary));
 
 	border-radius: 0 0 4px 4px;
 }

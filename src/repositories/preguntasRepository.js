@@ -1,77 +1,30 @@
-import api from "../api/api";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
-/**
- * Repositorio para gestionar las preguntas.
- * Centraliza las operaciones relacionadas
- * con el recurso /questions.
- */
+import { db } from "../config/firebase";
 
-const preguntasRepository = {
-  /**
-   * Obtener todas las preguntas.
-   */
-  async getAll(params = {}) {
-    const response = await api.get("/api/v1/questions", {
-      params,
-    });
+const PREGUNTAS_COLLECTION = "preguntas";
 
-    return response.data;
-  },
+export const getPreguntasByLectura = async (lecturaId) => {
+	if (!lecturaId) {
+		return [];
+	}
 
-  /**
-   * Obtener una pregunta por su ID.
-   */
-  async getById(id) {
-    const response = await api.get(`/api/v1/questions/${id}`);
+	const preguntasRef = collection(db, PREGUNTAS_COLLECTION);
+	const consulta = query(preguntasRef, where("lecturaId", "==", lecturaId));
 
-    return response.data;
-  },
+	const snapshot = await getDocs(consulta);
 
-  /**
-   * Obtener las preguntas de una actividad.
-   */
-  async getByActividadId(actividadId) {
-    const response = await api.get(
-      `/api/v1/activities/${actividadId}/questions`
-    );
+	return snapshot.docs.map((preguntaDoc) => {
+		const data = preguntaDoc.data();
 
-    return response.data;
-  },
-
-  /**
-   * Crear una nueva pregunta.
-   */
-  async create(data) {
-    const response = await api.post(
-      "/api/v1/questions",
-      data
-    );
-
-    return response.data;
-  },
-
-  /**
-   * Actualizar una pregunta.
-   */
-  async update(id, data) {
-    const response = await api.put(
-      `/api/v1/questions/${id}`,
-      data
-    );
-
-    return response.data;
-  },
-
-  /**
-   * Eliminar una pregunta.
-   */
-  async delete(id) {
-    const response = await api.delete(
-      `/api/v1/questions/${id}`
-    );
-
-    return response.data;
-  },
+		// Nunca exponer respuestaCorrecta ni explicacion antes de responder —
+		// eso solo lo devuelve registrarIntento tras calificar en el servidor.
+		return {
+			id: preguntaDoc.id,
+			lecturaId: data.lecturaId,
+			tipo: data.tipo || "seleccion_multiple",
+			enunciado: data.enunciado || "",
+			opciones: data.opciones || [],
+		};
+	});
 };
-
-export default preguntasRepository;

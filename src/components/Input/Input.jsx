@@ -16,6 +16,7 @@ function Input({
 	required = false,
 	fullWidth = true,
 	icon,
+	rightSlot,
 	className = "",
 }) {
 	const inputGroupClasses = `
@@ -51,8 +52,11 @@ function Input({
 					className={`
             input
             ${icon ? "input--with-icon" : ""}
+            ${rightSlot ? "input--with-right-slot" : ""}
           `}
 				/>
+
+				{rightSlot && <span className="input-right-slot">{rightSlot}</span>}
 			</div>
 
 			{error ? (

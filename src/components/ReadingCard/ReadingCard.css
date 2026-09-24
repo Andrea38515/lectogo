@@ -8,10 +8,10 @@
 
 	overflow: hidden;
 
-	background-color: #ffffff;
+	background-color: var(--color-surface);
 
-	border: 1px solid #e5e7eb;
-	border-radius: 16px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
 
 	box-shadow: 0 4px 14px rgba(23, 27, 52, 0.06);
 
@@ -24,7 +24,7 @@
 .reading-card:hover {
 	transform: translateY(-4px);
 
-	border-color: #d9d0ff;
+	border-color: var(--color-primary-light);
 
 	box-shadow: 0 10px 25px rgba(23, 27, 52, 0.12);
 }
@@ -41,7 +41,7 @@
 
 	overflow: hidden;
 
-	background-color: #f5f2ff;
+	background-color: var(--color-primary-light);
 }
 
 .reading-card__image {
@@ -67,9 +67,9 @@
 	width: 100%;
 	height: 100%;
 
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background: linear-gradient(135deg, #f5f2ff, #ebe5ff);
+	background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-light));
 
 	font-size: 48px;
 }
@@ -86,7 +86,7 @@
 
 	padding: 5px 10px;
 
-	color: #5b35d5;
+	color: var(--color-primary);
 
 	background-color: rgba(255, 255, 255, 0.94);
 
@@ -117,7 +117,7 @@
 .reading-card__title {
 	margin: 0 0 8px;
 
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 18px;
 	font-weight: 700;
@@ -136,7 +136,7 @@
 
 	overflow: hidden;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 13px;
 
@@ -166,14 +166,14 @@
 
 	gap: 5px;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 12px;
 	font-weight: 500;
 }
 
 .reading-card__info-item svg {
-	color: #5b35d5;
+	color: var(--color-primary);
 
 	font-size: 15px;
 }
@@ -193,7 +193,7 @@
 
 	margin-bottom: 6px;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 11px;
 	font-weight: 600;
@@ -205,17 +205,17 @@
 
 	overflow: hidden;
 
-	background-color: #ebecef;
+	background-color: var(--color-border);
 
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 }
 
 .reading-card__progress-bar {
 	height: 100%;
 
-	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+	background: linear-gradient(90deg, var(--color-primary), var(--color-primary));
 
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	transition: width 0.3s ease;
 }

@@ -5,7 +5,9 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // functions/ es un paquete Node.js/CommonJS aparte (su propio
+  // package.json), no el entorno de navegador que lintea el resto del repo.
+  globalIgnores(['dist', 'functions']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

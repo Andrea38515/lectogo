@@ -1,12 +1,16 @@
-import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
-import { logout } from "../repositories/authRepository";
+import Sidebar from "../components/Siderbarg/Sidebar";
+import Header from "../components/Header/Header";
+import BottomNavigation from "../components/BottomNavigation/BottomNavigation";
+import { useAuth } from "../hooks/useAuth";
+import { logout } from "../services/authServices";
 
 import "./StudentLayout.css";
 
 const StudentLayout = ({ children }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -17,171 +21,66 @@ const StudentLayout = ({ children }) => {
     }
   };
 
-  const menuItems = [
-    {
-      path: "/estudiante",
-      label: "Inicio",
-      icon: "⌂",
-      end: true,
-    },
-    {
-      path: "/estudiante/biblioteca",
-      label: "Biblioteca",
-      icon: "📚",
-    },
-    {
-      path: "/estudiante/actividades",
-      label: "Actividades",
-      icon: "✏️",
-    },
-    {
-      path: "/estudiante/logros",
-      label: "Logros",
-      icon: "🏆",
-    },
-    {
-      path: "/estudiante/ranking",
-      label: "Ranking",
-      icon: "📊",
-    },
-  ];
+  const userName = user?.nombre || "Estudiante";
+  const userRole = user?.rol || "estudiante";
+  const userPhoto = user?.fotoUrl || "";
 
   return (
     <div className="student-layout">
       {/* =====================================
           SIDEBAR
+          Componente reutilizable (src/components/Siderbarg/Sidebar.jsx),
+          ya migrado a variables del design system. Reemplaza el <aside>
+          inline que no tenía CSS propio.
          ===================================== */}
 
-      <aside className="student-sidebar">
-        <div className="student-sidebar-logo">
-          <div className="student-logo-icon">📖</div>
-
-          <div>
-            <strong>LectoGo</strong>
-            <span>Aprender leyendo</span>
-          </div>
-        </div>
-
-        {/* PERFIL */}
-
-        <div className="student-mini-profile">
-          <div className="student-avatar">👤</div>
-
-          <div className="student-mini-info">
-            <strong>Estudiante</strong>
-            <span>0 XP</span>
-          </div>
-        </div>
-
-        {/* MENÚ */}
-
-        <nav className="student-sidebar-nav">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.end}
-              className={({ isActive }) =>
-                `student-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="student-nav-icon">{item.icon}</span>
-
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* OPCIONES */}
-
-        <div className="student-sidebar-bottom">
-          <NavLink
-            to="/estudiante/perfil"
-            className={({ isActive }) =>
-              `student-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="student-nav-icon">👤</span>
-
-            <span>Perfil</span>
-          </NavLink>
-
-          <NavLink
-            to="/estudiante/ajustes"
-            className={({ isActive }) =>
-              `student-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="student-nav-icon">⚙️</span>
-
-            <span>Ajustes</span>
-          </NavLink>
-
-          <button className="student-logout-button" onClick={handleLogout}>
-            <span>↪</span>
-            <span>Cerrar sesión</span>
-          </button>
-        </div>
-      </aside>
+      <Sidebar
+        role={userRole}
+        userName={userName}
+        userPhoto={userPhoto}
+        onLogout={handleLogout}
+      />
 
       {/* =====================================
           CONTENIDO
+          Usa las clases que .student-layout__main / __content ya definen
+          en StudentLayout.css (margin-left: 260px pensado para el ancho
+          fijo del Sidebar real).
          ===================================== */}
 
-      <div className="student-content">
-        {/* HEADER */}
+      <div className="student-layout__main">
+        {/* HEADER
+            Componente reutilizable (src/components/Header/Header.jsx),
+            ya migrado a variables del design system. */}
 
-        <header className="student-header">
-          <div className="student-mobile-logo">📖 LectoGo</div>
-
-          <div className="student-header-spacer"></div>
-
-          <div className="student-header-stats">
-            <div className="student-stat">
-              <span>⭐</span>
-              <strong>0 XP</strong>
-            </div>
-
-            <div className="student-stat">
-              <span>🔥</span>
-              <strong>0 días</strong>
-            </div>
-          </div>
-
-          <button
-            className="student-header-profile"
-            onClick={() => navigate("/estudiante/perfil")}
-          >
-            👤
-          </button>
-        </header>
+        <Header
+          title="LectoGo"
+          subtitle="Aprender leyendo"
+          userName={userName}
+          userRole={userRole}
+          userPhoto={userPhoto}
+          onProfileClick={() => navigate("/estudiante/perfil")}
+        />
 
         {/* =====================================
             PÁGINA
            ===================================== */}
 
-        <main className="student-main">{children ? children : <Outlet />}</main>
+        <main className="student-layout__content">
+          {children ? children : <Outlet />}
+        </main>
       </div>
 
       {/* =====================================
           NAVEGACIÓN MÓVIL
+          Componente reutilizable (src/components/BottomNavigation/
+          BottomNavigation.jsx), ya migrado a variables del design system.
+          Se oculta a sí mismo en desktop (min-width: 768px) y el Sidebar
+          se oculta a sí mismo en mobile (max-width: 767px), así que ambos
+          conviven sin superponerse.
          ===================================== */}
 
-      <nav className="student-mobile-nav">
-        {menuItems.slice(0, 5).map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.end}
-            className={({ isActive }) =>
-              `student-mobile-nav-item ${isActive ? "active" : ""}`
-            }
-          >
-            <span>{item.icon}</span>
-            <small>{item.label}</small>
-          </NavLink>
-        ))}
-      </nav>
+      <BottomNavigation />
     </div>
   );
 };

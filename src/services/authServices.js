@@ -1,6 +1,25 @@
 import * as authRepository from "../repositories/authRepository";
 import * as usuariosRepository from "../repositories/usuariosRepository";
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// El trigger onUserCreate (Cloud Functions) crea el doc en Firestore de
+// forma asíncrona tras el signUp — puede tardar uno o dos segundos, así
+// que reintentamos con backoff corto antes de darlo por fallido.
+const getUserProfileWithRetry = async (uid, intentos = 5, esperaMs = 800) => {
+  for (let intento = 0; intento < intentos; intento += 1) {
+    const perfil = await usuariosRepository.getUserById(uid);
+
+    if (perfil) {
+      return perfil;
+    }
+
+    await sleep(esperaMs);
+  }
+
+  return null;
+};
+
 export const mapAuthError = (code) => {
   switch (code) {
     case "auth/invalid-credential":
@@ -21,24 +40,6 @@ export const mapAuthError = (code) => {
   }
 };
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const getUserProfileWithRetry = async (uid, intentos = 5, espera = 300) => {
-  for (let intento = 0; intento < intentos; intento += 1) {
-    const perfil = await usuariosRepository.getUserById(uid);
-
-    if (perfil) {
-      return perfil;
-    }
-
-    if (intento < intentos - 1) {
-      await sleep(espera);
-    }
-  }
-
-  return null;
-};
-
 export const register = async ({ nombre, correo, password }) => {
   const credential = await authRepository
     .signUp(correo, password)
@@ -46,30 +47,30 @@ export const register = async ({ nombre, correo, password }) => {
       throw new Error(mapAuthError(error.code), { cause: error });
     });
 
-  const uid = credential.user.uid;
+  // Si el envío del correo de verificación falla, el registro igual
+  // continúa — el usuario ya quedó creado, esto no debe bloquearlo.
+  await authRepository
+    .sendVerificationEmail(credential.user)
+    .catch((error) => console.error("Error enviando correo de verificación:", error));
 
-  try {
-    // El documento usuarios/{uid} lo crea exclusivamente
-    // el trigger onUserCreate en el servidor.
-    const perfil = await getUserProfileWithRetry(uid);
+  // El doc en usuarios/{uid} lo crea la Cloud Function onUserCreate, no el
+  // cliente (Sprint 1-01 [02]) — acá solo lo esperamos y lo devolvemos.
+  const perfil = await getUserProfileWithRetry(credential.user.uid);
 
-    if (!perfil) {
-      throw new Error(
-        "Tu cuenta fue creada, pero el perfil todavía no está disponible.",
-      );
-    }
-
-    return perfil;
-  } catch (error) {
-    // Si el usuario de Auth ya fue creado pero el perfil
-    // todavía no está disponible, no se crea ningún documento
-    // desde el cliente.
+  if (!perfil) {
     await authRepository.deleteCurrentUser().catch(() => {});
 
-    throw new Error(error.message || "No se pudo completar el registro.", {
-      cause: error,
-    });
+    throw new Error(
+      "No pudimos terminar tu registro. Intentá iniciar sesión en unos segundos o contactá al administrador.",
+    );
   }
+
+  // El trigger no conoce el nombre que se tipeó en el formulario (solo ve
+  // uid/email de Auth), así que lo completamos acá con un update normal
+  // — firestore.rules ya permite que el dueño del doc actualice "nombre".
+  await usuariosRepository.updateUser(credential.user.uid, { nombre });
+
+  return { ...perfil, nombre };
 };
 
 export const login = async (correo, password) => {

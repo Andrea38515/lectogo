@@ -10,10 +10,10 @@
 
 	padding: 18px;
 
-	background: linear-gradient(135deg, #ffffff, #f7f4ff);
+	background: linear-gradient(135deg, var(--color-surface), var(--color-primary-light));
 
-	border: 1px solid #ded6ff;
-	border-radius: 16px;
+	border: 1px solid var(--color-primary-light);
+	border-radius: var(--radius-lg);
 
 	box-shadow: 0 4px 14px rgba(23, 27, 52, 0.07);
 
@@ -36,7 +36,7 @@
 
 	color: #ffffff;
 
-	background: linear-gradient(135deg, #5b35d5, #7c5cff);
+	background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
 
 	border-radius: 50%;
 
@@ -76,7 +76,7 @@
 
 	margin-bottom: 2px;
 
-	color: #7b8190;
+	color: var(--color-text-secondary);
 
 	font-size: 11px;
 	font-weight: 600;
@@ -88,7 +88,7 @@
 .level-badge__name {
 	margin: 0;
 
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 18px;
 	font-weight: 700;
@@ -103,9 +103,9 @@
 
 	padding: 5px 10px;
 
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #eee9ff;
+	background-color: var(--color-primary-light);
 
 	border-radius: 20px;
 
@@ -130,7 +130,7 @@
 
 	margin-bottom: 6px;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 11px;
 	font-weight: 600;
@@ -142,7 +142,7 @@
 
 	overflow: hidden;
 
-	background-color: #e8e9ee;
+	background-color: var(--color-border);
 
 	border-radius: 20px;
 }
@@ -150,7 +150,7 @@
 .level-badge__progress-bar {
 	height: 100%;
 
-	background: linear-gradient(90deg, #5b35d5, #7c5cff);
+	background: linear-gradient(90deg, var(--color-primary), var(--color-primary));
 
 	border-radius: 20px;
 
@@ -169,13 +169,13 @@
 
 	margin-top: 10px;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 11px;
 }
 
 .level-badge__remaining svg {
-	color: #5b35d5;
+	color: var(--color-primary);
 
 	font-size: 14px;
 }
@@ -192,7 +192,7 @@
 
 	margin-top: 10px;
 
-	color: #16a34a;
+	color: var(--color-success);
 
 	font-size: 12px;
 	font-weight: 600;

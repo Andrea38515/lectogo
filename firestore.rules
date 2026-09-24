@@ -13,6 +13,10 @@ service cloud.firestore {
           ).data.rol == "administrador"
         );
 
+      // El doc se crea únicamente desde la Cloud Function onUserCreate
+      // (Sprint 1-01 [01], Admin SDK) — el cliente ya no tiene allow create,
+      // así nadie puede autoasignarse rol/xp/nivel desde el registro público.
+
       allow update: if request.auth != null &&
         request.auth.uid == uid &&
         request.resource.data.diff(resource.data).affectedKeys()

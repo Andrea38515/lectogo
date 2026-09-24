@@ -14,7 +14,7 @@
 /* Label */
 
 .input-label {
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 14px;
 	font-weight: 600;
@@ -23,7 +23,7 @@
 .input-required {
 	margin-left: 4px;
 
-	color: #dc3545;
+	color: var(--color-danger);
 }
 
 /* Contenedor */
@@ -43,11 +43,11 @@
 
 	padding: 10px 12px;
 
-	color: #171b34;
+	color: var(--color-text);
 
-	background-color: #ffffff;
+	background-color: var(--color-surface);
 
-	border: 1px solid #d9dce5;
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
 
 	font-family: inherit;
@@ -64,19 +64,19 @@
 /* Placeholder */
 
 .input::placeholder {
-	color: #9ca3af;
+	color: var(--color-text-muted);
 }
 
 /* Hover */
 
 .input:hover {
-	border-color: #b7bccc;
+	border-color: var(--color-text-muted);
 }
 
 /* Focus */
 
 .input:focus {
-	border-color: #5b35d5;
+	border-color: var(--color-primary);
 
 	box-shadow: 0 0 0 3px rgba(91, 53, 213, 0.12);
 }
@@ -92,7 +92,7 @@
 	align-items: center;
 	justify-content: center;
 
-	color: #7b8190;
+	color: var(--color-text-secondary);
 
 	font-size: 18px;
 
@@ -103,10 +103,24 @@
 	padding-left: 40px;
 }
 
+.input--with-right-slot {
+	padding-right: 40px;
+}
+
+.input-right-slot {
+	position: absolute;
+
+	right: 8px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 /* Error */
 
 .input-group--error .input {
-	border-color: #dc3545;
+	border-color: var(--color-danger);
 }
 
 .input-group--error .input:focus {
@@ -114,7 +128,7 @@
 }
 
 .input-error-message {
-	color: #dc3545;
+	color: var(--color-danger);
 
 	font-size: 12px;
 }
@@ -122,7 +136,7 @@
 /* Texto de ayuda */
 
 .input-helper-text {
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 12px;
 }
@@ -130,9 +144,9 @@
 /* Deshabilitado */
 
 .input:disabled {
-	color: #8b8f99;
+	color: var(--color-text-secondary);
 
-	background-color: #f3f4f6;
+	background-color: var(--color-background);
 
 	cursor: not-allowed;
 }

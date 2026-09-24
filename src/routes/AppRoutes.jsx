@@ -1,5 +1,4 @@
-import React from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import StudentLayout from "../layouts/StudentLayout";
@@ -8,10 +7,10 @@ import Login from "../pages/auth/Login/Login";
 import Register from "../pages/auth/Register/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword/Forgotpassword";
 import Profile from "../pages/perfil/Profile";
-import StudentDashboard from "../pages/estudiante/StudentDashboard/StudentDashboard";
-import TeacherDashboard from "../pages/docente/TeacherDashboard/TeacherDashboard";
-import AdminDashboard from "../pages/admin/AdminDashboard/AdminDashboard";
+import Reading from "../pages/estudiante/Reading/Reading";
+import Activity from "../pages/estudiante/Activity/Activity";
 import PrivateRoutes from "./PrivateRoutes";
+import AdminRoute from "./AdminRoute";
 
 const ComingSoon = ({ title }) => {
   return (
@@ -115,6 +114,10 @@ function AppRouter() {
 
         <Route path="/auth/login" element={<Login />} />
 
+        <Route path="/registro" element={<Register />} />
+
+        <Route path="/recuperar-password" element={<ForgotPassword />} />
+
         {/* Biblioteca pública limitada */}
         <Route path="/biblioteca" element={<PublicLibrary />} />
 
@@ -123,98 +126,104 @@ function AppRouter() {
       </Route>
 
       {/* =====================================
-            ÁREA DEL ESTUDIANTE
+            ÁREA DEL ESTUDIANTE (requiere sesión)
            ===================================== */}
 
-      <Route element={<StudentLayout />}>
+      <Route element={<PrivateRoutes />}>
+        <Route element={<StudentLayout />}>
+          <Route
+            path="/estudiante"
+            element={<ComingSoon title="Panel del estudiante" />}
+          />
+
+          <Route
+            path="/estudiante/inicio"
+            element={<ComingSoon title="Inicio del estudiante" />}
+          />
+
+          <Route
+            path="/estudiante/biblioteca"
+            element={<ComingSoon title="Biblioteca del estudiante" />}
+          />
+
+          <Route
+            path="/estudiante/lecturas"
+            element={<ComingSoon title="Lecturas" />}
+          />
+
+          {/* =================================
+                LECTURA DESDE EL ÁREA ESTUDIANTE
+               ================================= */}
+
+          <Route path="/estudiante/reading/:lecturaId" element={<Reading />} />
+
+          {/* =================================
+                ACTIVIDAD REAL
+
+                IMPORTANTE:
+                actividadId ≠ lecturaId
+               ================================= */}
+
+          <Route
+            path="/estudiante/actividades/:actividadId"
+            element={<Activity />}
+          />
+
+          <Route
+            path="/estudiante/actividades"
+            element={<ComingSoon title="Actividades" />}
+          />
+
+          <Route
+            path="/estudiante/logros"
+            element={<ComingSoon title="Logros" />}
+          />
+
+          <Route
+            path="/estudiante/ranking"
+            element={<ComingSoon title="Ranking" />}
+          />
+
+          <Route
+            path="/estudiante/estadisticas"
+            element={<ComingSoon title="Estadísticas" />}
+          />
+
+          <Route path="/estudiante/perfil" element={<Profile />} />
+
+          <Route
+            path="/estudiante/mascota"
+            element={<ComingSoon title="Mascota" />}
+          />
+
+          <Route
+            path="/estudiante/ajustes"
+            element={<ComingSoon title="Ajustes" />}
+          />
+        </Route>
+      </Route>
+
+      {/* =====================================
+            DOCENTE (requiere sesión)
+           ===================================== */}
+
+      <Route element={<PrivateRoutes />}>
         <Route
-          path="/estudiante"
-          element={<ComingSoon title="Panel del estudiante" />}
-        />
-
-        <Route
-          path="/estudiante/inicio"
-          element={<ComingSoon title="Inicio del estudiante" />}
-        />
-
-        <Route
-          path="/estudiante/biblioteca"
-          element={<ComingSoon title="Biblioteca del estudiante" />}
-        />
-
-        <Route
-          path="/estudiante/lecturas"
-          element={<ComingSoon title="Lecturas" />}
-        />
-
-        {/* =================================
-              LECTURA DESDE EL ÁREA ESTUDIANTE
-             ================================= */}
-
-        <Route path="/estudiante/reading/:lecturaId" element={<Reading />} />
-
-        {/* =================================
-              ACTIVIDAD REAL
-              
-              IMPORTANTE:
-              actividadId ≠ lecturaId
-             ================================= */}
-
-        <Route
-          path="/estudiante/actividades/:actividadId"
-          element={<Activity />}
-        />
-
-        <Route
-          path="/estudiante/actividades"
-          element={<ComingSoon title="Actividades" />}
-        />
-
-        <Route
-          path="/estudiante/logros"
-          element={<ComingSoon title="Logros" />}
-        />
-
-        <Route
-          path="/estudiante/ranking"
-          element={<ComingSoon title="Ranking" />}
-        />
-
-        <Route
-          path="/estudiante/estadisticas"
-          element={<ComingSoon title="Estadísticas" />}
-        />
-
-        <Route
-          path="/estudiante/perfil"
-          element={<ComingSoon title="Perfil" />}
-        />
-
-        <Route
-          path="/estudiante/mascota"
-          element={<ComingSoon title="Mascota" />}
-        />
-
-        <Route
-          path="/estudiante/ajustes"
-          element={<ComingSoon title="Ajustes" />}
+          path="/docente"
+          element={<ComingSoon title="Panel docente" />}
         />
       </Route>
 
       {/* =====================================
-            DOCENTE
+            ADMINISTRADOR (requiere sesión + rol administrador)
            ===================================== */}
 
-      <Route path="/docente" element={<ComingSoon title="Panel docente" />} />
-
-      {/* =====================================
-            ADMINISTRADOR
-           ===================================== */}
-
-      <Route
-        path="/admin"
-        element={<ComingSoon title="Panel administrador" />}
-      />
+      <Route element={<AdminRoute />}>
+        <Route
+          path="/admin"
+          element={<ComingSoon title="Panel administrador" />}
+        />
+      </Route>
 
       {/* =====================================
             RUTA NO ENCONTRADA
