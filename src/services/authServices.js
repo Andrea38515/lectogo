@@ -1,7 +1,24 @@
-import { serverTimestamp } from "firebase/firestore";
-
 import * as authRepository from "../repositories/authRepository";
 import * as usuariosRepository from "../repositories/usuariosRepository";
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// El trigger onUserCreate (Cloud Functions) crea el doc en Firestore de
+// forma asíncrona tras el signUp — puede tardar uno o dos segundos, así
+// que reintentamos con backoff corto antes de darlo por fallido.
+const getUserProfileWithRetry = async (uid, intentos = 5, esperaMs = 800) => {
+  for (let intento = 0; intento < intentos; intento += 1) {
+    const perfil = await usuariosRepository.getUserById(uid);
+
+    if (perfil) {
+      return perfil;
+    }
+
+    await sleep(esperaMs);
+  }
+
+  return null;
+};
 
 export const mapAuthError = (code) => {
   switch (code) {
@@ -30,35 +47,24 @@ export const register = async ({ nombre, correo, password }) => {
       throw new Error(mapAuthError(error.code), { cause: error });
     });
 
-  const perfil = {
-    uid: credential.user.uid,
-    nombre,
-    correo,
-    rol: "estudiante",
-    institucion: "",
-    fotoUrl: "",
-    xp: 0,
-    nivel: 1,
-    rachaActual: 0,
-    ultimaActividadEn: null,
-    creadoEn: new Date(),
-  };
+  // El doc en usuarios/{uid} lo crea la Cloud Function onUserCreate, no el
+  // cliente (Sprint 1-01 [02]) — acá solo lo esperamos y lo devolvemos.
+  const perfil = await getUserProfileWithRetry(credential.user.uid);
 
-  try {
-    // El cliente crea este doc porque todavía no existe la Cloud Function
-    // onUserCreate (Sprint 1-01 [01]); firestore.rules exige que rol/xp/
-    // nivel/rachaActual salgan siempre con estos valores iniciales fijos.
-    await usuariosRepository.createUser(credential.user.uid, {
-      ...perfil,
-      creadoEn: serverTimestamp(),
-    });
-
-    return perfil;
-  } catch (error) {
+  if (!perfil) {
     await authRepository.deleteCurrentUser().catch(() => {});
 
-    throw new Error(mapAuthError(error.code), { cause: error });
+    throw new Error(
+      "No pudimos terminar tu registro. Intentá iniciar sesión en unos segundos o contactá al administrador.",
+    );
   }
+
+  // El trigger no conoce el nombre que se tipeó en el formulario (solo ve
+  // uid/email de Auth), así que lo completamos acá con un update normal
+  // — firestore.rules ya permite que el dueño del doc actualice "nombre".
+  await usuariosRepository.updateUser(credential.user.uid, { nombre });
+
+  return { ...perfil, nombre };
 };
 
 export const login = async (correo, password) => {
