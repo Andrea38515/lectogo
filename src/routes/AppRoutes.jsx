@@ -10,6 +10,7 @@ import Profile from "../pages/perfil/Profile";
 import Reading from "../pages/estudiante/Reading/Reading";
 import Activity from "../pages/estudiante/Activity/Activity";
 import PrivateRoutes from "./PrivateRoutes";
+import AdminRoute from "./AdminRoute";
 
 const ComingSoon = ({ title }) => {
   return (
@@ -203,19 +204,26 @@ function AppRouter() {
       </Route>
 
       {/* =====================================
-            DOCENTE
+            DOCENTE (requiere sesión)
            ===================================== */}
 
-      <Route path="/docente" element={<ComingSoon title="Panel docente" />} />
+      <Route element={<PrivateRoutes />}>
+        <Route
+          path="/docente"
+          element={<ComingSoon title="Panel docente" />}
+        />
+      </Route>
 
       {/* =====================================
-            ADMINISTRADOR
+            ADMINISTRADOR (requiere sesión + rol administrador)
            ===================================== */}
 
-      <Route
-        path="/admin"
-        element={<ComingSoon title="Panel administrador" />}
-      />
+      <Route element={<AdminRoute />}>
+        <Route
+          path="/admin"
+          element={<ComingSoon title="Panel administrador" />}
+        />
+      </Route>
 
       {/* =====================================
             RUTA NO ENCONTRADA

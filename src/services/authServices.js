@@ -47,6 +47,12 @@ export const register = async ({ nombre, correo, password }) => {
       throw new Error(mapAuthError(error.code), { cause: error });
     });
 
+  // Si el envío del correo de verificación falla, el registro igual
+  // continúa — el usuario ya quedó creado, esto no debe bloquearlo.
+  await authRepository
+    .sendVerificationEmail(credential.user)
+    .catch((error) => console.error("Error enviando correo de verificación:", error));
+
   // El doc en usuarios/{uid} lo crea la Cloud Function onUserCreate, no el
   // cliente (Sprint 1-01 [02]) — acá solo lo esperamos y lo devolvemos.
   const perfil = await getUserProfileWithRetry(credential.user.uid);

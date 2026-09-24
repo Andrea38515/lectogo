@@ -3,6 +3,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut,
 	sendPasswordResetEmail,
+	sendEmailVerification,
 	EmailAuthProvider,
 	reauthenticateWithCredential,
 	updatePassword,
@@ -26,6 +27,10 @@ export const signOutUser = () => {
 
 export const sendResetEmail = (correo) => {
 	return sendPasswordResetEmail(auth, correo);
+};
+
+export const sendVerificationEmail = (user) => {
+	return sendEmailVerification(user);
 };
 
 export const reauthenticate = (password) => {
