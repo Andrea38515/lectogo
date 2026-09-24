@@ -16,9 +16,9 @@
 
 	padding: 20px 14px;
 
-	background-color: #ffffff;
+	background-color: var(--color-surface);
 
-	border-right: 1px solid #e5e7eb;
+	border-right: 1px solid var(--color-border);
 
 	box-sizing: border-box;
 }
@@ -35,7 +35,7 @@
 
 	padding: 4px 8px 22px;
 
-	border-bottom: 1px solid #f0f1f4;
+	border-bottom: 1px solid var(--color-border);
 }
 
 .sidebar__logo {
@@ -50,7 +50,7 @@
 
 	color: #ffffff;
 
-	background: linear-gradient(135deg, #5b35d5, #7c5cff);
+	background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
 
 	border-radius: 12px;
 
@@ -66,14 +66,14 @@
 }
 
 .sidebar__brand-name {
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 18px;
 	font-weight: 800;
 }
 
 .sidebar__brand-description {
-	color: #8b8f9c;
+	color: var(--color-text-secondary);
 
 	font-size: 10px;
 }
@@ -110,11 +110,11 @@
 
 	padding: 10px 12px;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	text-decoration: none;
 
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	transition:
 		color 0.2s ease,
@@ -123,9 +123,9 @@
 }
 
 .sidebar__item:hover {
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #f7f5ff;
+	background-color: var(--color-primary-light);
 }
 
 /* =========================
@@ -133,9 +133,9 @@
    ========================= */
 
 .sidebar__item--active {
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #f2eeff;
+	background-color: var(--color-primary-light);
 
 	font-weight: 600;
 }
@@ -150,7 +150,7 @@
 	width: 4px;
 	height: 24px;
 
-	background-color: #5b35d5;
+	background-color: var(--color-primary);
 
 	border-radius: 0 4px 4px 0;
 }
@@ -187,7 +187,7 @@
 
 	padding-top: 16px;
 
-	border-top: 1px solid #f0f1f4;
+	border-top: 1px solid var(--color-border);
 }
 
 /* =========================
@@ -217,7 +217,7 @@
 
 	color: #ffffff;
 
-	background-color: #5b35d5;
+	background-color: var(--color-primary);
 
 	border-radius: 50%;
 }
@@ -246,7 +246,7 @@
 
 	overflow: hidden;
 
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 13px;
 	font-weight: 600;
@@ -256,7 +256,7 @@
 }
 
 .sidebar__user-role {
-	color: #8b8f9c;
+	color: var(--color-text-secondary);
 
 	font-size: 10px;
 
@@ -278,12 +278,12 @@
 
 	padding: 9px 12px;
 
-	color: #dc3545;
+	color: var(--color-danger);
 
 	background-color: transparent;
 
 	border: none;
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	font-family: inherit;
 	font-size: 13px;
@@ -301,7 +301,7 @@
 }
 
 .sidebar__logout:hover {
-	background-color: #fff1f2;
+	background-color: var(--color-danger-light);
 }
 
 /* =========================

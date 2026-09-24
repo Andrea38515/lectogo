@@ -19,8 +19,8 @@
 
 .loading__spinner {
 	border-style: solid;
-	border-color: #e5e7eb;
-	border-top-color: #5b35d5;
+	border-color: var(--color-border);
+	border-top-color: var(--color-primary);
 
 	border-radius: 50%;
 
@@ -59,7 +59,7 @@
 .loading__message {
 	margin: 0;
 
-	color: #6b7280;
+	color: var(--color-text-secondary);
 
 	font-size: 14px;
 	font-weight: 500;

@@ -15,9 +15,9 @@
 
 	padding: 12px 24px;
 
-	background-color: #ffffff;
+	background-color: var(--color-surface);
 
-	border-bottom: 1px solid #e5e7eb;
+	border-bottom: 1px solid var(--color-border);
 
 	box-sizing: border-box;
 }
@@ -50,12 +50,12 @@
 
 	padding: 0;
 
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #f5f2ff;
+	background-color: var(--color-primary-light);
 
 	border: none;
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	font-size: 22px;
 
@@ -67,7 +67,7 @@
 }
 
 .header__menu-button:hover {
-	background-color: #ebe5ff;
+	background-color: var(--color-primary-light);
 }
 
 .header__menu-button:active {
@@ -90,7 +90,7 @@
 .header__title {
 	margin: 0;
 
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 22px;
 	font-weight: 700;
@@ -101,7 +101,7 @@
 .header__subtitle {
 	margin: 0;
 
-	color: #7b8190;
+	color: var(--color-text-secondary);
 
 	font-size: 13px;
 
@@ -137,11 +137,11 @@
 
 	padding: 0;
 
-	color: #5f6472;
+	color: var(--color-text-secondary);
 
-	background-color: #f7f8fc;
+	background-color: var(--color-background);
 
-	border: 1px solid #e5e7eb;
+	border: 1px solid var(--color-border);
 	border-radius: 50%;
 
 	font-size: 19px;
@@ -155,11 +155,11 @@
 }
 
 .header__notification:hover {
-	color: #5b35d5;
+	color: var(--color-primary);
 
-	background-color: #f5f2ff;
+	background-color: var(--color-primary-light);
 
-	border-color: #d9d0ff;
+	border-color: var(--color-primary-light);
 }
 
 /* Badge */
@@ -181,10 +181,10 @@
 
 	color: #ffffff;
 
-	background-color: #dc3545;
+	background-color: var(--color-danger);
 
 	border: 2px solid #ffffff;
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	font-size: 10px;
 	font-weight: 700;
@@ -207,7 +207,7 @@
 	background-color: transparent;
 
 	border: none;
-	border-radius: 10px;
+	border-radius: var(--radius-md);
 
 	cursor: pointer;
 
@@ -215,7 +215,7 @@
 }
 
 .header__profile:hover {
-	background-color: #f7f8fc;
+	background-color: var(--color-background);
 }
 
 /* =========================
@@ -234,7 +234,7 @@
 
 	overflow: hidden;
 
-	background-color: #5b35d5;
+	background-color: var(--color-primary);
 
 	border-radius: 50%;
 }
@@ -272,7 +272,7 @@
 .header__user-name {
 	max-width: 160px;
 
-	color: #171b34;
+	color: var(--color-text);
 
 	font-size: 14px;
 	font-weight: 600;
@@ -283,7 +283,7 @@
 }
 
 .header__user-role {
-	color: #7b8190;
+	color: var(--color-text-secondary);
 
 	font-size: 11px;
 	text-transform: capitalize;

@@ -12,7 +12,7 @@
 .statistics-eyebrow {
   display: inline-block;
   margin-bottom: 6px;
-  color: #6c63ff;
+  color: var(--color-primary);
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -21,13 +21,13 @@
 
 .statistics-header h1 {
   margin: 0;
-  color: #202124;
+  color: var(--color-text);
   font-size: 2rem;
 }
 
 .statistics-header p {
   margin: 8px 0 0;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 1rem;
 }
 
@@ -45,8 +45,8 @@
   align-items: center;
   gap: 16px;
   padding: 22px;
-  background: #ffffff;
-  border: 1px solid #ececf2;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 18px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
@@ -59,20 +59,20 @@
   height: 52px;
   flex-shrink: 0;
   border-radius: 14px;
-  background: #f1f0ff;
+  background: var(--color-primary-light);
   font-size: 1.5rem;
 }
 
 .statistics-card span {
   display: block;
   margin-bottom: 4px;
-  color: #737373;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
 
 .statistics-card strong {
   display: block;
-  color: #202124;
+  color: var(--color-text);
   font-size: 1.7rem;
 }
 
@@ -80,8 +80,8 @@
 
 .statistics-history {
   padding: 25px;
-  background: #ffffff;
-  border: 1px solid #ececf2;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 20px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
 }
@@ -96,13 +96,13 @@
 
 .statistics-history-header h2 {
   margin: 0;
-  color: #202124;
+  color: var(--color-text);
   font-size: 1.35rem;
 }
 
 .statistics-history-header p {
   margin: 5px 0 0;
-  color: #777;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
 
@@ -115,7 +115,7 @@
 }
 
 .statistics-filter label {
-  color: #555;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -123,17 +123,17 @@
 .statistics-filter select {
   min-width: 150px;
   padding: 10px 14px;
-  border: 1px solid #dcdde5;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #333;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 0.9rem;
   cursor: pointer;
   outline: none;
 }
 
 .statistics-filter select:focus {
-  border-color: #6c63ff;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
 }
 
@@ -150,7 +150,7 @@
   align-items: center;
   gap: 15px;
   padding: 17px;
-  border: 1px solid #eeeeee;
+  border: 1px solid var(--color-border);
   border-radius: 15px;
   transition:
     transform 0.2s ease,
@@ -170,8 +170,8 @@
   height: 42px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #f1f0ff;
-  color: #6c63ff;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -182,7 +182,7 @@
 
 .statistics-history-main h3 {
   margin: 0 0 7px;
-  color: #252525;
+  color: var(--color-text);
   font-size: 1rem;
 }
 
@@ -193,14 +193,14 @@
 }
 
 .statistics-history-details span {
-  color: #777;
+  color: var(--color-text-secondary);
   font-size: 0.82rem;
 }
 
 .statistics-history-details span:not(:last-child)::after {
   content: "•";
   margin-left: 8px;
-  color: #bbb;
+  color: var(--color-text-muted);
 }
 
 .statistics-history-result {
@@ -212,7 +212,7 @@
 }
 
 .statistics-history-result strong {
-  color: #202124;
+  color: var(--color-text);
   font-size: 1.1rem;
 }
 
@@ -224,18 +224,18 @@
 }
 
 .status-success {
-  background: #e8f7ee;
-  color: #25804a;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .status-pending {
-  background: #fff4d6;
+  background: var(--color-secondary-light);
   color: #956d00;
 }
 
 .status-neutral {
-  background: #eeeeee;
-  color: #666666;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
 }
 
 /* VACÍO */
@@ -251,12 +251,12 @@
 
 .statistics-empty h3 {
   margin: 14px 0 6px;
-  color: #333;
+  color: var(--color-text);
 }
 
 .statistics-empty p {
   margin: 0;
-  color: #777;
+  color: var(--color-text-secondary);
 }
 
 /* LOADING / ERROR */
@@ -271,15 +271,15 @@
 }
 
 .statistics-state p {
-  color: #777;
+  color: var(--color-text-secondary);
 }
 
 .statistics-spinner {
   width: 38px;
   height: 38px;
   margin-bottom: 15px;
-  border: 4px solid #eeeeee;
-  border-top-color: #6c63ff;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: statistics-spin 0.8s linear infinite;
 }
@@ -293,8 +293,8 @@
 .statistics-error {
   padding: 30px;
   border-radius: 18px;
-  background: #fff6f6;
-  border: 1px solid #f2d4d4;
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger-light);
 }
 
 .statistics-state-icon {
@@ -304,7 +304,7 @@
 
 .statistics-error h2 {
   margin: 0;
-  color: #a33;
+  color: var(--color-danger);
   font-size: 1.15rem;
 }
 

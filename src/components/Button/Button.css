@@ -19,7 +19,7 @@
 		background-color 0.2s ease,
 		color 0.2s ease,
 		border-color 0.2s ease,
-		transform 0.15s ease,
+		transform var(--transition-fast),
 		box-shadow 0.2s ease;
 }
 
@@ -30,12 +30,12 @@
 /* Botón principal */
 
 .button--primary {
-	background-color: #5b35d5;
+	background-color: var(--color-primary);
 	color: #ffffff;
 }
 
 .button--primary:hover {
-	background-color: #4b28bd;
+	background-color: var(--color-primary-hover);
 }
 
 .button--primary:active {
@@ -45,50 +45,50 @@
 /* Botón secundario */
 
 .button--secondary {
-	background-color: #ffffff;
-	color: #5b35d5;
+	background-color: var(--color-surface);
+	color: var(--color-primary);
 
-	border: 1px solid #5b35d5;
+	border: 1px solid var(--color-primary);
 }
 
 .button--secondary:hover {
-	background-color: #f2efff;
+	background-color: var(--color-primary-light);
 }
 
 /* Botón de éxito */
 
 .button--success {
-	background-color: #22a06b;
+	background-color: var(--color-success);
 	color: #ffffff;
 }
 
 .button--success:hover {
-	background-color: #198754;
+	background-color: var(--color-success);
 }
 
 /* Botón de peligro */
 
 .button--danger {
-	background-color: #dc3545;
+	background-color: var(--color-danger);
 	color: #ffffff;
 }
 
 .button--danger:hover {
-	background-color: #bb2d3b;
+	background-color: var(--color-danger);
 }
 
 /* Botón tipo texto */
 
 .button--text {
 	background-color: transparent;
-	color: #5b35d5;
+	color: var(--color-primary);
 
 	padding-left: 6px;
 	padding-right: 6px;
 }
 
 .button--text:hover {
-	background-color: #f2efff;
+	background-color: var(--color-primary-light);
 }
 
 /* =========================
