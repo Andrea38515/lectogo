@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import * as authServices from "../../../services/authServices";
 import { isEmailValido } from "../../../utils/validators";
+import Input from "../../../components/Input/Input";
+import Button from "../../../components/Button/Button";
 import "./Login.css";
 
 const obtenerRutaPorRol = (rol) => {
@@ -121,48 +123,31 @@ function Login() {
 						)}
 
 						<form onSubmit={handleSubmit} className="login-form">
-							<div className="form-group">
-								<label htmlFor="correo">Correo electrónico</label>
+							<Input
+								label="Correo electrónico"
+								name="correo"
+								type="email"
+								value={correo}
+								onChange={(e) => setCorreo(e.target.value)}
+								placeholder="ejemplo@correo.com"
+								icon={
+									<span aria-hidden="true">✉</span>
+								}
+								disabled={isSubmitting}
+								required
+							/>
 
-								<div className="input-wrapper">
-									<span className="input-icon" aria-hidden="true">
-										✉
-									</span>
-
-									<input
-										id="correo"
-										name="correo"
-										type="email"
-										value={correo}
-										onChange={(e) => setCorreo(e.target.value)}
-										placeholder="ejemplo@correo.com"
-										autoComplete="email"
-										disabled={isSubmitting}
-										required
-									/>
-								</div>
-							</div>
-
-							<div className="form-group">
-								<label htmlFor="password">Contraseña</label>
-
-								<div className="input-wrapper">
-									<span className="input-icon" aria-hidden="true">
-										🔒
-									</span>
-
-									<input
-										id="password"
-										name="password"
-										type={mostrarPassword ? "text" : "password"}
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-										placeholder="••••••••"
-										autoComplete="current-password"
-										disabled={isSubmitting}
-										required
-									/>
-
+							<Input
+								label="Contraseña"
+								name="password"
+								type={mostrarPassword ? "text" : "password"}
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="••••••••"
+								icon={
+									<span aria-hidden="true">🔒</span>
+								}
+								rightSlot={
 									<button
 										type="button"
 										className="password-toggle"
@@ -176,18 +161,16 @@ function Login() {
 									>
 										{mostrarPassword ? "◉" : "◌"}
 									</button>
-								</div>
-							</div>
+								}
+								disabled={isSubmitting}
+								required
+							/>
 
 							<div className="forgot-password">
 								<Link to="/recuperar-password">¿Olvidaste tu contraseña?</Link>
 							</div>
 
-							<button
-								type="submit"
-								className="login-button"
-								disabled={isSubmitting}
-							>
+							<Button type="submit" fullWidth disabled={isSubmitting}>
 								{isSubmitting ? (
 									<>
 										<span className="spinner"></span>
@@ -196,7 +179,7 @@ function Login() {
 								) : (
 									"Iniciar sesión"
 								)}
-							</button>
+							</Button>
 						</form>
 
 						<div className="register-section">

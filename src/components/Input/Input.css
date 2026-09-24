@@ -103,6 +103,20 @@
 	padding-left: 40px;
 }
 
+.input--with-right-slot {
+	padding-right: 40px;
+}
+
+.input-right-slot {
+	position: absolute;
+
+	right: 8px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 /* Error */
 
 .input-group--error .input {

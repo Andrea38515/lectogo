@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import * as authServices from "../../../services/authServices";
 import { isEmailValido } from "../../../utils/validators";
+import Input from "../../../components/Input/Input";
+import Button from "../../../components/Button/Button";
 import "./Forgotpassword.css";
 
 function ForgotPassword() {
@@ -39,15 +41,15 @@ function ForgotPassword() {
 			<form className="auth-form" onSubmit={handleSubmit}>
 				<h1>LectoGo</h1>
 
-				<label>
-					Correo
-					<input
-						type="email"
-						value={correo}
-						onChange={(e) => setCorreo(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Correo"
+					name="correo"
+					type="email"
+					value={correo}
+					onChange={(e) => setCorreo(e.target.value)}
+					disabled={isSubmitting}
+					required
+				/>
 
 				{error && <p className="auth-error">{error}</p>}
 
@@ -58,9 +60,9 @@ function ForgotPassword() {
 					</p>
 				)}
 
-				<button type="submit" disabled={isSubmitting}>
+				<Button type="submit" fullWidth disabled={isSubmitting}>
 					{isSubmitting ? "Enviando..." : "Enviar enlace"}
-				</button>
+				</Button>
 
 				<div className="auth-links">
 					<Link to="/">Volver a iniciar sesión</Link>

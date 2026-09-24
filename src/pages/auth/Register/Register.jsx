@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import * as authServices from "../../../services/authServices";
 import { isEmailValido, esPasswordSegura } from "../../../utils/validators";
+import Input from "../../../components/Input/Input";
+import Button from "../../../components/Button/Button";
 import "./Register.css";
 
 function Register() {
@@ -67,51 +69,50 @@ function Register() {
 			<form className="auth-form" onSubmit={handleSubmit}>
 				<h1>LectoGo</h1>
 
-				<label>
-					Nombre
-					<input
-						type="text"
-						value={nombre}
-						onChange={(e) => setNombre(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Nombre"
+					name="nombre"
+					value={nombre}
+					onChange={(e) => setNombre(e.target.value)}
+					disabled={isSubmitting}
+					required
+				/>
 
-				<label>
-					Correo
-					<input
-						type="email"
-						value={correo}
-						onChange={(e) => setCorreo(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Correo"
+					name="correo"
+					type="email"
+					value={correo}
+					onChange={(e) => setCorreo(e.target.value)}
+					disabled={isSubmitting}
+					required
+				/>
 
-				<label>
-					Contraseña
-					<input
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Contraseña"
+					name="password"
+					type="password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					disabled={isSubmitting}
+					required
+				/>
 
-				<label>
-					Confirmar contraseña
-					<input
-						type="password"
-						value={confirmarPassword}
-						onChange={(e) => setConfirmarPassword(e.target.value)}
-						required
-					/>
-				</label>
+				<Input
+					label="Confirmar contraseña"
+					name="confirmarPassword"
+					type="password"
+					value={confirmarPassword}
+					onChange={(e) => setConfirmarPassword(e.target.value)}
+					disabled={isSubmitting}
+					required
+				/>
 
 				{error && <p className="auth-error">{error}</p>}
 
-				<button type="submit" disabled={isSubmitting}>
+				<Button type="submit" fullWidth disabled={isSubmitting}>
 					{isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
-				</button>
+				</Button>
 
 				<div className="auth-links">
 					<Link to="/">Ya tengo cuenta</Link>
