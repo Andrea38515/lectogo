@@ -30,5 +30,114 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    /*
+     * IMPORTANTE:
+     * Conserva aquí el bloque de usuarios/{uid}
+     * que ya existe en tu archivo.
+     */
+
+    /*
+     * LECTURAS
+     *
+     * Invitados:
+     * solamente pueden consultar contenido publicado.
+     *
+     * Usuarios autenticados:
+     * pueden consultar lecturas.
+     *
+     * La escritura queda restringida a docentes
+     * (sus propios contenidos) y administradores.
+     */
+    match /lecturas/{id} {
+      allow read: if
+        resource.data.estado == "publicada"
+        || request.auth != null;
+
+      allow create: if
+        request.auth != null &&
+        request.auth.token.role in ["docente", "administrador"];
+
+      allow update, delete: if
+        request.auth != null &&
+        (
+          request.auth.token.role == "administrador" ||
+          (
+            request.auth.token.role == "docente" &&
+            resource.data.autorId == request.auth.uid
+          )
+        );
+    }
+
+    /*
+     * CATEGORÍAS
+     *
+     * Los invitados pueden consultar únicamente
+     * categorías marcadas como públicas.
+     */
+    match /categorias/{id} {
+      allow read: if
+        resource.data.publica == true ||
+        request.auth != null;
+
+      allow write: if
+        request.auth != null &&
+        request.auth.token.role == "administrador";
+    }
+
+    /*
+     * PREGUNTAS
+     *
+     * No se permite acceso público a las preguntas.
+     * El contenido queda disponible para usuarios
+     * autenticados según las reglas del proyecto.
+     */
+    match /preguntas/{id} {
+      allow read: if request.auth != null;
+
+      allow create: if
+        request.auth != null &&
+        request.auth.token.role in ["docente", "administrador"];
+
+      allow update, delete: if
+        request.auth != null &&
+        (
+          request.auth.token.role == "administrador" ||
+          (
+            request.auth.token.role == "docente" &&
+            resource.data.autorId == request.auth.uid
+          )
+        );
+    }
+
+    /*
+     * INTENTOS
+     *
+     * El cliente NO puede crear, modificar
+     * ni eliminar intentos directamente.
+     *
+     * Un estudiante únicamente puede leer
+     * sus propios intentos.
+     *
+     * Docentes y administradores pueden consultar
+     * los intentos permitidos por su rol.
+     */
+    match /intentos/{id} {
+      allow create, update, delete: if false;
+
+      allow read: if
+        request.auth != null &&
+        (
+          resource.data.estudianteId == request.auth.uid ||
+          request.auth.token.role in ["docente", "administrador"]
+        );
+    }
+
+    /*
+     * REGLA DE SEGURIDAD POR DEFECTO
+     */
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
