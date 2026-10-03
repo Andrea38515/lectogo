@@ -28,3 +28,12 @@ export const getPreguntasByLectura = async (lecturaId) => {
 		};
 	});
 };
+// src/repositories/preguntasRepository.js
+
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+

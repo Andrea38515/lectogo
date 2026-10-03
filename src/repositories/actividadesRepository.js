@@ -1,56 +1,50 @@
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+// src/repositories/actividadesRepository.js
 
-import { db } from "../config/firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
-const ACTIVIDADES_COLLECTION = "actividades";
+import { db } from "../firebase/config";
+
+const actividadesCollection = collection(db, "actividades");
 
 export const getActividadesAsignadas = async (uid) => {
-	if (!uid) {
-		return [];
-	}
+  if (!uid) {
+    throw new Error("El uid del estudiante es obligatorio.");
+  }
 
-	const actividadesRef = collection(db, ACTIVIDADES_COLLECTION);
-	const consulta = query(
-		actividadesRef,
-		where("estudiantesAsignados", "array-contains", uid),
-	);
+  const actividadesQuery = query(
+    actividadesCollection,
+    where("estudiantesAsignados", "array-contains", uid)
+  );
 
-	const snapshot = await getDocs(consulta);
+  const snapshot = await getDocs(actividadesQuery);
 
-	return snapshot.docs.map((actividadDoc) => {
-		const data = actividadDoc.data();
-
-		return {
-			id: actividadDoc.id,
-			lecturaId: data.lecturaId || null,
-			docenteId: data.docenteId || null,
-			estudiantesAsignados: data.estudiantesAsignados || [],
-			estado: data.estado || null,
-			fechaLimite: data.fechaLimite || null,
-		};
-	});
+  return snapshot.docs.map((documento) => ({
+    id: documento.id,
+    ...documento.data(),
+  }));
 };
 
 export const getActividadById = async (id) => {
-	if (!id) {
-		return null;
-	}
+  if (!id) {
+    throw new Error("El id de la actividad es obligatorio.");
+  }
 
-	const actividadRef = doc(db, ACTIVIDADES_COLLECTION, id);
-	const snapshot = await getDoc(actividadRef);
+  const actividadRef = doc(db, "actividades", id);
+  const snapshot = await getDoc(actividadRef);
 
-	if (!snapshot.exists()) {
-		return null;
-	}
+  if (!snapshot.exists()) {
+    return null;
+  }
 
-	const data = snapshot.data();
-
-	return {
-		id: snapshot.id,
-		lecturaId: data.lecturaId || null,
-		docenteId: data.docenteId || null,
-		estudiantesAsignados: data.estudiantesAsignados || [],
-		estado: data.estado || null,
-		fechaLimite: data.fechaLimite || null,
-	};
+  return {
+    id: snapshot.id,
+    ...snapshot.data(),
+  };
 };
