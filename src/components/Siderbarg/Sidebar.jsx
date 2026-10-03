@@ -42,7 +42,7 @@ function Sidebar({
 		},
 		{
 			label: "Mi progreso",
-			path: "/estudiante/progreso",
+			path: "/estudiante/estadisticas",
 			icon: <FiBarChart2 />,
 		},
 		{
