@@ -1,30 +1,26 @@
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit as limitQuery,
+  orderBy,
+  query,
+} from "firebase/firestore";
 
-import { db } from "../config/firebase";
+import { db } from "../firebase/config";
 
-export const getUserById = async (uid) => {
-	const ref = doc(db, "usuarios", uid);
+const rankingCollection = collection(db, "ranking");
 
-	const snapshot = await getDoc(ref);
+export const getRanking = async (limit = 10) => {
+  const rankingQuery = query(
+    rankingCollection,
+    orderBy("xp", "desc"),
+    limitQuery(limit)
+  );
 
-	if (!snapshot.exists()) {
-		return null;
-	}
+  const snapshot = await getDocs(rankingQuery);
 
-	return {
-		id: snapshot.id,
-		...snapshot.data(),
-	};
-};
-
-export const createUser = (uid, data) => {
-	const ref = doc(db, "usuarios", uid);
-
-	return setDoc(ref, data);
-};
-
-export const updateUser = (uid, data) => {
-	const ref = doc(db, "usuarios", uid);
-
-	return updateDoc(ref, data);
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 };
