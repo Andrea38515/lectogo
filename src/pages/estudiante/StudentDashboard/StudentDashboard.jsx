@@ -1,328 +1,132 @@
-import { useMemo } from "react";
-import "./StudentDashboard.css";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
+import { getActividadesAsignadas } from "../../../repositories/actividadesRepository";
+import XpBar from "../../../components/XpBartx/XpBar";
+import LevelBadge from "../../../components/LevelBadge/LevelBadge";
 
 const StudentDashboard = () => {
-  /*
-   * Datos temporales.
-   * Posteriormente pueden reemplazarse por información
-   * proveniente de los hooks de actividades y resultados.
-   */
-  const student = {
-    name: "Estudiante",
-    level: "Nivel 11",
-    avatar: "👩‍🎓",
-  };
+  const { user } = useAuth();
+  const uid = user?.uid;
 
-  const activities = [
-    {
-      id: 1,
-      title: "Comprensión lectora",
-      subject: "Lenguaje",
-      progress: 75,
-      questions: 10,
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Pensamiento crítico",
-      subject: "Filosofía",
-      progress: 40,
-      questions: 8,
-      completed: false,
-    },
-    {
-      id: 3,
-      title: "Literatura universal",
-      subject: "Literatura",
-      progress: 100,
-      questions: 12,
-      completed: true,
-    },
-  ];
+  const xp = user?.xp ?? 0;
+  const nivel = user?.nivel ?? 1;
+  const nextLevelXp = user?.nextLevelXp ?? 100;
 
-  const stats = useMemo(() => {
-    const completed = activities.filter(
-      (activity) => activity.completed
-    ).length;
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    const averageProgress =
-      activities.length > 0
-        ? Math.round(
-            activities.reduce(
-              (total, activity) => total + activity.progress,
-              0
-            ) / activities.length
-          )
-        : 0;
+  useEffect(() => {
+    const cargarActividades = async () => {
+      if (!uid) {
+        setActivities([]);
+        setLoading(false);
+        return;
+      }
 
-    return {
-      completed,
-      total: activities.length,
-      averageProgress,
+      try {
+        setLoading(true);
+        setError("");
+
+        const actividades = await getActividadesAsignadas(uid);
+        setActivities(actividades);
+      } catch (err) {
+        console.error("Error al cargar las actividades:", err);
+        setError("No se pudieron cargar las actividades.");
+      } finally {
+        setLoading(false);
+      }
     };
-  }, []);
+
+    cargarActividades();
+  }, [uid]);
+
+  if (loading) {
+    return (
+      <section className="student-dashboard">
+        <h1>Mis actividades</h1>
+        <p>Cargando actividades...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="student-dashboard">
+        <h1>Mis actividades</h1>
+        <p>{error}</p>
+      </section>
+    );
+  }
 
   return (
-    <main className="student-dashboard">
-      {/* =========================
-          HEADER
-      ========================= */}
-      <section className="dashboard-header">
-        <div className="welcome-section">
-          <div className="student-avatar">
-            {student.avatar}
-          </div>
+    <section className="student-dashboard">
+      <header className="student-dashboard__header">
+        <h1>Mis actividades</h1>
+        <p>Consulta las actividades que tienes asignadas.</p>
+      </header>
 
-          <div>
-            <span className="dashboard-eyebrow">
-              PANEL DEL ESTUDIANTE
-            </span>
+      <section className="student-dashboard__gamification">
+        <LevelBadge level={nivel} />
 
-            <h1>
-              ¡Hola, {student.name}! 👋
-            </h1>
-
-            <p>
-              Continúa aprendiendo y alcanza tus objetivos.
-            </p>
-          </div>
-        </div>
-
-        <div className="student-level">
-          <span>Tu nivel</span>
-          <strong>{student.level}</strong>
-        </div>
+        <XpBar
+          currentXp={xp}
+          nextLevelXp={nextLevelXp}
+          level={nivel}
+        />
       </section>
 
-      {/* =========================
-          STATS
-      ========================= */}
-      <section className="dashboard-stats">
-        <article className="stat-card">
-          <div className="stat-icon purple">
-            📚
-          </div>
-
-          <div>
-            <span>Actividades</span>
-            <strong>{stats.total}</strong>
-          </div>
-        </article>
-
-        <article className="stat-card">
-          <div className="stat-icon green">
-            ✅
-          </div>
-
-          <div>
-            <span>Completadas</span>
-            <strong>{stats.completed}</strong>
-          </div>
-        </article>
-
-        <article className="stat-card">
-          <div className="stat-icon blue">
-            📈
-          </div>
-
-          <div>
-            <span>Progreso</span>
-            <strong>{stats.averageProgress}%</strong>
-          </div>
-        </article>
-
-        <article className="stat-card">
-          <div className="stat-icon orange">
-            🏆
-          </div>
-
-          <div>
-            <span>Logros</span>
-            <strong>3</strong>
-          </div>
-        </article>
-      </section>
-
-      {/* =========================
-          MAIN CONTENT
-      ========================= */}
-      <section className="dashboard-grid">
-
-        {/* Actividades */}
-        <div className="dashboard-panel activities-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Mis actividades</h2>
-              <p>Continúa donde lo dejaste</p>
-            </div>
-
-            <button
-              className="view-all-button"
-              type="button"
+      {activities.length === 0 ? (
+        <div className="student-dashboard__empty">
+          <h2>No tienes actividades asignadas</h2>
+          <p>
+            Cuando un docente te asigne una actividad, aparecerá aquí.
+          </p>
+        </div>
+      ) : (
+        <div className="student-dashboard__activities">
+          {activities.map((activity) => (
+            <article
+              key={activity.id}
+              className="student-dashboard__activity-card"
             >
-              Ver todas
-            </button>
-          </div>
+              <div className="student-dashboard__activity-content">
+                <h2>
+                  {activity.titulo ||
+                    activity.actividadTitulo ||
+                    "Actividad de comprensión lectora"}
+                </h2>
 
-          <div className="activity-list">
-            {activities.map((activity) => (
-              <article
-                className="dashboard-activity"
-                key={activity.id}
-              >
-                <div className="activity-icon">
-                  {activity.completed
-                    ? "✅"
-                    : "📖"}
-                </div>
-
-                <div className="activity-info">
-                  <div className="activity-title-row">
-                    <div>
-                      <span className="activity-subject">
-                        {activity.subject}
-                      </span>
-
-                      <h3>{activity.title}</h3>
-                    </div>
-
-                    <strong>
-                      {activity.progress}%
-                    </strong>
-                  </div>
-
-                  <div className="progress-track">
-                    <div
-                      className="progress-fill"
-                      style={{
-                        width: `${activity.progress}%`,
-                      }}
-                    />
-                  </div>
-
-                  <span className="activity-questions">
-                    {activity.questions} preguntas
+                {activity.estado && (
+                  <span className="student-dashboard__activity-status">
+                    {activity.estado}
                   </span>
-                </div>
+                )}
 
-                <button
-                  className={`activity-button ${
-                    activity.completed
-                      ? "completed"
-                      : ""
-                  }`}
-                  type="button"
-                >
-                  {activity.completed
-                    ? "Revisar"
-                    : "Continuar"}
-                </button>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        {/* Progreso */}
-        <aside className="dashboard-panel progress-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Mi progreso</h2>
-              <p>Resumen de aprendizaje</p>
-            </div>
-          </div>
-
-          <div className="progress-circle-container">
-            <div className="progress-circle">
-              <div className="progress-circle-inner">
-                <strong>{stats.averageProgress}%</strong>
-                <span>Progreso</span>
+                {activity.fechaLimite && (
+                  <p>
+                    Fecha límite:{" "}
+                    {activity.fechaLimite?.toDate
+                      ? activity.fechaLimite.toDate().toLocaleDateString()
+                      : new Date(
+                          activity.fechaLimite
+                        ).toLocaleDateString()}
+                  </p>
+                )}
               </div>
-            </div>
-          </div>
 
-          <div className="progress-summary">
-            <div>
-              <span>Actividades realizadas</span>
-              <strong>
-                {stats.completed}/{stats.total}
-              </strong>
-            </div>
-
-            <div>
-              <span>Rendimiento</span>
-              <strong>Excelente</strong>
-            </div>
-
-            <div>
-              <span>Racha actual</span>
-              <strong>5 días 🔥</strong>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      {/* =========================
-          QUICK ACCESS
-      ========================= */}
-      <section className="quick-section">
-        <div className="panel-header">
-          <div>
-            <h2>Accesos rápidos</h2>
-            <p>Encuentra rápidamente lo que necesitas</p>
-          </div>
+              <Link
+                to={`/estudiante/actividades/${activity.id}`}
+                className="student-dashboard__activity-link"
+              >
+                Resolver actividad
+              </Link>
+            </article>
+          ))}
         </div>
-
-        <div className="quick-grid">
-          <button
-            className="quick-card"
-            type="button"
-          >
-            <span className="quick-icon">📚</span>
-
-            <div>
-              <strong>Biblioteca</strong>
-              <span>
-                Explora recursos educativos
-              </span>
-            </div>
-
-            <span className="quick-arrow">→</span>
-          </button>
-
-          <button
-            className="quick-card"
-            type="button"
-          >
-            <span className="quick-icon">📝</span>
-
-            <div>
-              <strong>Actividades</strong>
-              <span>
-                Continúa tus ejercicios
-              </span>
-            </div>
-
-            <span className="quick-arrow">→</span>
-          </button>
-
-          <button
-            className="quick-card"
-            type="button"
-          >
-            <span className="quick-icon">🏆</span>
-
-            <div>
-              <strong>Mis logros</strong>
-              <span>
-                Revisa tus recompensas
-              </span>
-            </div>
-
-            <span className="quick-arrow">→</span>
-          </button>
-        </div>
-      </section>
-    </main>
+      )}
+    </section>
   );
 };
 
