@@ -8,6 +8,7 @@ import {
 	FiCheckSquare,
 	FiBarChart2,
 	FiAward,
+	FiStar,
 	FiUser,
 	FiUsers,
 	FiFolder,
@@ -46,6 +47,11 @@ function Sidebar({
 			icon: <FiBarChart2 />,
 		},
 		{
+  label: "Logros",
+  path: "/estudiante/logros",
+  icon: <FiStar/>,
+},
+		{
 			label: "Ranking",
 			path: "/estudiante/ranking",
 			icon: <FiAward />,
@@ -55,6 +61,11 @@ function Sidebar({
 			path: "/estudiante/perfil",
 			icon: <FiUser />,
 		},
+		{
+  label: "Ajustes",
+  path: "/estudiante/ajustes",
+  icon: <FiSettings/>,
+},
 	];
 
 	const teacherItems = [
