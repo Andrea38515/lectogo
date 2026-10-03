@@ -1,4 +1,5 @@
 import { useLibrary } from "../../../hooks/useLibrary";
+import SearchBar from "../../../components/SearchBar/SearchBar";
 import "./Library.css";
 
 function Library() {
@@ -23,6 +24,10 @@ function Library() {
   const handleOpenResource = (resource) => {
     console.log("Abrir recurso:", resource);
   };
+
+  const hasSearch = search.trim().length > 0;
+  const hasResults = filteredResources.length > 0;
+  const hasNoResults = !hasResults && (hasSearch || category !== "Todos");
 
   return (
     <main className="library-page">
@@ -146,35 +151,15 @@ function Library() {
               </div>
             </div>
 
-            {/* Buscador */}
+            {/* Buscador y categorías */}
             <div className="library-toolbar">
-              <div className="search-box">
-                <span className="search-icon">
-                  ⌕
-                </span>
+              <SearchBar
+                value={search}
+                onChange={setSearch}
+                placeholder="Buscar por palabra clave..."
+                onClear={clearFilters}
+              />
 
-                <input
-                  type="text"
-                  placeholder="Buscar por palabra clave..."
-                  value={search}
-                  onChange={(event) =>
-                    setSearch(event.target.value)
-                  }
-                  aria-label="Buscar lecturas por palabra clave"
-                />
-
-                {search && (
-                  <button
-                    className="clear-search"
-                    onClick={() => setSearch("")}
-                    aria-label="Limpiar búsqueda"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-
-              {/* Categorías */}
               <div className="category-filters">
                 {categories.map((item) => (
                   <button
@@ -190,8 +175,20 @@ function Library() {
               </div>
             </div>
 
-            {/* Cantidad de resultados */}
-            {(search || category !== "Todos") && (
+            {/* Campo vacío: mostrar todos los recursos */}
+            {!hasSearch && category === "Todos" && hasResults && (
+              <div className="library-result-info">
+                <span>
+                  {filteredResources.length}{" "}
+                  {filteredResources.length === 1
+                    ? "recurso disponible"
+                    : "recursos disponibles"}
+                </span>
+              </div>
+            )}
+
+            {/* Hay resultados después de aplicar búsqueda/filtro */}
+            {(hasSearch || category !== "Todos") && hasResults && (
               <div className="library-result-info">
                 <span>
                   {filteredResources.length}{" "}
@@ -203,7 +200,7 @@ function Library() {
             )}
 
             {/* Resultados */}
-            {filteredResources.length > 0 ? (
+            {hasResults ? (
               <div className="resource-grid">
                 {filteredResources.map((resource) => (
                   <article
@@ -250,7 +247,8 @@ function Library() {
                   </article>
                 ))}
               </div>
-            ) : (
+            ) : hasNoResults ? (
+              /* Sin resultados */
               <div className="library-empty">
                 <div className="empty-icon">
                   🔎
@@ -272,7 +270,7 @@ function Library() {
                   Ver todas las lecturas
                 </button>
               </div>
-            )}
+            ) : null}
           </section>
         </>
       )}

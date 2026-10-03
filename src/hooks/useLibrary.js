@@ -115,5 +115,7 @@ export const useLibrary = () => {
 		clearFilters,
 	};
 };
+const searchText = normalizeText(search);
+
 
 export default useLibrary;
