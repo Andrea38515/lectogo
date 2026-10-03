@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "descripcion": "Catálogo inicial de logros de LectoGo para Sprint 5.",
+  "logros": [
+    {
+      "id": "logro-primer-paso",
+      "nombre": "Primer paso",
+      "descripcion": "Completar la primera actividad.",
+      "criterioTipo": "actividades",
+      "criterioValor": 1,
+      "iconoUrl": "/assets/logros/primer-paso.svg"
+    },
+    {
+      "id": "logro-constante",
+      "nombre": "Estudiante constante",
+      "descripcion": "Completar 3 actividades.",
+      "criterioTipo": "actividades",
+      "criterioValor": 3,
+      "iconoUrl": "/assets/logros/constante.svg"
+    },
+    {
+      "id": "logro-dedicado",
+      "nombre": "Estudiante dedicado",
+      "descripcion": "Completar 5 actividades.",
+      "criterioTipo": "actividades",
+      "criterioValor": 5,
+      "iconoUrl": "/assets/logros/dedicado.svg"
+    },
+    {
+      "id": "logro-excelencia",
+      "nombre": "Excelencia",
+      "descripcion": "Obtener 100% de aciertos en una actividad.",
+      "criterioTipo": "desempeño",
+      "criterioValor": 100,
+      "iconoUrl": "/assets/logros/excelencia.svg"
+    },
+    {
+      "id": "logro-racha-inicial",
+      "nombre": "Racha inicial",
+      "descripcion": "Mantener una racha de 3 días consecutivos con actividad.",
+      "criterioTipo": "racha",
+      "criterioValor": 3,
+      "iconoUrl": "/assets/logros/racha-inicial.svg"
+    },
+    {
+      "id": "logro-racha-semanal",
+      "nombre": "Semana imparable",
+      "descripcion": "Mantener una racha de 7 días consecutivos con actividad.",
+      "criterioTipo": "racha",
+      "criterioValor": 7,
+      "iconoUrl": "/assets/logros/racha-semanal.svg"
+    }
+  ]
+}

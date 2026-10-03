@@ -1,0 +1,340 @@
+{
+  "metadata": {
+    "proyecto": "LectoGo",
+    "sprint": "Sprint 4",
+    "contrato": "S4-01",
+    "version": "1.0",
+    "proposito": "Contenido inicial de desarrollo/staging para probar biblioteca, preguntas, actividades e intentos.",
+    "entorno_destino": [
+      "development",
+      "staging"
+    ],
+    "produccion": false,
+    "datos_reales_menores": false,
+    "ids_estables": true
+  },
+  "categorias": [
+    {
+      "id": "cat-cuentos",
+      "nombre": "Cuentos",
+      "descripcion": "Relatos narrativos breves para trabajar comprensión literal e inferencial."
+    },
+    {
+      "id": "cat-ciencia",
+      "nombre": "Ciencia",
+      "descripcion": "Textos breves sobre fenómenos y conceptos científicos."
+    },
+    {
+      "id": "cat-historia",
+      "nombre": "Historia",
+      "descripcion": "Textos informativos breves sobre hechos y procesos históricos."
+    }
+  ],
+  "autores_seed": [
+    {
+      "id": "usr-docente-s4-01",
+      "alias": "docente_s4_demo",
+      "rol": "docente"
+    },
+    {
+      "id": "usr-admin-s4-01",
+      "alias": "admin_s4_demo",
+      "rol": "administrador"
+    }
+  ],
+  "lecturas": [
+    {
+      "id": "lec-s4-cuentos-01",
+      "titulo": "El puente de madera",
+      "contenido": "En un pequeño pueblo había un puente de madera que conectaba la plaza con los cultivos. Una noche de lluvia, varias tablas quedaron flojas. Marta, que regresaba a casa, avisó al encargado del pueblo y colocó una señal para advertir a los vecinos. A la mañana siguiente, el puente fue reparado antes de que alguien resultara herido. Desde entonces, los habitantes revisaban el puente después de cada tormenta.",
+      "categoriaId": "cat-cuentos",
+      "nivelDificultad": "básico",
+      "autorId": "usr-docente-s4-01",
+      "estado": "publicada",
+      "creadoEn": "2026-09-14T10:00:00-05:00",
+      "procedencia": {
+        "tipo": "original",
+        "autor": "Equipo LectoGo",
+        "referencia": "Contenido original creado para pruebas académicas de LectoGo."
+      },
+      "licencia": {
+        "tipo": "CC BY 4.0",
+        "titular": "Equipo LectoGo",
+        "uso": "Permite reutilización y adaptación con atribución."
+      }
+    },
+    {
+      "id": "lec-s4-ciencia-01",
+      "titulo": "La sombra cambia de lugar",
+      "contenido": "Durante una mañana soleada, Diego colocó un palo vertical en el patio y observó su sombra. Al principio, la sombra era larga y apuntaba hacia un lado. Cerca del mediodía se hizo más corta. Por la tarde volvió a alargarse, pero apuntó hacia el lado contrario. Diego comprendió que la posición aparente del Sol cambia durante el día y que la sombra de un objeto depende de la dirección desde la que recibe la luz.",
+      "categoriaId": "cat-ciencia",
+      "nivelDificultad": "intermedio",
+      "autorId": "usr-docente-s4-01",
+      "estado": "publicada",
+      "creadoEn": "2026-09-15T09:30:00-05:00",
+      "procedencia": {
+        "tipo": "original",
+        "autor": "Equipo LectoGo",
+        "referencia": "Contenido original creado para pruebas académicas de LectoGo."
+      },
+      "licencia": {
+        "tipo": "CC BY 4.0",
+        "titular": "Equipo LectoGo",
+        "uso": "Permite reutilización y adaptación con atribución."
+      }
+    },
+    {
+      "id": "lec-s4-historia-01",
+      "titulo": "Un periódico en la plaza",
+      "contenido": "En una ciudad de comienzos del siglo XX, un grupo de vecinos se reunía cada domingo en la plaza para leer un periódico. Allí comentaban noticias sobre comercio, educación y acontecimientos locales. Algunas personas llevaban las noticias a sus familias y otras las discutían con sus compañeros de trabajo. Aunque no todos podían comprar un periódico, la lectura colectiva permitía que más habitantes conocieran los acontecimientos de la ciudad.",
+      "categoriaId": "cat-historia",
+      "nivelDificultad": "avanzado",
+      "autorId": "usr-admin-s4-01",
+      "estado": "borrador",
+      "creadoEn": "2026-09-16T14:15:00-05:00",
+      "procedencia": {
+        "tipo": "original",
+        "autor": "Equipo LectoGo",
+        "referencia": "Contenido original creado para pruebas académicas de LectoGo."
+      },
+      "licencia": {
+        "tipo": "CC BY 4.0",
+        "titular": "Equipo LectoGo",
+        "uso": "Permite reutilización y adaptación con atribución."
+      }
+    },
+    {
+      "id": "lec-s4-cuentos-02",
+      "titulo": "La caja de semillas",
+      "contenido": "Lucía encontró una caja de semillas en el taller de su abuelo. En lugar de plantarlas todas de inmediato, separó una parte para sembrarla y otra para conservarla. Después de varias semanas, algunas plantas crecieron fuertes y otras no germinaron. Lucía anotó qué semillas había utilizado y qué cuidados había dado a cada grupo. Así pudo comparar los resultados y planear mejor la siguiente siembra.",
+      "categoriaId": "cat-cuentos",
+      "nivelDificultad": "avanzado",
+      "autorId": "usr-docente-s4-01",
+      "estado": "publicada",
+      "creadoEn": "2026-09-17T11:00:00-05:00",
+      "procedencia": {
+        "tipo": "original",
+        "autor": "Equipo LectoGo",
+        "referencia": "Contenido original creado para pruebas académicas de LectoGo."
+      },
+      "licencia": {
+        "tipo": "CC BY 4.0",
+        "titular": "Equipo LectoGo",
+        "uso": "Permite reutilización y adaptación con atribución."
+      }
+    }
+  ],
+  "preguntas": [
+    {
+      "id": "preg-s4-cuentos-01-01",
+      "lecturaId": "lec-s4-cuentos-01",
+      "tipo": "seleccion_multiple",
+      "enunciado": "¿Qué hizo Marta al notar que el puente podía ser peligroso?",
+      "opciones": [
+        "Se fue sin avisar a nadie.",
+        "Avisó al encargado y colocó una señal.",
+        "Reparó todas las tablas durante la noche.",
+        "Cerró la plaza durante una semana."
+      ],
+      "respuestaCorrecta": "Avisó al encargado y colocó una señal.",
+      "explicacion": "El texto indica que Marta avisó al encargado del pueblo y colocó una señal para advertir a los vecinos.",
+      "autorId": "usr-docente-s4-01"
+    },
+    {
+      "id": "preg-s4-cuentos-01-02",
+      "lecturaId": "lec-s4-cuentos-01",
+      "tipo": "verdadero_falso",
+      "enunciado": "El puente fue reparado después de que alguien resultara herido.",
+      "opciones": [
+        "verdadero",
+        "falso"
+      ],
+      "respuestaCorrecta": "falso",
+      "explicacion": "La reparación se realizó antes de que alguien resultara herido.",
+      "autorId": "usr-docente-s4-01"
+    },
+    {
+      "id": "preg-s4-ciencia-01-01",
+      "lecturaId": "lec-s4-ciencia-01",
+      "tipo": "seleccion_multiple",
+      "enunciado": "¿Qué ocurrió con la sombra cerca del mediodía?",
+      "opciones": [
+        "Se hizo más corta.",
+        "Desapareció por completo.",
+        "Se hizo más larga.",
+        "Cambió de color."
+      ],
+      "respuestaCorrecta": "Se hizo más corta.",
+      "explicacion": "Según el texto, cerca del mediodía la sombra del palo se hizo más corta.",
+      "autorId": "usr-docente-s4-01"
+    },
+    {
+      "id": "preg-s4-ciencia-01-02",
+      "lecturaId": "lec-s4-ciencia-01",
+      "tipo": "verdadero_falso",
+      "enunciado": "La sombra observada por Diego apuntó siempre hacia el mismo lado.",
+      "opciones": [
+        "verdadero",
+        "falso"
+      ],
+      "respuestaCorrecta": "falso",
+      "explicacion": "El texto señala que por la tarde la sombra apuntó hacia el lado contrario.",
+      "autorId": "usr-docente-s4-01"
+    },
+    {
+      "id": "preg-s4-historia-01-01",
+      "lecturaId": "lec-s4-historia-01",
+      "tipo": "seleccion_multiple",
+      "enunciado": "¿Qué permitía la lectura colectiva del periódico?",
+      "opciones": [
+        "Que todos compraran un periódico.",
+        "Que más habitantes conocieran los acontecimientos.",
+        "Que las reuniones fueran privadas.",
+        "Que desaparecieran las noticias locales."
+      ],
+      "respuestaCorrecta": "Que más habitantes conocieran los acontecimientos.",
+      "explicacion": "La lectura colectiva permitía compartir las noticias con personas que no podían comprar un periódico.",
+      "autorId": "usr-admin-s4-01"
+    },
+    {
+      "id": "preg-s4-historia-01-02",
+      "lecturaId": "lec-s4-historia-01",
+      "tipo": "verdadero_falso",
+      "enunciado": "Todas las personas de la ciudad podían comprar un periódico.",
+      "opciones": [
+        "verdadero",
+        "falso"
+      ],
+      "respuestaCorrecta": "falso",
+      "explicacion": "El texto aclara que no todos podían comprar un periódico.",
+      "autorId": "usr-admin-s4-01"
+    },
+    {
+      "id": "preg-s4-cuentos-02-01",
+      "lecturaId": "lec-s4-cuentos-02",
+      "tipo": "seleccion_multiple",
+      "enunciado": "¿Por qué Lucía separó las semillas en grupos?",
+      "opciones": [
+        "Para perderlas con mayor facilidad.",
+        "Para comparar resultados y planear mejor la siguiente siembra.",
+        "Para evitar registrar sus cuidados.",
+        "Para sembrarlas todas al mismo tiempo."
+      ],
+      "respuestaCorrecta": "Para comparar resultados y planear mejor la siguiente siembra.",
+      "explicacion": "Lucía separó las semillas y registró los cuidados para comparar resultados y mejorar la siguiente siembra.",
+      "autorId": "usr-docente-s4-01"
+    },
+    {
+      "id": "preg-s4-cuentos-02-02",
+      "lecturaId": "lec-s4-cuentos-02",
+      "tipo": "verdadero_falso",
+      "enunciado": "Lucía sembró todas las semillas de la caja inmediatamente.",
+      "opciones": [
+        "verdadero",
+        "falso"
+      ],
+      "respuestaCorrecta": "falso",
+      "explicacion": "El texto indica que separó una parte para conservarla y no sembró todas de inmediato.",
+      "autorId": "usr-docente-s4-01"
+    }
+  ],
+  "actividades": [
+    {
+      "id": "act-s4-basico-asignada",
+      "lecturaId": "lec-s4-cuentos-01",
+      "docenteId": "usr-docente-s4-01",
+      "estudiantesAsignados": [
+        "stu-s4-demo-01",
+        "stu-s4-demo-02"
+      ],
+      "estado": "asignada",
+      "fechaLimite": "2026-10-05T23:59:00-05:00",
+      "creadoEn": "2026-09-18T08:00:00-05:00"
+    },
+    {
+      "id": "act-s4-intermedio-cerrada",
+      "lecturaId": "lec-s4-ciencia-01",
+      "docenteId": "usr-docente-s4-01",
+      "estudiantesAsignados": [
+        "stu-s4-demo-01",
+        "stu-s4-demo-02"
+      ],
+      "estado": "cerrada",
+      "fechaLimite": "2026-09-28T23:59:00-05:00",
+      "creadoEn": "2026-09-20T08:30:00-05:00"
+    },
+    {
+      "id": "act-s4-avanzado-asignada",
+      "lecturaId": "lec-s4-cuentos-02",
+      "docenteId": "usr-docente-s4-01",
+      "estudiantesAsignados": [
+        "stu-s4-demo-02"
+      ],
+      "estado": "asignada",
+      "fechaLimite": "2026-10-10T23:59:00-05:00",
+      "creadoEn": "2026-09-22T09:00:00-05:00"
+    }
+  ],
+  "intentos": [
+    {
+      "id": "intento-s4-01-100",
+      "actividadId": "act-s4-basico-asignada",
+      "estudianteId": "stu-s4-demo-01",
+      "respuestas": [
+        {
+          "preguntaId": "preg-s4-cuentos-01-01",
+          "respuestaDada": "Avisó al encargado y colocó una señal.",
+          "correcta": true
+        },
+        {
+          "preguntaId": "preg-s4-cuentos-01-02",
+          "respuestaDada": "falso",
+          "correcta": true
+        }
+      ],
+      "porcentajeAciertos": 100,
+      "xpGanado": 40,
+      "resueltoEn": "2026-09-22T16:10:00-05:00"
+    },
+    {
+      "id": "intento-s4-02-50",
+      "actividadId": "act-s4-intermedio-cerrada",
+      "estudianteId": "stu-s4-demo-02",
+      "respuestas": [
+        {
+          "preguntaId": "preg-s4-ciencia-01-01",
+          "respuestaDada": "Se hizo más larga.",
+          "correcta": false
+        },
+        {
+          "preguntaId": "preg-s4-ciencia-01-02",
+          "respuestaDada": "falso",
+          "correcta": true
+        }
+      ],
+      "porcentajeAciertos": 50,
+      "xpGanado": 10,
+      "resueltoEn": "2026-09-27T15:20:00-05:00"
+    },
+    {
+      "id": "intento-s4-03-0",
+      "actividadId": "act-s4-avanzado-asignada",
+      "estudianteId": "stu-s4-demo-02",
+      "respuestas": [
+        {
+          "preguntaId": "preg-s4-cuentos-02-01",
+          "respuestaDada": "Para sembrarlas todas al mismo tiempo.",
+          "correcta": false
+        },
+        {
+          "preguntaId": "preg-s4-cuentos-02-02",
+          "respuestaDada": "verdadero",
+          "correcta": false
+        }
+      ],
+      "porcentajeAciertos": 0,
+      "xpGanado": 0,
+      "resueltoEn": "2026-09-25T10:05:00-05:00"
+    }
+  ]
+}

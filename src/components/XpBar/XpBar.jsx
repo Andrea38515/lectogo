@@ -1,80 +1,39 @@
-// src/components/XpBar/XpBar.jsx
+// src/components/XpBartx/XpBar.jsx
 
-import { FiZap } from "react-icons/fi";
+const XpBar = ({ currentXp = 0, nextLevelXp = 100, level = 1 }) => {
+  const xp = Math.max(0, Number(currentXp) || 0);
+  const siguienteNivel = Math.max(0, Number(nextLevelXp) || 0);
+  const nivelActual = Math.max(1, Number(level) || 1);
 
-import "./XpBar.css";
+  const porcentaje =
+    siguienteNivel > 0
+      ? Math.min((xp / siguienteNivel) * 100, 100)
+      : 0;
 
-function XpBar({
-	currentXp = 0,
-	nextLevelXp = 100,
-	level = 1,
-	showLevel = true,
-	showText = true,
-	size = "medium",
-}) {
-	const normalizedXp = Math.max(currentXp, 0);
+  return (
+    <div className="xp-bar">
+      <div className="xp-bar__header">
+        <span>Nivel {nivelActual}</span>
+        <span>
+          {xp} / {siguienteNivel} XP
+        </span>
+      </div>
 
-	const progressPercentage =
-		nextLevelXp > 0
-			? Math.min(Math.round((normalizedXp / nextLevelXp) * 100), 100)
-			: 0;
-
-	const remainingXp = Math.max(nextLevelXp - normalizedXp, 0);
-
-	return (
-		<div
-			className={`
-        xp-bar
-        xp-bar--${size}
-      `}
-		>
-			{/* Información superior */}
-
-			<div className="xp-bar__header">
-				<div className="xp-bar__title">
-					<FiZap />
-
-					<span>Experiencia</span>
-				</div>
-
-				{showLevel && <span className="xp-bar__level">Nivel {level}</span>}
-			</div>
-
-			{/* Barra */}
-
-			<div
-				className="xp-bar__track"
-				role="progressbar"
-				aria-valuemin="0"
-				aria-valuemax={nextLevelXp}
-				aria-valuenow={normalizedXp}
-				aria-label="Progreso de experiencia"
-			>
-				<div
-					className="xp-bar__progress"
-					style={{
-						width: `${progressPercentage}%`,
-					}}
-				/>
-			</div>
-
-			{/* Información inferior */}
-
-			{showText && (
-				<div className="xp-bar__info">
-					<span className="xp-bar__current">{normalizedXp} XP</span>
-
-					{remainingXp > 0 ? (
-						<span className="xp-bar__remaining">Faltan {remainingXp} XP</span>
-					) : (
-						<span className="xp-bar__completed">¡Nivel completado!</span>
-					)}
-
-					<span className="xp-bar__target">{nextLevelXp} XP</span>
-				</div>
-			)}
-		</div>
-	);
-}
+      <div
+        className="xp-bar__track"
+        role="progressbar"
+        aria-valuenow={xp}
+        aria-valuemin="0"
+        aria-valuemax={siguienteNivel}
+        aria-label={`Progreso de XP del nivel ${nivelActual}`}
+      >
+        <div
+          className="xp-bar__progress"
+          style={{ width: `${porcentaje}%` }}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default XpBar;

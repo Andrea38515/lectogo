@@ -1,325 +1,264 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useActivity } from "../../../hooks/useActivity";
+// src/pages/estudiante/Activity/Activity.jsx
+
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+
+import useActivity from "../../../hooks/useActivity";
+import QuestionCard from "../../../components/QuestionCard";
+import FeedbackPanel from "../../../components/FeedbackPanel";
+
 import "./Activity.css";
 
 const Activity = () => {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todas");
+  const { actividadId } = useParams();
 
   const {
-    activities = [],
-    isLoading,
+    preguntas,
+    respuestas,
+    resultado,
+    cargando,
+    enviando,
     error,
-    refetch,
-  } = useActivity();
+    cargarActividad,
+    seleccionarRespuesta,
+    enviarRespuestas,
+  } = useActivity(actividadId);
 
-  const categories = useMemo(() => {
-    const values = activities
-      .map(
-        (activity) =>
-          activity.category ||
-          activity.categoria ||
-          activity.tipo
-      )
-      .filter(Boolean);
+  const [preguntaActual, setPreguntaActual] = useState(0);
+  const [errorLocal, setErrorLocal] = useState("");
 
-    return ["Todas", ...new Set(values)];
-  }, [activities]);
+  useEffect(() => {
+    if (typeof cargarActividad === "function") {
+      cargarActividad();
+    }
+  }, [cargarActividad]);
 
-  const filteredActivities = useMemo(() => {
-    return activities.filter((activity) => {
-      const title =
-        activity.title ||
-        activity.titulo ||
-        activity.name ||
-        activity.nombre ||
-        "";
+  const handleRespuesta = (preguntaId, respuesta) => {
+    setErrorLocal("");
 
-      const description =
-        activity.description ||
-        activity.descripcion ||
-        "";
-
-      const category =
-        activity.category ||
-        activity.categoria ||
-        activity.tipo ||
-        "";
-
-      const searchValue = search.toLowerCase().trim();
-
-      const matchesSearch =
-        title.toLowerCase().includes(searchValue) ||
-        description.toLowerCase().includes(searchValue);
-
-      const matchesCategory =
-        selectedCategory === "Todas" ||
-        category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [activities, search, selectedCategory]);
-
-  const handleStartActivity = (activity) => {
-    const id = activity.id || activity._id;
-
-    if (id) {
-      navigate(`/estudiante/actividades/${id}`);
+    if (typeof seleccionarRespuesta === "function") {
+      seleccionarRespuesta(preguntaId, respuesta);
     }
   };
 
-  if (isLoading) {
+  const handleEnviar = async () => {
+    if (enviando) {
+      return;
+    }
+
+    const preguntasSinResponder = preguntas.filter(
+      (pregunta) => respuestas?.[pregunta.id] === undefined
+    );
+
+    if (preguntasSinResponder.length > 0) {
+      setErrorLocal("Debes responder todas las preguntas antes de enviar.");
+      return;
+    }
+
+    try {
+      setErrorLocal("");
+
+      if (typeof enviarRespuestas === "function") {
+        await enviarRespuestas();
+      }
+    } catch (err) {
+      console.error("Error enviando respuestas:", err);
+      setErrorLocal(
+        "No fue posible enviar la actividad. Puedes intentarlo nuevamente."
+      );
+    }
+  };
+
+  if (cargando) {
     return (
-      <main className="activity">
-        <div className="activity__loading">
-          <div className="activity__spinner"></div>
-          <p>Cargando actividades...</p>
-        </div>
+      <main className="activity-page">
+        <section className="activity-state">
+          <div className="activity-spinner" />
+          <p>Cargando actividad...</p>
+        </section>
       </main>
     );
   }
 
-  if (error) {
+  if (error && !preguntas?.length) {
     return (
-      <main className="activity">
-        <div className="activity__error">
-          <div className="activity__error-icon">⚠️</div>
+      <main className="activity-page">
+        <section className="activity-state activity-state--error">
+          <h2>No se pudo cargar la actividad</h2>
+          <p>{error}</p>
 
-          <h2>No pudimos cargar las actividades</h2>
-
-          <p>
-            Ocurrió un problema al obtener las actividades.
-            Intenta nuevamente.
-          </p>
-
-          <button
-            type="button"
-            className="activity__button"
-            onClick={() => refetch()}
-          >
-            Intentar nuevamente
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="activity">
-      <header className="activity__header">
-        <div>
-          <span className="activity__eyebrow">
-            📝 FocUsly
-          </span>
-
-          <h1 className="activity__title">
-            Actividades
-          </h1>
-
-          <p className="activity__description">
-            Practica tus habilidades y fortalece tu
-            comprensión lectora mediante actividades
-            interactivas.
-          </p>
-        </div>
-      </header>
-
-      <section className="activity__toolbar">
-        <div className="activity__search-wrapper">
-          <span className="activity__search-icon">
-            🔎
-          </span>
-
-          <input
-            type="text"
-            className="activity__search"
-            placeholder="Buscar actividad..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-
-          {search && (
+          {typeof cargarActividad === "function" && (
             <button
               type="button"
-              className="activity__clear"
-              onClick={() => setSearch("")}
-              aria-label="Limpiar búsqueda"
+              className="activity-button"
+              onClick={cargarActividad}
             >
-              ×
+              Intentar nuevamente
             </button>
           )}
-        </div>
+        </section>
+      </main>
+    );
+  }
 
-        <div className="activity__categories">
-          {categories.map((category) => (
-            <button
-              key={category}
-              type="button"
-              className={`activity__category ${
-                selectedCategory === category
-                  ? "activity__category--active"
-                  : ""
-              }`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="activity__summary">
-        <div>
-          <h2>Mis actividades</h2>
-
+  if (!preguntas || preguntas.length === 0) {
+    return (
+      <main className="activity-page">
+        <section className="activity-state">
+          <h2>Actividad sin preguntas</h2>
           <p>
-            {filteredActivities.length} actividad
-            {filteredActivities.length !== 1 ? "es" : ""}
-            disponible
-            {filteredActivities.length !== 1 ? "s" : ""}
+            Esta actividad todavía no tiene preguntas disponibles para
+            resolver.
           </p>
-        </div>
-      </section>
 
-      {filteredActivities.length === 0 ? (
-        <section className="activity__empty">
-          <div className="activity__empty-icon">
-            📚
+          <Link to="/estudiante" className="activity-secondary-button">
+            Volver
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const actividadRespondida = Boolean(resultado);
+
+  if (actividadRespondida) {
+    return (
+      <main className="activity-page">
+        <section className="activity-container">
+          <FeedbackPanel
+            resultado={resultado}
+            porcentaje={
+              resultado.porcentajeAciertos ??
+              resultado.porcentaje ??
+              resultado.porcentajeFinal
+            }
+          />
+
+          <div className="activity-final-result">
+            <span className="activity-final-result__label">
+              Porcentaje final confirmado por el servidor
+            </span>
+
+            <strong className="activity-final-result__percentage">
+              {resultado.porcentajeAciertos ??
+                resultado.porcentaje ??
+                resultado.porcentajeFinal ??
+                0}
+              %
+            </strong>
           </div>
 
-          <h3>No encontramos actividades</h3>
+          <div className="activity-actions">
+            <Link to="/estudiante" className="activity-secondary-button">
+              Volver al inicio
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
-          <p>
-            Intenta cambiar la búsqueda o seleccionar otra
-            categoría.
-          </p>
+  const pregunta = preguntas[preguntaActual];
+  const respuestaSeleccionada = respuestas?.[pregunta.id];
 
+  return (
+    <main className="activity-page">
+      <section className="activity-container">
+        <header className="activity-header">
+          <div>
+            <span className="activity-label">Actividad</span>
+            <h1>Comprueba tu comprensión</h1>
+          </div>
+
+          <span className="activity-progress">
+            {preguntaActual + 1} / {preguntas.length}
+          </span>
+        </header>
+
+        <div className="activity-progress-bar">
+          <span
+            style={{
+              width: `${
+                ((preguntaActual + 1) / preguntas.length) * 100
+              }%`,
+            }}
+          />
+        </div>
+
+        <section className="activity-question">
+          <QuestionCard
+            pregunta={pregunta}
+            respuestaSeleccionada={respuestaSeleccionada}
+            respuesta={respuestaSeleccionada}
+            onRespuesta={(respuesta) =>
+              handleRespuesta(pregunta.id, respuesta)
+            }
+            onSelectAnswer={(respuesta) =>
+              handleRespuesta(pregunta.id, respuesta)
+            }
+            disabled={enviando}
+          />
+        </section>
+
+        {(errorLocal || error) && (
+          <div className="activity-error" role="alert">
+            <span>{errorLocal || error}</span>
+
+            {error && !errorLocal && (
+              <button
+                type="button"
+                onClick={() => setErrorLocal("")}
+                className="activity-error__close"
+              >
+                Cerrar
+              </button>
+            )}
+          </div>
+        )}
+
+        <footer className="activity-navigation">
           <button
             type="button"
-            className="activity__button"
-            onClick={() => {
-              setSearch("");
-              setSelectedCategory("Todas");
-            }}
+            className="activity-secondary-button"
+            onClick={() =>
+              setPreguntaActual((actual) => Math.max(actual - 1, 0))
+            }
+            disabled={preguntaActual === 0 || enviando}
           >
-            Limpiar filtros
+            Anterior
           </button>
-        </section>
-      ) : (
-        <section className="activity__grid">
-          {filteredActivities.map((activity) => {
-            const id = activity.id || activity._id;
 
-            const title =
-              activity.title ||
-              activity.titulo ||
-              activity.name ||
-              activity.nombre ||
-              "Actividad";
+          {preguntaActual < preguntas.length - 1 ? (
+            <button
+              type="button"
+              className="activity-button"
+              onClick={() => {
+                if (respuestaSeleccionada === undefined) {
+                  setErrorLocal("Responde esta pregunta antes de continuar.");
+                  return;
+                }
 
-            const description =
-              activity.description ||
-              activity.descripcion ||
-              "Actividad interactiva para fortalecer tus conocimientos.";
-
-            const category =
-              activity.category ||
-              activity.categoria ||
-              activity.tipo ||
-              "Comprensión lectora";
-
-            const difficulty =
-              activity.difficulty ||
-              activity.dificultad ||
-              "Intermedio";
-
-            const duration =
-              activity.duration ||
-              activity.duracion ||
-              "15 min";
-
-            const progress = Math.min(
-              Math.max(
-                Number(
-                  activity.progress ||
-                    activity.progreso ||
-                    0
-                ),
-                0
-              ),
-              100
-            );
-
-            return (
-              <article
-                key={id || title}
-                className="activity__card"
-              >
-                <div className="activity__card-header">
-                  <div className="activity__card-icon">
-                    {activity.icon || "📖"}
-                  </div>
-
-                  <span className="activity__difficulty">
-                    {difficulty}
-                  </span>
-                </div>
-
-                <span className="activity__tag">
-                  {category}
-                </span>
-
-                <h3 className="activity__card-title">
-                  {title}
-                </h3>
-
-                <p className="activity__card-description">
-                  {description}
-                </p>
-
-                <div className="activity__card-info">
-                  <span>⏱️ {duration}</span>
-                  <span>📖 Lectura</span>
-                </div>
-
-                {progress > 0 && (
-                  <div className="activity__progress">
-                    <div className="activity__progress-header">
-                      <span>Progreso</span>
-                      <span>{progress}%</span>
-                    </div>
-
-                    <div className="activity__progress-bar">
-                      <div
-                        className="activity__progress-fill"
-                        style={{
-                          width: `${progress}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  className="activity__start"
-                  onClick={() =>
-                    handleStartActivity(activity)
-                  }
-                >
-                  {progress > 0
-                    ? "Continuar actividad"
-                    : "Comenzar actividad"}
-
-                  <span>→</span>
-                </button>
-              </article>
-            );
-          })}
-        </section>
-      )}
+                setErrorLocal("");
+                setPreguntaActual((actual) =>
+                  Math.min(actual + 1, preguntas.length - 1)
+                );
+              }}
+              disabled={enviando}
+            >
+              Siguiente
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="activity-button"
+              onClick={handleEnviar}
+              disabled={enviando}
+            >
+              {enviando ? "Enviando..." : "Enviar respuestas"}
+            </button>
+          )}
+        </footer>
+      </section>
     </main>
   );
 };
