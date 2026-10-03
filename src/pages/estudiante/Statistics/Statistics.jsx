@@ -1,14 +1,40 @@
 import { useEffect, useMemo, useState } from "react";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { getIntentosByEstudiante } from "../../../repositories/intentosRepository";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../../config/firebase";
 import "./Statistics.css";
+
+const datos = await getIntentosByEstudiante(user.uid);
+
+const intentosNormalizados = datos.map((data) => ({
+  id: data.id,
+  actividadId: data.actividadId || "",
+  actividadTitulo:
+    data.actividadTitulo || data.tituloActividad || "Actividad",
+  aciertos: Number(data.aciertos || 0),
+  totalPreguntas: Number(
+    data.totalPreguntas || data.preguntasTotales || 0,
+  ),
+  porcentaje:
+    data.porcentaje !== undefined
+      ? Number(data.porcentaje)
+      : calcularPorcentaje(
+          Number(data.aciertos || 0),
+          Number(data.totalPreguntas || data.preguntasTotales || 0),
+        ),
+  estado: data.estado || "completado",
+  resueltoEn: convertirFecha(data.resueltoEn),
+}));
+
+
 
 const Statistics = () => {
   const [intentos, setIntentos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filtro, setFiltro] = useState("todos");
+
+  
 
   useEffect(() => {
     let unsubscribeAuth;
@@ -252,7 +278,8 @@ const Statistics = () => {
 
                         <span>{intento.porcentaje}% de aciertos</span>
 
-                        <span>{formatearFecha(intento.fechaCreacion)}</span>
+                       <span>{formatearFecha(intento.resueltoEn)}</span>
+
                       </div>
                     </div>
 
