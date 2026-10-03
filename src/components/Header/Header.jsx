@@ -11,6 +11,8 @@ function Header({
 	userRole = "",
 	userPhoto = "",
 	notificationCount = 0,
+	xp,
+	racha,
 	onMenuClick,
 	onNotificationClick,
 	onProfileClick,
@@ -64,6 +66,20 @@ function Header({
 						</span>
 					)}
 				</button>
+
+				{/* Gamificación */}
+
+				{xp !== undefined && (
+					<span className="header__pill header__pill--xp">
+						⭐ {xp} XP
+					</span>
+				)}
+
+				{racha !== undefined && (
+					<span className="header__pill header__pill--racha">
+						🔥 {racha} días
+					</span>
+				)}
 
 				{/* Perfil */}
 

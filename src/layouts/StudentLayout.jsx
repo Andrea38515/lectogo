@@ -59,6 +59,8 @@ const StudentLayout = ({ children }) => {
           userName={userName}
           userRole={userRole}
           userPhoto={userPhoto}
+          xp={user?.xp ?? 0}
+          racha={user?.rachaActual ?? 0}
           onProfileClick={() => navigate("/estudiante/perfil")}
         />
 
