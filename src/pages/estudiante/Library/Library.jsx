@@ -1,4 +1,5 @@
 import { useLibrary } from "../../../hooks/useLibrary";
+import SearchBar from "../../../components/SearchBar/SearchBar";
 import "./Library.css";
 
 function Library() {
@@ -148,31 +149,11 @@ function Library() {
 
             {/* Buscador */}
             <div className="library-toolbar">
-              <div className="search-box">
-                <span className="search-icon">
-                  ⌕
-                </span>
-
-                <input
-                  type="text"
-                  placeholder="Buscar por palabra clave..."
-                  value={search}
-                  onChange={(event) =>
-                    setSearch(event.target.value)
-                  }
-                  aria-label="Buscar lecturas por palabra clave"
-                />
-
-                {search && (
-                  <button
-                    className="clear-search"
-                    onClick={() => setSearch("")}
-                    aria-label="Limpiar búsqueda"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
+              <SearchBar
+                value={search}
+                onChange={setSearch}
+                onClear={clearFilters}
+              />
 
               {/* Categorías */}
               <div className="category-filters">
