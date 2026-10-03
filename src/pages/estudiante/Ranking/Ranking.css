@@ -1,0 +1,224 @@
+.ranking {
+  width: 100%;
+  min-height: 100%;
+  padding: var(--space-lg, 24px);
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.ranking__header {
+  margin-bottom: 24px;
+}
+
+.ranking__header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ranking__header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.ranking__table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.ranking__table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+}
+
+.ranking__table th {
+  padding: 15px 18px;
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.ranking__table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.ranking__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ranking__row {
+  transition: var(--transition-fast);
+}
+
+.ranking__row:hover {
+  background: var(--primary-soft);
+}
+
+.ranking__row--current {
+  background: var(--primary-light);
+}
+
+.ranking__row--current:hover {
+  background: var(--primary-light);
+}
+
+.ranking__position {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: var(--radius-round);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.ranking__row--current .ranking__position {
+  background: var(--primary);
+  color: var(--surface);
+}
+
+.ranking__student {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ranking__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  font-size: 19px;
+}
+
+.ranking__alias {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.ranking__current-label {
+  display: inline-block;
+  margin-top: 3px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ranking__loading,
+.ranking__empty,
+.ranking__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.ranking__loading {
+  flex-direction: row;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.ranking__spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--primary-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: ranking-spin 0.8s linear infinite;
+}
+
+.ranking__empty-icon,
+.ranking__error-icon {
+  margin-bottom: 12px;
+  font-size: 42px;
+}
+
+.ranking__empty h2,
+.ranking__error h2 {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 20px;
+}
+
+.ranking__empty p,
+.ranking__error p {
+  max-width: 480px;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ranking__retry {
+  margin-top: 18px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--surface);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.ranking__retry:hover {
+  background: var(--primary-hover);
+}
+
+.ranking__retry:focus-visible {
+  outline: 3px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ranking__privacy {
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+@keyframes ranking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .ranking {
+    padding: 16px;
+  }
+
+  .ranking__table th,
+  .ranking__table td {
+    padding: 13px 14px;
+  }
+}
