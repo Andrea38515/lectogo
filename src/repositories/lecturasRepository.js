@@ -22,7 +22,9 @@ const LECTURAS_COLLECTION = "lecturas";
 export const getLecturas = async ({ nivel, categoriaId } = {}) => {
   const lecturasRef = collection(db, LECTURAS_COLLECTION);
 
-  const condiciones = [];
+  // Las reglas de Firestore rechazan toda consulta que pueda devolver
+  // borradores, así que el filtro tiene que viajar en la consulta.
+  const condiciones = [where("estado", "==", "publicada")];
 
   if (nivel) {
     condiciones.push(where("nivelDificultad", "==", nivel));
@@ -32,8 +34,7 @@ export const getLecturas = async ({ nivel, categoriaId } = {}) => {
     condiciones.push(where("categoriaId", "==", categoriaId));
   }
 
-  const consulta =
-    condiciones.length > 0 ? query(lecturasRef, ...condiciones) : lecturasRef;
+  const consulta = query(lecturasRef, ...condiciones);
 
   const snapshot = await getDocs(consulta);
 
