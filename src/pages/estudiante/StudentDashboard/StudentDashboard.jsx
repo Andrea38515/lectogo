@@ -232,7 +232,10 @@ const StudentDashboard = () => {
           </div>
 
           <div className="progress-circle-container">
-            <div className="progress-circle">
+            <div
+              className="progress-circle"
+              style={{ "--progress": `${stats.averageProgress}%` }}
+            >
               <div className="progress-circle-inner">
                 <strong>{stats.averageProgress}%</strong>
                 <span>Progreso</span>

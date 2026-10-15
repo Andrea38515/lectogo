@@ -1,3 +1,516 @@
-/* Archivo faltante en el commit original de feature/button: el .jsx importa
-   este CSS pero nunca se subió el diseño real. Queda vacío hasta que se
-   complete con los estilos que correspondan. */
+/* Todos los selectores cuelgan de .student-dashboard: las clases del JSX son
+   genéricas (.completed, .purple, .progress-fill) y no deben filtrarse a otras
+   pantallas, porque el CSS de Vite es global. Solo usa tokens de
+   src/styles/variables.css. */
+
+.student-dashboard {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+.student-dashboard h1,
+.student-dashboard h2,
+.student-dashboard h3,
+.student-dashboard p {
+  margin: 0;
+}
+
+/* ===== Encabezado ===== */
+
+.student-dashboard .dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-hover)
+  );
+  color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.student-dashboard .welcome-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.student-dashboard .student-avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  font-size: 2rem;
+}
+
+.student-dashboard .dashboard-eyebrow {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.student-dashboard .dashboard-header h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-dashboard .dashboard-header p {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+.student-dashboard .student-level {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface) 18%, transparent);
+  text-align: center;
+}
+
+.student-dashboard .student-level span {
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+}
+
+.student-dashboard .student-level strong {
+  font-size: var(--font-size-xl);
+}
+
+/* ===== Estadísticas ===== */
+
+.student-dashboard .dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 1320px) {
+  .student-dashboard .dashboard-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.student-dashboard .stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-dashboard .stat-card span {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-dashboard .stat-card strong {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-dashboard .stat-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  font-size: 1.4rem;
+}
+
+.student-dashboard .stat-icon.purple {
+  background: var(--color-primary-light);
+}
+
+.student-dashboard .stat-icon.green {
+  background: var(--color-success-light);
+}
+
+.student-dashboard .stat-icon.blue {
+  background: var(--color-info-light);
+}
+
+.student-dashboard .stat-icon.orange {
+  background: var(--color-secondary-light);
+}
+
+/* ===== Paneles ===== */
+
+.student-dashboard .dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.student-dashboard .dashboard-panel {
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-dashboard .panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.student-dashboard .panel-header h2 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-dashboard .panel-header p {
+  margin-top: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-dashboard .view-all-button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.student-dashboard .view-all-button:hover {
+  background: var(--color-primary-light);
+}
+
+/* ===== Actividades ===== */
+
+.student-dashboard .activity-list {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.student-dashboard .dashboard-activity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  transition: border-color var(--transition-fast);
+}
+
+.student-dashboard .dashboard-activity:hover {
+  border-color: var(--color-primary);
+}
+
+.student-dashboard .activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  font-size: 1.2rem;
+}
+
+.student-dashboard .activity-info {
+  min-width: 0;
+}
+
+.student-dashboard .activity-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.student-dashboard .activity-subject {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.student-dashboard .activity-title-row h3 {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+}
+
+.student-dashboard .activity-title-row strong {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+.student-dashboard .progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+}
+
+.student-dashboard .progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  transition: width var(--transition-base);
+}
+
+.student-dashboard .activity-questions {
+  display: block;
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.student-dashboard .activity-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.student-dashboard .activity-button:hover {
+  background: var(--color-primary-hover);
+}
+
+.student-dashboard .activity-button.completed {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.student-dashboard .activity-button.completed:hover {
+  background: var(--color-success);
+  color: var(--color-surface);
+}
+
+/* ===== Progreso ===== */
+
+.student-dashboard .progress-circle-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.student-dashboard .progress-circle {
+  display: grid;
+  place-items: center;
+  width: 148px;
+  height: 148px;
+  border-radius: var(--radius-full);
+  background: conic-gradient(
+    var(--color-primary) var(--progress, 0%),
+    var(--color-primary-light) 0
+  );
+}
+
+.student-dashboard .progress-circle-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+
+.student-dashboard .progress-circle-inner strong {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-dashboard .progress-circle-inner span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.student-dashboard .progress-summary {
+  display: grid;
+}
+
+.student-dashboard .progress-summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.student-dashboard .progress-summary span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-dashboard .progress-summary strong {
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Accesos rápidos ===== */
+
+.student-dashboard .quick-section .panel-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.student-dashboard .quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.student-dashboard .quick-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.student-dashboard .quick-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.student-dashboard .quick-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  font-size: 1.3rem;
+}
+
+.student-dashboard .quick-card > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-dashboard .quick-card strong {
+  display: block;
+  font-size: var(--font-size-base);
+}
+
+.student-dashboard .quick-card > div > span {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-dashboard .quick-arrow {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.student-dashboard .view-all-button:focus-visible,
+.student-dashboard .activity-button:focus-visible,
+.student-dashboard .quick-card:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 1024px) {
+  .student-dashboard .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .student-dashboard .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-lg);
+  }
+
+  .student-dashboard .stat-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-md);
+  }
+
+  .student-dashboard .dashboard-activity {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .student-dashboard .activity-button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-dashboard .welcome-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-dashboard * {
+    transition: none !important;
+  }
+
+  .student-dashboard .quick-card:hover {
+    transform: none;
+  }
+}
