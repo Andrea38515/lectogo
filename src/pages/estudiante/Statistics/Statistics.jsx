@@ -2,7 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../../config/firebase";
+import { getActividadById } from "../../../repositories/actividadesRepository";
+import { getLecturaById } from "../../../repositories/lecturasRepository";
 import "./Statistics.css";
+
+// El intento no guarda el título: se obtiene de la lectura de su actividad.
+const resolverTitulo = async (actividadId) => {
+  try {
+    const actividad = await getActividadById(actividadId);
+    const lectura = await getLecturaById(actividad?.lecturaId);
+
+    return lectura?.titulo || "Actividad";
+  } catch {
+    return "Actividad";
+  }
+};
 
 const Statistics = () => {
   const [intentos, setIntentos] = useState([]);
@@ -26,47 +40,65 @@ const Statistics = () => {
         setError("");
 
         /*
-         * S5-04:
-         * Consulta los intentos del estudiante autenticado.
+         * Intentos del estudiante autenticado, del más reciente al más
+         * antiguo. Requiere el índice compuesto intentos(estudianteId,
+         * resueltoEn desc) de firestore.indexes.json.
          *
-         * Se utiliza orderBy para aprovechar el índice compuesto
-         * definido para la consulta de historial.
+         * Los escribe la Cloud Function registrarIntento con estos campos:
+         * actividadId, estudianteId, respuestas[{ correcta, ... }],
+         * porcentajeAciertos, xpGanado y resueltoEn.
          */
         const intentosRef = collection(db, "intentos");
 
         const q = query(
           intentosRef,
           where("estudianteId", "==", user.uid),
-          orderBy("fechaCreacion", "desc"),
+          orderBy("resueltoEn", "desc"),
         );
 
         const snapshot = await getDocs(q);
 
         const datos = snapshot.docs.map((doc) => {
           const data = doc.data();
+          const respuestas = Array.isArray(data.respuestas)
+            ? data.respuestas
+            : [];
+          const aciertos = respuestas.filter(
+            (respuesta) => respuesta.correcta,
+          ).length;
+          const totalPreguntas = respuestas.length;
+          const porcentajeGuardado = Number(data.porcentajeAciertos);
 
           return {
             id: doc.id,
             actividadId: data.actividadId || "",
-            actividadTitulo:
-              data.actividadTitulo || data.tituloActividad || "Actividad",
-            aciertos: Number(data.aciertos || 0),
-            totalPreguntas: Number(
-              data.totalPreguntas || data.preguntasTotales || 0,
-            ),
-            porcentaje:
-              data.porcentaje !== undefined
-                ? Number(data.porcentaje)
-                : calcularPorcentaje(
-                    Number(data.aciertos || 0),
-                    Number(data.totalPreguntas || data.preguntasTotales || 0),
-                  ),
-            estado: data.estado || "completado",
-            fechaCreacion: convertirFecha(data.fechaCreacion),
+            actividadTitulo: "Actividad",
+            aciertos,
+            totalPreguntas,
+            porcentaje: Number.isFinite(porcentajeGuardado)
+              ? porcentajeGuardado
+              : calcularPorcentaje(aciertos, totalPreguntas),
+            estado: "completado",
+            resueltoEn: convertirFecha(data.resueltoEn),
           };
         });
 
-        setIntentos(datos);
+        const actividadIds = [
+          ...new Set(datos.map((intento) => intento.actividadId)),
+        ].filter(Boolean);
+
+        const titulos = new Map(
+          await Promise.all(
+            actividadIds.map(async (id) => [id, await resolverTitulo(id)]),
+          ),
+        );
+
+        setIntentos(
+          datos.map((intento) => ({
+            ...intento,
+            actividadTitulo: titulos.get(intento.actividadId) || "Actividad",
+          })),
+        );
       } catch (err) {
         console.error("Error cargando estadísticas:", err);
 
@@ -252,7 +284,7 @@ const Statistics = () => {
 
                         <span>{intento.porcentaje}% de aciertos</span>
 
-                        <span>{formatearFecha(intento.fechaCreacion)}</span>
+                        <span>{formatearFecha(intento.resueltoEn)}</span>
                       </div>
                     </div>
 
