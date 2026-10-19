@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "lecturas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "categoriaId", "order": "ASCENDING" },
+        { "fieldPath": "nivelDificultad", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "intentos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "estudianteId", "order": "ASCENDING" },
+        { "fieldPath": "resueltoEn", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

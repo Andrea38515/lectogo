@@ -7,8 +7,11 @@ import Login from "../pages/auth/Login/Login";
 import Register from "../pages/auth/Register/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword/Forgotpassword";
 import Profile from "../pages/perfil/Profile";
+import StudentDashboard from "../pages/estudiante/StudentDashboard/StudentDashboard";
+import Library from "../pages/estudiante/Library/Library";
 import Reading from "../pages/estudiante/Reading/Reading";
 import Activity from "../pages/estudiante/Activity/Activity";
+import Statistics from "../pages/estudiante/Statistics/Statistics";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
 
@@ -131,24 +134,18 @@ function AppRouter() {
 
       <Route element={<PrivateRoutes />}>
         <Route element={<StudentLayout />}>
-          <Route
-            path="/estudiante"
-            element={<ComingSoon title="Panel del estudiante" />}
-          />
+          <Route path="/estudiante" element={<StudentDashboard />} />
 
           <Route
             path="/estudiante/inicio"
-            element={<ComingSoon title="Inicio del estudiante" />}
+            element={<Navigate to="/estudiante" replace />}
           />
 
-          <Route
-            path="/estudiante/biblioteca"
-            element={<ComingSoon title="Biblioteca del estudiante" />}
-          />
+          <Route path="/estudiante/biblioteca" element={<Library />} />
 
           <Route
             path="/estudiante/lecturas"
-            element={<ComingSoon title="Lecturas" />}
+            element={<Navigate to="/estudiante/biblioteca" replace />}
           />
 
           {/* =================================
@@ -164,14 +161,11 @@ function AppRouter() {
                 actividadId ≠ lecturaId
                ================================= */}
 
-          <Route
-            path="/estudiante/actividades/:actividadId"
-            element={<Activity />}
-          />
+          <Route path="/estudiante/actividades" element={<Activity />} />
 
           <Route
-            path="/estudiante/actividades"
-            element={<ComingSoon title="Actividades" />}
+            path="/estudiante/actividades/:actividadId"
+            element={<ComingSoon title="Resolver actividad" />}
           />
 
           <Route
@@ -184,9 +178,11 @@ function AppRouter() {
             element={<ComingSoon title="Ranking" />}
           />
 
+          <Route path="/estudiante/estadisticas" element={<Statistics />} />
+
           <Route
-            path="/estudiante/estadisticas"
-            element={<ComingSoon title="Estadísticas" />}
+            path="/estudiante/progreso"
+            element={<Navigate to="/estudiante/estadisticas" replace />}
           />
 
           <Route path="/estudiante/perfil" element={<Profile />} />

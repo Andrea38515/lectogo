@@ -3,6 +3,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // El rol vive en usuarios/{uid}.rol (lo crea onUserCreate), no en custom
+    // claims: por eso se consulta el documento y no request.auth.token.role.
+    function haySesion() {
+      return request.auth != null;
+    }
+
+    function rolActual() {
+      return get(
+        /databases/$(database)/documents/usuarios/$(request.auth.uid)
+      ).data.rol;
+    }
+
+    function esAdmin() {
+      return haySesion() && rolActual() == "administrador";
+    }
+
+    function esDocente() {
+      return haySesion() && rolActual() == "docente";
+    }
+
     match /usuarios/{uid} {
 
       allow read: if request.auth != null &&
@@ -25,6 +45,111 @@ service cloud.firestore {
             "institucion",
             "fotoUrl"
           ]);
+    }
+
+    // Las reglas no filtran: una consulta que pueda devolver borradores se
+    // rechaza entera. Por eso getLecturas() filtra estado == "publicada".
+    match /lecturas/{lecturaId} {
+      allow read: if resource.data.estado == "publicada" ||
+        esAdmin() ||
+        (esDocente() && resource.data.autorId == request.auth.uid);
+
+      allow create: if esAdmin() ||
+        (esDocente() && request.resource.data.autorId == request.auth.uid);
+
+      allow update, delete: if esAdmin() ||
+        (
+          esDocente() &&
+          resource.data.autorId == request.auth.uid &&
+          request.resource.data.autorId == resource.data.autorId
+        );
+    }
+
+    match /categorias/{categoriaId} {
+      allow read: if haySesion() ||
+        resource.data.get("publica", false) == true;
+
+      allow write: if esAdmin();
+    }
+
+    // Aquí solo vive lo que el estudiante puede ver (enunciado, opciones).
+    // respuestaCorrecta y explicacion van en preguntas/{id}/solucion/{doc},
+    // que ningún estudiante puede leer; las califica registrarIntento.
+    match /preguntas/{preguntaId} {
+      allow read: if haySesion();
+
+      allow create: if esAdmin() ||
+        (esDocente() && request.resource.data.autorId == request.auth.uid);
+
+      allow update, delete: if esAdmin() ||
+        (esDocente() && resource.data.autorId == request.auth.uid);
+
+      match /solucion/{solucionId} {
+        allow read, write: if esAdmin() ||
+          (
+            esDocente() &&
+            get(
+              /databases/$(database)/documents/preguntas/$(preguntaId)
+            ).data.autorId == request.auth.uid
+          );
+      }
+    }
+
+    match /actividades/{actividadId} {
+      allow read: if esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (haySesion() && request.auth.uid in resource.data.estudiantesAsignados);
+
+      allow create: if esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid);
+
+      allow update, delete: if esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid);
+    }
+
+    // Solo los escribe la Cloud Function registrarIntento (Admin SDK).
+    match /intentos/{intentoId} {
+      allow read: if haySesion() &&
+        (
+          resource.data.estudianteId == request.auth.uid ||
+          esAdmin() ||
+          (
+            esDocente() &&
+            get(
+              /databases/$(database)/documents/actividades/$(resource.data.actividadId)
+            ).data.docenteId == request.auth.uid
+          )
+        );
+
+      allow write: if false;
+    }
+
+    // Gamificación: la escriben las Cloud Functions; el cliente solo lee.
+    // El ranking guarda únicamente el alias, nunca el nombre.
+    match /ranking/{rankingId} {
+      allow read: if haySesion();
+      allow write: if false;
+    }
+
+    match /logros/{logroId} {
+      allow read: if haySesion();
+      allow write: if esAdmin();
+    }
+
+    match /logros_usuario/{logroUsuarioId} {
+      allow read: if haySesion() &&
+        (resource.data.estudianteId == request.auth.uid || esAdmin());
+
+      allow write: if false;
+    }
+
+    match /niveles_config/{nivelId} {
+      allow read: if haySesion();
+      allow write: if esAdmin();
+    }
+
+    match /config_negocio/{configId} {
+      allow read, write: if esAdmin();
     }
 
     match /{document=**} {

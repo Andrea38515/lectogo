@@ -28,7 +28,11 @@ const useActivity = () => {
 
 			const conLectura = await Promise.all(
 				asignadas.map(async (actividad) => {
-					const lectura = await getLecturaById(actividad.lecturaId);
+					// Si la lectura no es publicada las reglas la deniegan: no
+					// debe tumbar la lista entera de actividades.
+					const lectura = await getLecturaById(actividad.lecturaId).catch(
+						() => null,
+					);
 
 					return {
 						...actividad,

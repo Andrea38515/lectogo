@@ -86,4 +86,25 @@
 	--z-index-sidebar: 200;
 	--z-index-modal: 300;
 	--z-index-toast: 400;
+
+	/* Alias de compatibilidad: Activity, Library, Reading y QuestionCard
+	   se escribieron con estos nombres. Apuntan a los tokens --color-* de
+	   arriba, que son la única fuente de verdad: no cambiar valores acá. */
+	--primary: var(--color-primary);
+	--primary-hover: var(--color-primary-hover);
+	--primary-light: var(--color-primary-light);
+	--primary-soft: var(--color-primary-light);
+	--secondary: var(--color-secondary);
+	--secondary-light: var(--color-secondary-light);
+	--success: var(--color-success);
+	--danger: var(--color-danger);
+	--background: var(--color-background);
+	--surface: var(--color-surface);
+	--surface-secondary: var(--color-background);
+	--text-primary: var(--color-text);
+	--text-secondary: var(--color-text-secondary);
+	--text-muted: var(--color-text-muted);
+	--border-color: var(--color-border);
+	--border-focus: var(--color-primary);
+	--radius-round: var(--radius-full);
 }
