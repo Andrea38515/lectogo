@@ -12,6 +12,7 @@ import Library from "../pages/estudiante/Library/Library";
 import Reading from "../pages/estudiante/Reading/Reading";
 import Activity from "../pages/estudiante/Activity/Activity";
 import Statistics from "../pages/estudiante/Statistics/Statistics";
+import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
 
@@ -165,7 +166,7 @@ function AppRouter() {
 
           <Route
             path="/estudiante/actividades/:actividadId"
-            element={<ComingSoon title="Resolver actividad" />}
+            element={<ResolverActividad />}
           />
 
           <Route
