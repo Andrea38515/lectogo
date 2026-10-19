@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useLibrary } from "../../../hooks/useLibrary";
 import "./Library.css";
 
@@ -20,8 +21,10 @@ function Library() {
     isError,
   } = useLibrary();
 
+  const navigate = useNavigate();
+
   const handleOpenResource = (resource) => {
-    console.log("Abrir recurso:", resource);
+    navigate(`/estudiante/reading/${resource.id}`);
   };
 
   return (

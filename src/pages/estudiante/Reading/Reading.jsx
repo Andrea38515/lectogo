@@ -1,112 +1,35 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLectura } from "../../../hooks/useLectura";
 import "./Reading.css";
-
-const lecturasDemo = [
-  {
-    id: "1",
-    titulo: "El principito",
-    autor: "Antoine de Saint-Exupéry",
-    categoria: "Literatura",
-    nivelDificultad: "Fácil",
-    contenido: `
-      Había una vez un pequeño príncipe que vivía en un planeta muy pequeño.
-
-      Desde allí observaba las estrellas y soñaba con conocer otros lugares.
-
-      Durante su viaje descubrió que cada persona puede ver el mundo de una
-      manera diferente y que algunas cosas importantes no siempre son visibles
-      a simple vista.
-    `,
-    actividadId: "1",
-    estado: "publicado",
-  },
-  {
-    id: "2",
-    titulo: "La importancia de leer",
-    autor: "LectoGo",
-    categoria: "Comprensión lectora",
-    nivelDificultad: "Medio",
-    contenido: `
-      Leer es una actividad que permite conocer nuevas ideas, ampliar el
-      vocabulario y desarrollar la imaginación.
-
-      La lectura también ayuda a comprender diferentes puntos de vista y a
-      construir nuevos conocimientos.
-    `,
-    actividadId: "2",
-    estado: "publicado",
-  },
-];
 
 const Reading = () => {
   const { lecturaId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [lectura, setLectura] = useState(null);
-  const [estado, setEstado] = useState("cargando");
+  const { estado, lectura, categoria, reintentar } = useLectura(lecturaId);
+
   const [fontSize, setFontSize] = useState("medium");
-  const [favorita, setFavorita] = useState(false);
   const [progreso, setProgreso] = useState(0);
 
   /*
-   * Si la lectura viene desde /biblioteca se permite el acceso público
-   * solamente cuando la lectura está publicada.
+   * La misma pantalla vive en dos rutas: dentro del área del estudiante y
+   * en la biblioteca pública. "Volver" tiene que respetar de dónde vino.
    */
-  const accesoPublico =
-    location.pathname.startsWith("/biblioteca") ||
-    location.pathname.startsWith("/lecturas/");
+  const esAreaEstudiante = location.pathname.startsWith("/estudiante");
+  const rutaBiblioteca = esAreaEstudiante ? "/estudiante/biblioteca" : "/biblioteca";
+
+  // StudentLayout ya da margen lateral en móvil; PublicLayout no.
+  const claseRaiz = esAreaEstudiante ? "reading-page" : "reading-page reading-page--publica";
+
+  const hayLectura = estado === "ok";
 
   useEffect(() => {
-    const cargarLectura = async () => {
-      setEstado("cargando");
-      setLectura(null);
-
-      try {
-        /*
-         * Aquí posteriormente se puede reemplazar por:
-         *
-         * const data = await obtenerLecturaPorId(lecturaId);
-         *
-         * usando el readingRepository.
-         */
-
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        const resultado = lecturasDemo.find(
-          (item) => String(item.id) === String(lecturaId),
-        );
-
-        if (!resultado) {
-          setEstado("no-encontrada");
-          return;
-        }
-
-        /*
-         * El acceso público solamente permite lecturas publicadas.
-         */
-        if (accesoPublico && resultado.estado !== "publicado") {
-          setEstado("no-autorizada");
-          return;
-        }
-
-        setLectura(resultado);
-        setEstado("ok");
-      } catch (error) {
-        console.error("Error cargando lectura:", error);
-        setEstado("error");
-      }
-    };
-
-    if (lecturaId) {
-      cargarLectura();
-    } else {
-      setEstado("no-encontrada");
+    if (!hayLectura) {
+      return undefined;
     }
-  }, [lecturaId, accesoPublico]);
 
-  useEffect(() => {
     const actualizarProgreso = () => {
       const scrollTop = window.scrollY;
       const altura = document.documentElement.scrollHeight - window.innerHeight;
@@ -121,34 +44,20 @@ const Reading = () => {
       setProgreso(porcentaje);
     };
 
-    window.addEventListener("scroll", actualizarProgreso);
+    window.addEventListener("scroll", actualizarProgreso, { passive: true });
+
+    // Sin esto, un valor viejo (otra lectura o scroll restaurado por el
+    // navegador) se queda hasta el próximo evento de scroll.
+    const frame = window.requestAnimationFrame(actualizarProgreso);
 
     return () => {
+      window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", actualizarProgreso);
     };
-  }, [lectura]);
+  }, [hayLectura]);
 
   const irABiblioteca = () => {
-    navigate("/biblioteca");
-  };
-
-  /*
-   * IMPORTANTE:
-   * Aquí NO usamos lecturaId para la actividad.
-   *
-   * lectura.id      -> identifica la lectura
-   * lectura.actividadId -> identifica la actividad
-   */
-  const irAActividad = () => {
-    if (!lectura?.actividadId) {
-      return;
-    }
-
-    navigate(`/estudiante/actividades/${lectura.actividadId}`);
-  };
-
-  const marcarCompletada = () => {
-    setProgreso(100);
+    navigate(rutaBiblioteca);
   };
 
   /* ==============================
@@ -157,8 +66,8 @@ const Reading = () => {
 
   if (estado === "cargando") {
     return (
-      <div className="reading-page">
-        <div className="reading-loading">
+      <div className={claseRaiz}>
+        <div className="reading-loading" role="status">
           <div className="reading-spinner"></div>
           <p>Cargando lectura...</p>
         </div>
@@ -172,72 +81,60 @@ const Reading = () => {
 
   if (estado === "error") {
     return (
-      <div className="reading-page">
-        <div className="reading-error">
+      <div className={claseRaiz}>
+        <div className="reading-error" role="alert">
           <div className="reading-error-icon">⚠️</div>
 
           <h2>Ocurrió un error</h2>
 
           <p>No fue posible cargar la lectura. Intenta nuevamente.</p>
 
-          <button
-            className="reading-action-button primary"
-            onClick={() => window.location.reload()}
-          >
-            Intentar nuevamente
-          </button>
+          <div className="reading-error-actions">
+            <button
+              className="reading-action-button primary"
+              onClick={reintentar}
+            >
+              Intentar nuevamente
+            </button>
+
+            <button
+              className="reading-action-button secondary"
+              onClick={irABiblioteca}
+            >
+              Volver a la biblioteca
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   /* ==============================
-     ESTADO: NO ENCONTRADA
+     ESTADO: NO DISPONIBLE
+     (no existe, no está publicada o no se tiene permiso: Firestore
+     no distingue entre estos casos y tampoco debemos hacerlo nosotros)
      ============================== */
 
-  if (estado === "no-encontrada") {
+  if (estado === "no-disponible") {
     return (
-      <div className="reading-page">
+      <div className={claseRaiz}>
         <div className="reading-error">
           <div className="reading-error-icon">📖</div>
 
-          <h2>Lectura no encontrada</h2>
+          <h2>Lectura no disponible</h2>
 
           <p>
             La lectura que estás buscando no existe o ya no está disponible.
           </p>
 
-          <button
-            className="reading-action-button primary"
-            onClick={irABiblioteca}
-          >
-            Volver a la biblioteca
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  /* ==============================
-     ESTADO: NO AUTORIZADA
-     ============================== */
-
-  if (estado === "no-autorizada") {
-    return (
-      <div className="reading-page">
-        <div className="reading-error">
-          <div className="reading-error-icon">🔒</div>
-
-          <h2>Lectura no disponible</h2>
-
-          <p>Esta lectura no está disponible mediante el acceso público.</p>
-
-          <button
-            className="reading-action-button primary"
-            onClick={irABiblioteca}
-          >
-            Volver a la biblioteca
-          </button>
+          <div className="reading-error-actions">
+            <button
+              className="reading-action-button primary"
+              onClick={irABiblioteca}
+            >
+              Volver a la biblioteca
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -247,14 +144,13 @@ const Reading = () => {
      LECTURA
      ============================== */
 
-  const contenido =
-    lectura.contenido
-      ?.split("\n")
-      .map((texto) => texto.trim())
-      .filter(Boolean) || [];
+  const parrafos = lectura.contenido
+    .split(/\r?\n\s*\r?\n/)
+    .map((texto) => texto.trim())
+    .filter(Boolean);
 
   return (
-    <div className="reading-page">
+    <div className={claseRaiz}>
       {/* HEADER */}
 
       <header className="reading-header">
@@ -264,14 +160,6 @@ const Reading = () => {
           </button>
 
           <div className="reading-header-title">{lectura.titulo}</div>
-
-          <button
-            className={`reading-favorite-button ${favorita ? "active" : ""}`}
-            onClick={() => setFavorita(!favorita)}
-            aria-label="Marcar como favorita"
-          >
-            {favorita ? "★" : "☆"}
-          </button>
         </div>
 
         {/* PROGRESO */}
@@ -286,19 +174,17 @@ const Reading = () => {
 
       {/* CONTENIDO PRINCIPAL */}
 
-      <main className="reading-main">
+      <div className="reading-main">
         <section className="reading-info">
-          <span className="reading-category">{lectura.categoria}</span>
+          <span className="reading-category">{categoria}</span>
 
           <h1 className="reading-title">{lectura.titulo}</h1>
 
-          <p className="reading-author">
-            Por <strong>{lectura.autor}</strong>
-          </p>
-
-          <span className="reading-difficulty">
-            Nivel: {lectura.nivelDificultad}
-          </span>
+          {lectura.nivelDificultad ? (
+            <span className="reading-difficulty">
+              Nivel: {lectura.nivelDificultad}
+            </span>
+          ) : null}
         </section>
 
         {/* CONTROLES DE TEXTO */}
@@ -311,6 +197,7 @@ const Reading = () => {
               fontSize === "small" ? "active" : ""
             }`}
             onClick={() => setFontSize("small")}
+            aria-pressed={fontSize === "small"}
           >
             A-
           </button>
@@ -320,6 +207,7 @@ const Reading = () => {
               fontSize === "medium" ? "active" : ""
             }`}
             onClick={() => setFontSize("medium")}
+            aria-pressed={fontSize === "medium"}
           >
             A
           </button>
@@ -329,6 +217,7 @@ const Reading = () => {
               fontSize === "large" ? "active" : ""
             }`}
             onClick={() => setFontSize("large")}
+            aria-pressed={fontSize === "large"}
           >
             A+
           </button>
@@ -336,9 +225,9 @@ const Reading = () => {
 
         {/* TEXTO */}
 
-        <article className="reading-card">
+        <article className="reading-article">
           <div className={`reading-content font-${fontSize}`}>
-            {contenido.map((parrafo, index) => (
+            {parrafos.map((parrafo, index) => (
               <p key={index}>{parrafo}</p>
             ))}
           </div>
@@ -346,11 +235,11 @@ const Reading = () => {
 
         {/* FINALIZACIÓN */}
 
-        {progreso >= 90 && (
+        {progreso >= 90 ? (
           <div className="reading-complete">
             ✓ Has avanzado hasta el final de la lectura.
           </div>
-        )}
+        ) : null}
 
         {/* ACCIONES */}
 
@@ -361,58 +250,8 @@ const Reading = () => {
           >
             ← Biblioteca
           </button>
-
-          {lectura.actividadId && (
-            <button
-              className="reading-action-button primary"
-              onClick={irAActividad}
-            >
-              Ir a la actividad →
-            </button>
-          )}
         </div>
-
-        {progreso < 90 && lectura.actividadId && (
-          <div className="reading-actions">
-            <button
-              className="reading-action-button secondary"
-              onClick={marcarCompletada}
-            >
-              Marcar lectura como completada
-            </button>
-          </div>
-        )}
-      </main>
-
-      {/* NAVEGACIÓN INFERIOR */}
-
-      <nav className="reading-bottom-nav">
-        <div className="reading-bottom-nav-content">
-          <button
-            className="reading-bottom-item active"
-            onClick={irABiblioteca}
-          >
-            <span>📚</span>
-            <span>Biblioteca</span>
-          </button>
-
-          <button
-            className="reading-bottom-item"
-            onClick={() => navigate("/estudiante")}
-          >
-            <span>⌂</span>
-            <span>Inicio</span>
-          </button>
-
-          <button
-            className="reading-bottom-item"
-            onClick={() => navigate("/estudiante/perfil")}
-          >
-            <span>👤</span>
-            <span>Perfil</span>
-          </button>
-        </div>
-      </nav>
+      </div>
     </div>
   );
 };
