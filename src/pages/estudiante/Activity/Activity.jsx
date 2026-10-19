@@ -111,7 +111,7 @@ const Activity = () => {
       <header className="activity__header">
         <div>
           <span className="activity__eyebrow">
-            📝 FocUsly
+            📝 LectoGo
           </span>
 
           <h1 className="activity__title">
@@ -175,10 +175,10 @@ const Activity = () => {
           <h2>Mis actividades</h2>
 
           <p>
-            {filteredActivities.length} actividad
-            {filteredActivities.length !== 1 ? "es" : ""}
-            disponible
-            {filteredActivities.length !== 1 ? "s" : ""}
+            {filteredActivities.length}{" "}
+            {filteredActivities.length === 1
+              ? "actividad disponible"
+              : "actividades disponibles"}
           </p>
         </div>
       </section>
@@ -267,9 +267,17 @@ const Activity = () => {
                   </span>
                 </div>
 
-                <span className="activity__tag">
-                  {category}
-                </span>
+                <div className="activity__tags">
+                  <span className="activity__tag">
+                    {category}
+                  </span>
+
+                  {activity.completada && (
+                    <span className="activity__completed">
+                      ✓ Completada
+                    </span>
+                  )}
+                </div>
 
                 <h3 className="activity__card-title">
                   {title}
@@ -309,9 +317,11 @@ const Activity = () => {
                     handleStartActivity(activity)
                   }
                 >
-                  {progress > 0
-                    ? "Continuar actividad"
-                    : "Comenzar actividad"}
+                  {activity.completada
+                    ? "Ver resultados"
+                    : progress > 0
+                      ? "Continuar actividad"
+                      : "Comenzar actividad"}
 
                   <span>→</span>
                 </button>

@@ -218,6 +218,22 @@
   font-weight: 600;
 }
 
+.activity__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.activity__completed {
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: var(--radius-round);
+  background: var(--color-success-light);
+  color: var(--color-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .activity__tag {
   width: fit-content;
   padding: 5px 9px;

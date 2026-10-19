@@ -5,6 +5,8 @@ import {
 	getActividadesAsignadas,
 } from "../repositories/actividadesRepository";
 import { getLecturaById } from "../repositories/lecturasRepository";
+import { getAllCategorias } from "../repositories/categoriasRepository";
+import { getIntentosByEstudiante } from "../repositories/intentosRepository";
 
 const useActivity = () => {
 	const { user } = useAuth();
@@ -24,7 +26,20 @@ const useActivity = () => {
 		setError(null);
 
 		try {
-			const asignadas = await getActividadesAsignadas(user.uid);
+			// Categorías e intentos solo enriquecen la lista: si fallan no deben
+			// tumbarla, así que se degradan a "General" / sin completadas.
+			const [asignadas, categorias, intentos] = await Promise.all([
+				getActividadesAsignadas(user.uid),
+				getAllCategorias().catch(() => []),
+				getIntentosByEstudiante(user.uid).catch(() => []),
+			]);
+
+			const nombresCategoria = Object.fromEntries(
+				categorias.map((categoria) => [categoria.id, categoria.nombre]),
+			);
+			const completadas = new Set(
+				intentos.map((intento) => intento.actividadId),
+			);
 
 			const conLectura = await Promise.all(
 				asignadas.map(async (actividad) => {
@@ -37,7 +52,8 @@ const useActivity = () => {
 					return {
 						...actividad,
 						titulo: lectura?.titulo || "Actividad",
-						categoria: lectura?.categoriaId || "General",
+						categoria: nombresCategoria[lectura?.categoriaId] || "General",
+						completada: completadas.has(actividad.id),
 					};
 				}),
 			);
