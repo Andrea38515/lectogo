@@ -1,0 +1,336 @@
+/* Todos los selectores cuelgan de .student-ranking: el CSS de Vite es global y
+   clases genéricas como .ranking-fila o .ranking-boton no deben filtrarse a
+   otras pantallas. Solo usa tokens de src/styles/variables.css. */
+
+.student-ranking {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+/* :where() deja estos reseteos con especificidad 0 para no pisar los márgenes
+   de componentes compartidos (p. ej. el mensaje de Loading). */
+:where(.student-ranking) :is(h1, h2, p, ol) {
+  margin: 0;
+}
+
+:where(.student-ranking) ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* ===== Encabezado ===== */
+
+.student-ranking .ranking-encabezado {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-hover)
+  );
+  color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.student-ranking .ranking-encabezado h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-ranking .ranking-encabezado p {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+/* ===== Paneles ===== */
+
+.student-ranking .ranking-panel {
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-ranking .ranking-panel h2 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+
+/* ===== Piezas comunes ===== */
+
+.student-ranking .ranking-alias {
+  min-width: 0;
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.student-ranking .ranking-yo {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.student-ranking .ranking-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-ranking .ranking-datos strong {
+  color: var(--color-text);
+}
+
+/* Fila del propio estudiante: anillo + fondo suave, sin depender solo del
+   color (además lleva la marca "Tú" y aria-current). */
+.student-ranking .ranking-propia {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.student-ranking .ranking-fila.ranking-propia {
+  background: var(--color-primary-light);
+}
+
+/* ===== Botones y estados vacíos ===== */
+
+.student-ranking .ranking-boton {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.student-ranking .ranking-boton:hover {
+  background: var(--color-primary-hover);
+}
+
+.student-ranking .ranking-boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.student-ranking .ranking-vacio {
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-ranking .ranking-vacio--error {
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+/* ===== Tu posición ===== */
+
+.student-ranking .ranking-tu__cuerpo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-lg);
+}
+
+.student-ranking .ranking-tu__puesto {
+  grid-row: span 2;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.student-ranking .ranking-tu__puesto strong {
+  color: var(--color-primary);
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-ranking .ranking-tu__identidad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+/* ===== Podio ===== */
+
+.student-ranking .ranking-podio {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.student-ranking .ranking-podio__puesto {
+  display: grid;
+  flex: 0 1 200px;
+  justify-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.student-ranking .ranking-podio__puesto .ranking-datos {
+  justify-content: center;
+}
+
+.student-ranking .ranking-podio__medalla {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.student-ranking .ranking-podio__posicion {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+/* El DOM va 1.º, 2.º, 3.º; visualmente el 1.º queda al centro y más alto. */
+.student-ranking .ranking-podio__puesto--1 {
+  order: 2;
+  padding-block: var(--spacing-xl);
+  border-color: var(--color-secondary);
+  background: var(--color-secondary-light);
+}
+
+.student-ranking .ranking-podio__puesto--1 .ranking-podio__medalla {
+  font-size: 2.5rem;
+}
+
+.student-ranking .ranking-podio__puesto--2 {
+  order: 1;
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.student-ranking .ranking-podio__puesto--3 {
+  order: 3;
+  border-color: var(--color-info);
+  background: var(--color-info-light);
+}
+
+/* ===== Lista ===== */
+
+.student-ranking .ranking-lista {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.student-ranking .ranking-fila {
+  display: grid;
+  grid-template-columns: minmax(3rem, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.student-ranking .ranking-fila__posicion {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-bold);
+}
+
+.student-ranking .ranking-fila__alias {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+/* La fila propia fuera del top va separada para que no parezca el puesto 21. */
+.student-ranking .ranking-fuera {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px dashed var(--color-border);
+}
+
+.student-ranking .ranking-fuera__separador {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 767px) {
+  .student-ranking .ranking-encabezado {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 640px) {
+  .student-ranking .ranking-fila {
+    grid-template-columns: minmax(3rem, auto) minmax(0, 1fr);
+  }
+
+  .student-ranking .ranking-fila .ranking-datos {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-ranking .ranking-panel {
+    padding: var(--spacing-md);
+  }
+
+  /* En pantallas angostas el podio se apila en el orden del ranking. */
+  .student-ranking .ranking-podio {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-ranking .ranking-podio__puesto {
+    flex: 0 0 auto;
+    order: 0;
+  }
+
+  .student-ranking .ranking-tu__cuerpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .student-ranking .ranking-tu__puesto {
+    grid-row: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-ranking * {
+    transition: none !important;
+  }
+}
