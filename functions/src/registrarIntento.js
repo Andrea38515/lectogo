@@ -4,12 +4,106 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const {
   getFirestore,
   FieldValue,
+  Timestamp,
 } = require("firebase-admin/firestore");
+
+const {
+  ZONA_HORARIA,
+  CONFIG_POR_DEFECTO,
+  esConfigXpValida,
+  normalizarConfigXp,
+  calcularXp,
+  normalizarNiveles,
+  calcularNivel,
+  calcularRacha,
+  evaluarLogros,
+} = require("./gamificacion");
 
 const db = getFirestore();
 
 // Tope defensivo: cada respuesta cuesta dos lecturas dentro de la transacción.
 const MAX_RESPUESTAS = 100;
+
+/*
+ * La configuración de XP y la tabla de niveles cambian muy rara vez y no
+ * dependen del intento, así que se leen una sola vez ANTES de la
+ * transacción: Firestore puede reejecutar el callback y no tiene sentido
+ * repetir estas lecturas ni bloquearlas.
+ *
+ * Dos situaciones distintas:
+ *  - El documento falta o es inválido (seed pendiente): se avisa en el log
+ *    y se sigue con valores seguros, para no bloquear a los estudiantes.
+ *  - La LECTURA falla (error transitorio): se aborta con "unavailable"
+ *    antes de escribir nada. El id del intento es determinista y no hay
+ *    reintento posterior, así que seguir con valores por defecto fijaría
+ *    XP y nivel equivocados para siempre; que el cliente reintente es
+ *    barato.
+ */
+const errorConfigNoDisponible = (docPath, error) => {
+  console.error(`No se pudo leer ${docPath}:`, error);
+
+  return new HttpsError(
+    "unavailable",
+    "No pudimos cargar la configuración, inténtalo de nuevo en unos segundos."
+  );
+};
+
+const leerConfigXp = async () => {
+  let datos;
+  let problema = null;
+  let snap;
+
+  try {
+    snap = await db.collection("config_negocio").doc("gamificacion").get();
+  } catch (error) {
+    throw errorConfigNoDisponible("config_negocio/gamificacion", error);
+  }
+
+  if (snap.exists) {
+    datos = snap.data();
+  } else {
+    problema = "no existe";
+  }
+
+  if (!problema && !esConfigXpValida(datos)) {
+    problema = "tiene campos inválidos";
+  }
+
+  if (problema) {
+    console.warn(
+      `config_negocio/gamificacion ${problema}: se usan los valores ` +
+        `del DDS (${CONFIG_POR_DEFECTO.xpPorRespuestaCorrecta} por ` +
+        `respuesta, ${CONFIG_POR_DEFECTO.xpBonoActividadCompleta} de bono).`
+    );
+  }
+
+  return normalizarConfigXp(datos);
+};
+
+const leerNiveles = async () => {
+  let snap;
+
+  try {
+    snap = await db.collection("niveles_config").get();
+  } catch (error) {
+    throw errorConfigNoDisponible("niveles_config", error);
+  }
+
+  const niveles = normalizarNiveles(snap.docs.map((doc) => doc.data()));
+  let problema = null;
+
+  if (niveles.length === 0) {
+    problema = "está vacía o no tiene documentos válidos";
+  }
+
+  if (problema) {
+    console.warn(
+      `niveles_config ${problema}: el nivel del estudiante no se modifica.`
+    );
+  }
+
+  return niveles;
+};
 
 // Un id con "/" se interpretaría como una ruta de documento anidada.
 const esIdValido = (valor) =>
@@ -120,14 +214,28 @@ const registrarIntento = onCall(async (request) => {
    */
   const intentoId = `${actividadId}_${estudianteId}`;
   const intentoRef = db.collection("intentos").doc(intentoId);
+  const usuarioRef = db.collection("usuarios").doc(estudianteId);
+
+  /*
+   * La hora se toma UNA vez, fuera de la transacción: el callback puede
+   * reejecutarse y debe ser función pura de lo que lee más este valor. De
+   * ella salen el día de la racha y ultimaActividadEn.
+   */
+  const ahora = new Date();
+
+  const [configXp, niveles] = await Promise.all([
+    leerConfigXp(),
+    leerNiveles(),
+  ]);
 
   /*
    * ============================================================
    * 4. TRANSACCIÓN
    * ============================================================
    *
-   * La transacción hace que la comprobación de idempotencia y
-   * la creación del intento sean atómicas.
+   * La transacción hace que la comprobación de idempotencia, la
+   * creación del intento y la actualización de XP, nivel, racha y
+   * logros sean atómicas: o ocurre todo o no ocurre nada.
    */
 
   const resultado = await db.runTransaction(async (transaction) => {
@@ -351,6 +459,49 @@ const registrarIntento = onCall(async (request) => {
     });
 
     /*
+     * ----------------------------------------------------------
+     * 4.7 LEER EL ESTADO DE GAMIFICACIÓN
+     * ----------------------------------------------------------
+     *
+     * Todo lo que el cálculo necesita se lee aquí, antes de la primera
+     * escritura (Firestore rechaza lecturas posteriores a una escritura):
+     * el perfil (XP, nivel y racha actuales), el catálogo de logros, los
+     * logros que el estudiante ya tiene y sus intentos previos. Son
+     * consultas de igualdad simple, sin índice compuesto.
+     *
+     * Va después de las validaciones: un duplicado o un intento inválido
+     * ya terminó arriba y no paga estas lecturas.
+     */
+    const [
+      usuarioTxSnap,
+      catalogoSnap,
+      logrosObtenidosSnap,
+      intentosPreviosSnap,
+    ] = await Promise.all([
+      transaction.get(usuarioRef),
+      transaction.get(db.collection("logros")),
+      transaction.get(
+        db
+          .collection("logros_usuario")
+          .where("estudianteId", "==", estudianteId)
+      ),
+      transaction.get(
+        db
+          .collection("intentos")
+          .where("estudianteId", "==", estudianteId)
+      ),
+    ]);
+
+    // Se actualiza con transaction.update: si el perfil desapareció tras
+    // validar el rol, fallar aquí es más claro que un NOT_FOUND al confirmar.
+    if (!usuarioTxSnap.exists) {
+      throw new HttpsError(
+        "failed-precondition",
+        "No existe el perfil del estudiante."
+      );
+    }
+
+    /*
      * ==========================================================
      * 5. CALIFICAR RESPUESTAS EN EL SERVIDOR
      * ==========================================================
@@ -408,27 +559,65 @@ const registrarIntento = onCall(async (request) => {
         : 0;
 
     /*
-     * El cálculo de XP se mantiene compatible con la configuración
-     * definida en el DDS:
-     *
-     * xpPorRespuestaCorrecta = 10
-     * xpBonoActividadCompleta = 20
-     *
-     * Esta función registra el intento. Las funciones de
-     * gamificación pueden procesar posteriormente el XP.
+     * Los valores salen de config_negocio/gamificacion (por defecto los
+     * del DDS: 10 por respuesta y 20 de bono por actividad completa).
      */
-    const xpPorRespuestaCorrecta = 10;
-    const xpBonoActividadCompleta = 20;
-
-    const xpGanado =
-      respuestasCorrectas * xpPorRespuestaCorrecta +
-      (porcentajeAciertos === 100
-        ? xpBonoActividadCompleta
-        : 0);
+    const xpGanado = calcularXp(
+      configXp,
+      respuestasCorrectas,
+      porcentajeAciertos
+    );
 
     /*
      * ==========================================================
-     * 7. GUARDAR INTENTO
+     * 7. CALCULAR GAMIFICACIÓN
+     * ==========================================================
+     *
+     * Sólo cálculo, sin tocar Firestore: depende de lo leído arriba y de
+     * `ahora`, así que un reintento de la transacción da lo mismo. Los
+     * campos del perfil pueden faltar o venir corruptos; se toman valores
+     * por defecto en vez de fallar.
+     */
+    const usuario = usuarioTxSnap.data() || {};
+
+    const xpAnterior =
+      typeof usuario.xp === "number" &&
+      Number.isFinite(usuario.xp) &&
+      usuario.xp >= 0
+        ? usuario.xp
+        : 0;
+
+    const nivelAnterior =
+      Number.isInteger(usuario.nivel) && usuario.nivel >= 1
+        ? usuario.nivel
+        : 1;
+
+    // XP total absoluto (no FieldValue.increment): el nivel nuevo se
+    // calcula sobre el total.
+    const xpTotal = xpAnterior + xpGanado;
+    const nivel = calcularNivel(niveles, xpTotal, nivelAnterior);
+
+    const racha = calcularRacha(
+      usuario.rachaActual,
+      usuario.ultimaActividadEn,
+      ahora,
+      ZONA_HORARIA
+    );
+
+    // Este intento aún no existe en la consulta, de ahí el + 1.
+    const logrosNuevos = evaluarLogros(
+      catalogoSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
+      logrosObtenidosSnap.docs.map((doc) => doc.data().logroId),
+      {
+        actividadesCompletadas: intentosPreviosSnap.size + 1,
+        porcentajeAciertos,
+        racha,
+      }
+    );
+
+    /*
+     * ==========================================================
+     * 8. ESCRIBIR (todas las lecturas ya terminaron)
      * ==========================================================
      */
 
@@ -444,6 +633,32 @@ const registrarIntento = onCall(async (request) => {
 
     transaction.create(intentoRef, intentoData);
 
+    transaction.update(usuarioRef, {
+      xp: xpTotal,
+      nivel,
+      rachaActual: racha,
+      ultimaActividadEn: Timestamp.fromDate(ahora),
+    });
+
+    // Id determinista: un logro no se duplica. Se usa set (upsert) y no
+    // create porque la consulta de "ya obtenidos" filtra por estudianteId:
+    // un documento existente sin ese campo (edición manual) no se vería, y
+    // create fallaría con ALREADY_EXISTS dejando al estudiante sin poder
+    // enviar la actividad nunca. Con set el resultado es el mismo.
+    for (const logro of logrosNuevos) {
+      const logroUsuarioId = `${estudianteId}_${logro.id}`;
+
+      transaction.set(
+        db.collection("logros_usuario").doc(logroUsuarioId),
+        {
+          id: logroUsuarioId,
+          estudianteId,
+          logroId: logro.id,
+          obtenidoEn: FieldValue.serverTimestamp(),
+        }
+      );
+    }
+
     return {
       duplicado: false,
       intentoId,
@@ -453,19 +668,25 @@ const registrarIntento = onCall(async (request) => {
       // El serverTimestamp guardado aún no se resuelve aquí; se devuelve
       // la hora de la función en ISO, igual que en la repetición.
       resueltoEn: new Date().toISOString(),
+      nivel,
+      nivelAnterior,
+      subioDeNivel: nivel > nivelAnterior,
+      xpTotal,
+      racha,
+      logrosNuevos,
     };
   });
 
   /*
    * ============================================================
-   * 8. RESPUESTA AL CLIENTE
+   * 9. RESPUESTA AL CLIENTE
    * ============================================================
    *
    * Las explicaciones viajan dentro de cada respuesta para que
    * FeedbackPanel pueda mostrarlas inmediatamente.
    */
 
-  return {
+  const respuesta = {
     ok: true,
     duplicado: resultado.duplicado,
     intentoId: resultado.intentoId,
@@ -473,6 +694,24 @@ const registrarIntento = onCall(async (request) => {
     respuestas: resultado.respuestas,
     xpGanado: resultado.xpGanado,
     resueltoEn: resultado.resueltoEn,
+  };
+
+  /*
+   * Un duplicado no trae datos de gamificación: el primer envío ya los
+   * otorgó y no se inventan valores para esta repetición.
+   */
+  if (resultado.duplicado) {
+    return respuesta;
+  }
+
+  return {
+    ...respuesta,
+    nivel: resultado.nivel,
+    nivelAnterior: resultado.nivelAnterior,
+    subioDeNivel: resultado.subioDeNivel,
+    xpTotal: resultado.xpTotal,
+    racha: resultado.racha,
+    logrosNuevos: resultado.logrosNuevos,
   };
 });
 

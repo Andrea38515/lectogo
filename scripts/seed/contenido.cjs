@@ -356,4 +356,76 @@ const lecturas = [
   },
 ];
 
-module.exports = { categorias, lecturas };
+// ---------------------------------------------------------------------------
+// Gamificación. La lee la Cloud Function registrarIntento con Admin SDK: los
+// estudiantes no pueden leer config_negocio ni escribir en ninguna de estas
+// colecciones (firestore.rules).
+// ---------------------------------------------------------------------------
+
+// config_negocio/gamificacion. Valores del DDS.
+const configGamificacion = {
+  xpPorRespuestaCorrecta: 10,
+  xpBonoActividadCompleta: 20,
+};
+
+// niveles_config/{id}. El nivel de un estudiante es el mayor `nivel` cuyo
+// xpMinimo ya alcanzó con su XP total.
+const nivelesConfig = [
+  { id: "nivel-1", nivel: 1, xpMinimo: 0 },
+  { id: "nivel-2", nivel: 2, xpMinimo: 100 },
+  { id: "nivel-3", nivel: 3, xpMinimo: 250 },
+  { id: "nivel-4", nivel: 4, xpMinimo: 500 },
+  { id: "nivel-5", nivel: 5, xpMinimo: 900 },
+  { id: "nivel-6", nivel: 6, xpMinimo: 1400 },
+  { id: "nivel-7", nivel: 7, xpMinimo: 2000 },
+  { id: "nivel-8", nivel: 8, xpMinimo: 2800 },
+];
+
+// logros/{id}. criterioTipo admitido: "actividades", "desempeño" y "racha".
+// OJO con la ñ: la función también acepta "desempeno", pero aquí se escribe
+// con ñ y el seed lo valida contra la lista de tipos permitidos.
+const logros = [
+  {
+    id: "logro-primer-paso",
+    nombre: "Primer paso",
+    descripcion: "Completaste tu primera actividad de lectura.",
+    criterioTipo: "actividades",
+    criterioValor: 1,
+  },
+  {
+    id: "logro-lector-constante",
+    nombre: "Lector constante",
+    descripcion: "Completaste cinco actividades de lectura.",
+    criterioTipo: "actividades",
+    criterioValor: 5,
+  },
+  {
+    id: "logro-perfeccionista",
+    nombre: "Perfeccionista",
+    descripcion: "Respondiste bien todas las preguntas de una actividad.",
+    criterioTipo: "desempeño",
+    criterioValor: 100,
+  },
+  {
+    id: "logro-racha-3",
+    nombre: "Tres días seguidos",
+    descripcion: "Leíste durante tres días seguidos.",
+    criterioTipo: "racha",
+    criterioValor: 3,
+  },
+  {
+    id: "logro-racha-7",
+    nombre: "Una semana de lectura",
+    descripcion: "Leíste durante siete días seguidos.",
+    criterioTipo: "racha",
+    criterioValor: 7,
+  },
+];
+
+module.exports = {
+  categorias,
+  lecturas,
+  configGamificacion,
+  nivelesConfig,
+  logros,
+};
