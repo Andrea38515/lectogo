@@ -10,15 +10,23 @@ import { formatearFecha } from "../../../utils/formatearFecha";
  * no se muestra, porque la celebración corresponde a ese momento.
  */
 const ProgresoDelIntento = ({ gamificacion }) => {
-  const { subioDeNivel, nivel, xpTotal, racha, logrosNuevos } = gamificacion;
+  const { subioDeNivel, xpRepetida, nivel, xpTotal, racha, logrosNuevos } =
+    gamificacion;
   const hayTotales = xpTotal !== null || racha !== null;
 
-  if (!subioDeNivel && logrosNuevos.length === 0 && !hayTotales) {
+  if (!subioDeNivel && !xpRepetida && logrosNuevos.length === 0 && !hayTotales) {
     return null;
   }
 
   return (
     <section className="resolver-actividad__progreso-intento">
+      {xpRepetida && (
+        <p className="resolver-actividad__aviso" role="status">
+          Ya habías ganado XP con esta lectura, por eso esta vez no suma. Tu
+          resultado y tu racha sí quedan registrados.
+        </p>
+      )}
+
       {subioDeNivel && nivel !== null && (
         <div className="resolver-actividad__celebracion" role="status">
           <span className="resolver-actividad__celebracion-icono" aria-hidden="true">

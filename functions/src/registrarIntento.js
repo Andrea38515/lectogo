@@ -217,6 +217,7 @@ const registrarIntento = onCall(async (request) => {
   const intentoId = `${actividadId}_${estudianteId}`;
   const intentoRef = db.collection("intentos").doc(intentoId);
   const usuarioRef = db.collection("usuarios").doc(estudianteId);
+  const rankingRef = db.collection("ranking").doc(estudianteId);
 
   /*
    * La hora se toma UNA vez, fuera de la transacción: el callback puede
@@ -283,6 +284,15 @@ const registrarIntento = onCall(async (request) => {
     }
 
     const actividad = actividadSnap.data();
+
+    // Sin lecturaId no hay forma de preguntar por las preguntas ni de aplicar
+    // la regla de XP una sola vez: mejor un error claro que un intento a medias.
+    if (typeof actividad.lecturaId !== "string" || actividad.lecturaId === "") {
+      throw new HttpsError(
+        "failed-precondition",
+        "La actividad no tiene una lectura asociada."
+      );
+    }
 
     /*
      * ----------------------------------------------------------
@@ -468,8 +478,9 @@ const registrarIntento = onCall(async (request) => {
      * Todo lo que el cálculo necesita se lee aquí, antes de la primera
      * escritura (Firestore rechaza lecturas posteriores a una escritura):
      * el perfil (XP, nivel y racha actuales), el catálogo de logros, los
-     * logros que el estudiante ya tiene y sus intentos previos. Son
-     * consultas de igualdad simple, sin índice compuesto.
+     * logros que el estudiante ya tiene, sus intentos previos y su fila
+     * actual del ranking. Son consultas de igualdad simple, sin índice
+     * compuesto.
      *
      * Va después de las validaciones: un duplicado o un intento inválido
      * ya terminó arriba y no paga estas lecturas.
@@ -479,6 +490,7 @@ const registrarIntento = onCall(async (request) => {
       catalogoSnap,
       logrosObtenidosSnap,
       intentosPreviosSnap,
+      rankingPrevioSnap,
     ] = await Promise.all([
       transaction.get(usuarioRef),
       transaction.get(db.collection("logros")),
@@ -492,7 +504,69 @@ const registrarIntento = onCall(async (request) => {
           .collection("intentos")
           .where("estudianteId", "==", estudianteId)
       ),
+      transaction.get(rankingRef),
     ]);
+
+    /*
+     * XP UNA SOLA VEZ POR (estudiante, lectura): sin esto, un docente que
+     * crea N actividades sobre la misma lectura permitiría cultivar XP,
+     * niveles y ranking. La lectura cuenta como resuelta si algún intento
+     * previo del estudiante CON XP tiene su mismo lecturaId. Un intento que
+     * dio 0 XP (todo mal) no gasta la oportunidad: nunca se ganó XP con esa
+     * lectura, así que decir "ya ganaste" sería falso.
+     *
+     * Los intentos anteriores a este cambio no guardan lecturaId: su lectura
+     * se resuelve leyendo actividades/{actividadId}. Es una segunda tanda de
+     * lecturas, todavía antes de la primera escritura; se deduplican los ids
+     * y se omite la actividad actual (no puede ser su propio intento
+     * previo). Una actividad borrada o sin lecturaId simplemente no
+     * coincide (y, por tanto, deja de proteger). Esos intentos viejos nunca
+     * se reescriben, así que esta ruta NO se abarata con el tiempo: cuesta
+     * una lectura por actividad vieja con XP hasta que se les rellene
+     * lecturaId con un script.
+     */
+    const lecturaIdActual = actividad.lecturaId;
+    const intentosPrevios = intentosPreviosSnap
+      .docs.map((doc) => doc.data())
+      .filter(
+        (intento) => typeof intento.xpGanado === "number" && intento.xpGanado > 0
+      );
+
+    const lecturaDeIntentoPrevio = (intento) =>
+      typeof intento.lecturaId === "string" && intento.lecturaId !== ""
+        ? intento.lecturaId
+        : null;
+
+    const actividadIdsLegacy = [
+      ...new Set(
+        intentosPrevios
+          .filter((intento) => lecturaDeIntentoPrevio(intento) === null)
+          .map((intento) => intento.actividadId)
+          .filter(
+            (id) => esIdValido(id) && id !== actividadId
+          )
+      ),
+    ];
+
+    const actividadesLegacySnaps = await Promise.all(
+      actividadIdsLegacy.map((id) =>
+        transaction.get(db.collection("actividades").doc(id))
+      )
+    );
+
+    const lecturasResueltas = new Set([
+      ...intentosPrevios
+        .map(lecturaDeIntentoPrevio)
+        .filter((id) => id !== null),
+      ...actividadesLegacySnaps
+        .filter((snap) => snap.exists)
+        .map((snap) => snap.data().lecturaId)
+        .filter((id) => typeof id === "string" && id !== ""),
+    ]);
+
+    const lecturaYaResuelta =
+      typeof lecturaIdActual === "string" &&
+      lecturasResueltas.has(lecturaIdActual);
 
     // Se actualiza con transaction.update: si el perfil desapareció tras
     // validar el rol, fallar aquí es más claro que un NOT_FOUND al confirmar.
@@ -564,11 +638,17 @@ const registrarIntento = onCall(async (request) => {
      * Los valores salen de config_negocio/gamificacion (por defecto los
      * del DDS: 10 por respuesta y 20 de bono por actividad completa).
      */
-    const xpGanado = calcularXp(
-      configXp,
-      respuestasCorrectas,
-      porcentajeAciertos
-    );
+    /*
+     * Si la lectura ya estaba resuelta no hay XP (ni por respuesta ni bono).
+     * Sólo se restringe el XP: la racha, ultimaActividadEn, el contador de
+     * actividades y los logros (actividades, desempeño, racha) se evalúan
+     * igual que siempre, porque repetir sigue siendo actividad real. Es una
+     * limitación aceptada: p. ej. un logro de 'actividades' puede ganarse
+     * repitiendo una lectura.
+     */
+    const xpGanado = lecturaYaResuelta
+      ? 0
+      : calcularXp(configXp, respuestasCorrectas, porcentajeAciertos);
 
     /*
      * ==========================================================
@@ -641,6 +721,23 @@ const registrarIntento = onCall(async (request) => {
     });
 
     /*
+     * Desempate del ranking: gana quien llegó primero a ese XP. Por eso
+     * actualizadoEn sólo avanza si el XP cambia; un intento que no suma XP
+     * (lectura repetida) conserva el Timestamp anterior, sin tocarlo.
+     */
+    const rankingPrevio = rankingPrevioSnap.exists
+      ? rankingPrevioSnap.data()
+      : null;
+
+    if (
+      rankingPrevio &&
+      typeof rankingPrevio.actualizadoEn?.toDate === "function" &&
+      rankingPrevio.xp === filaRanking.xp
+    ) {
+      filaRanking.actualizadoEn = rankingPrevio.actualizadoEn;
+    }
+
+    /*
      * ==========================================================
      * 8. ESCRIBIR (todas las lecturas ya terminaron)
      * ==========================================================
@@ -650,6 +747,7 @@ const registrarIntento = onCall(async (request) => {
       id: intentoId,
       actividadId,
       estudianteId,
+      lecturaId: lecturaIdActual,
       respuestas: respuestasCalificadas,
       porcentajeAciertos,
       xpGanado,
@@ -685,7 +783,7 @@ const registrarIntento = onCall(async (request) => {
     }
 
     // Sobrescritura completa: la fila es derivada, no hay nada que fusionar.
-    transaction.set(db.collection("ranking").doc(estudianteId), filaRanking);
+    transaction.set(rankingRef, filaRanking);
 
     return {
       duplicado: false,
@@ -702,6 +800,7 @@ const registrarIntento = onCall(async (request) => {
       xpTotal,
       racha,
       logrosNuevos,
+      xpRepetida: lecturaYaResuelta,
     };
   });
 
@@ -740,6 +839,7 @@ const registrarIntento = onCall(async (request) => {
     xpTotal: resultado.xpTotal,
     racha: resultado.racha,
     logrosNuevos: resultado.logrosNuevos,
+    xpRepetida: resultado.xpRepetida,
   };
 });
 

@@ -884,8 +884,9 @@ test("un segundo intento no vuelve a otorgar el mismo logro", async () => {
   assert.ok(!idsDe(segundo.logrosNuevos).includes("logro-primer-paso"));
   assert.ok(!idsDe(segundo.logrosNuevos).includes("logro-perfeccionista"));
   assert.ok(!("logros_usuario/est1_logro-primer-paso" in seteados));
-  // El perfil sí se actualiza otra vez, con el xp acumulado.
-  assert.equal(store["usuarios/est1"].xp, 80);
+  // Misma lectura: el perfil se actualiza otra vez (racha) pero el XP no
+  // vuelve a sumar.
+  assert.equal(store["usuarios/est1"].xp, 40);
 });
 
 test("logros ya obtenidos en logros_usuario no se vuelven a crear", async () => {
@@ -1011,6 +1012,7 @@ test("un duplicado omite los campos de gamificación en la respuesta", async () 
     "nivelAnterior",
     "subioDeNivel",
     "xpTotal",
+    "xpRepetida",
     "racha",
     "logrosNuevos",
   ]) {
@@ -1022,13 +1024,14 @@ test("un duplicado omite los campos de gamificación en la respuesta", async () 
 /* Forma del intento y de la respuesta                                 */
 /* ------------------------------------------------------------------ */
 
-test("el intento guardado conserva exactamente los mismos campos", async () => {
+test("el intento guardado tiene los 8 campos (los de siempre más lecturaId)", async () => {
   await resolver();
   const intento = created["intentos/act1_est1"];
   assert.deepEqual(Object.keys(intento).sort(), [
     "actividadId",
     "estudianteId",
     "id",
+    "lecturaId",
     "porcentajeAciertos",
     "respuestas",
     "resueltoEn",
@@ -1037,6 +1040,7 @@ test("el intento guardado conserva exactamente los mismos campos", async () => {
   assert.equal(intento.id, "act1_est1");
   assert.equal(intento.actividadId, "act1");
   assert.equal(intento.estudianteId, "est1");
+  assert.equal(intento.lecturaId, "lec1");
   assert.equal(intento.porcentajeAciertos, 100);
   assert.equal(intento.xpGanado, 40);
   assert.equal(intento.resueltoEn, "TS");
@@ -1058,9 +1062,11 @@ test("la respuesta conserva los campos previos y añade los nuevos", async () =>
     "resueltoEn",
     "subioDeNivel",
     "xpGanado",
+    "xpRepetida",
     "xpTotal",
   ]);
 
+  assert.equal(r.xpRepetida, false);
   assert.equal(r.ok, true);
   assert.equal(r.duplicado, false);
   assert.equal(r.intentoId, "act1_est1");
@@ -1461,4 +1467,411 @@ test("la respuesta del callable no incluye la fila del ranking", async () => {
   for (const campo of ["alias", "actividades", "logros", "actualizadoEn", "ranking"]) {
     assert.equal(campo in r, false, `no debe incluir ${campo}`);
   }
+});
+
+/* ------------------------------------------------------------------ */
+/* XP una sola vez por (estudiante, lectura)                           */
+/* ------------------------------------------------------------------ */
+
+const agregarActividad = (id, lecturaId, asignados = ["est1"]) => {
+  store[`actividades/${id}`] = {
+    lecturaId,
+    estado: "asignada",
+    estudiantesAsignados: asignados,
+  };
+};
+
+// Segunda lectura con sus dos preguntas.
+const agregarLecturaDos = () => {
+  store["preguntas/p3"] = {
+    lecturaId: "lec2",
+    tipo: "seleccion_multiple",
+    enunciado: "?",
+    opciones: ["x", "y"],
+  };
+  store["preguntas/p3/solucion/datos"] = { respuestaCorrecta: "x", explicacion: "" };
+  store["preguntas/p4"] = {
+    lecturaId: "lec2",
+    tipo: "verdadero_falso",
+    enunciado: "?",
+    opciones: ["Verdadero", "Falso"],
+  };
+  store["preguntas/p4/solucion/datos"] = { respuestaCorrecta: "Verdadero", explicacion: "" };
+};
+
+const respuestasLecturaDos = [
+  { preguntaId: "p3", respuestaDada: "x" },
+  { preguntaId: "p4", respuestaDada: "Verdadero" },
+];
+
+// Intento previo "moderno" (ya con lecturaId) de otra actividad.
+const intentoPrevio = (id, extra = {}) => {
+  store[`intentos/${id}_est1`] = {
+    id: `${id}_est1`,
+    actividadId: id,
+    estudianteId: "est1",
+    lecturaId: "lec1",
+    porcentajeAciertos: 100,
+    xpGanado: 40,
+    ...extra,
+  };
+};
+
+// Intento previo "legacy": creado antes de existir el campo lecturaId.
+const intentoLegacy = (id, extra = {}) => {
+  store[`intentos/${id}_est1`] = {
+    id: `${id}_est1`,
+    actividadId: id,
+    estudianteId: "est1",
+    porcentajeAciertos: 100,
+    xpGanado: 40,
+    ...extra,
+  };
+};
+
+test("el primer intento sobre una lectura da XP y xpRepetida es false", async () => {
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+  assert.equal(r.xpTotal, 40);
+  assert.equal(created["intentos/act1_est1"].lecturaId, "lec1");
+  assert.equal(created["intentos/act1_est1"].xpGanado, 40);
+});
+
+test("una segunda actividad sobre la MISMA lectura da 0 XP y no cambia xp ni nivel", async () => {
+  agregarActividad("act2", "lec1");
+
+  const primero = await resolver("est1", "act1");
+  assert.equal(primero.xpGanado, 40);
+  assert.equal(store["usuarios/est1"].xp, 40);
+
+  const segundo = await resolver("est1", "act2");
+
+  assert.equal(segundo.xpGanado, 0);
+  assert.equal(segundo.xpRepetida, true);
+  assert.equal(segundo.xpTotal, 40);
+  assert.equal(segundo.nivel, 1);
+  assert.equal(segundo.nivelAnterior, 1);
+  assert.equal(segundo.subioDeNivel, false);
+  assert.equal(store["usuarios/est1"].xp, 40);
+  assert.equal(store["usuarios/est1"].nivel, 1);
+
+  // El intento se registra y se califica igual, pero sin XP.
+  const intento = store["intentos/act2_est1"];
+  assert.equal(intento.xpGanado, 0);
+  assert.equal(intento.lecturaId, "lec1");
+  assert.equal(intento.porcentajeAciertos, 100);
+  assert.equal(segundo.porcentajeAciertos, 100);
+  assert.equal(segundo.respuestas.length, 2);
+  assert.equal(segundo.respuestas[0].correcta, true);
+  assert.equal(segundo.duplicado, false);
+});
+
+test("un nivel no sube por repetir la lectura aunque las respuestas sean perfectas", async () => {
+  store["usuarios/est1"] = { rol: "estudiante", xp: 90, nivel: 1 };
+  intentoPrevio("act0");
+  agregarActividad("act2", "lec1");
+
+  const r = await resolver("est1", "act2");
+
+  assert.equal(r.xpRepetida, true);
+  assert.equal(store["usuarios/est1"].xp, 90);
+  assert.equal(r.nivel, 1);
+  assert.equal(r.subioDeNivel, false);
+});
+
+test("repetir la lectura sigue actualizando la racha y ultimaActividadEn", async () => {
+  store["usuarios/est1"] = {
+    rol: "estudiante",
+    xp: 40,
+    nivel: 1,
+    rachaActual: 2,
+    ultimaActividadEn: ts("2026-10-18T20:00:00Z"),
+  };
+  intentoPrevio("act0");
+  agregarActividad("act2", "lec1");
+
+  const r = await resolver("est1", "act2");
+
+  assert.equal(r.xpRepetida, true);
+  assert.equal(r.racha, 3);
+  assert.equal(store["usuarios/est1"].rachaActual, 3);
+  assert.equal(
+    store["usuarios/est1"].ultimaActividadEn.toDate().toISOString(),
+    AHORA_ISO
+  );
+  assert.equal(store["usuarios/est1"].xp, 40);
+});
+
+test("repetir la lectura sigue evaluando logros y contando actividades", async () => {
+  intentoPrevio("act0");
+  agregarActividad("act2", "lec1");
+
+  const r = await resolver("est1", "act2");
+
+  assert.equal(r.xpGanado, 0);
+  assert.equal(r.xpRepetida, true);
+  // actividades (1 previa + la actual) y desempeño 100 % siguen otorgando.
+  assert.deepEqual(idsDe(r.logrosNuevos), [
+    "logro-perfeccionista",
+    "logro-primer-paso",
+  ]);
+  assert.equal(seteados["ranking/est1"].actividades, 2);
+  assert.equal(seteados["ranking/est1"].logros, 2);
+});
+
+test("una actividad sobre OTRA lectura sí da XP", async () => {
+  intentoPrevio("act0"); // lec1 ya resuelta
+  agregarLecturaDos();
+  agregarActividad("act3", "lec2");
+  store["usuarios/est1"] = { rol: "estudiante", xp: 40, nivel: 1 };
+
+  const r = await call("est1", {
+    actividadId: "act3",
+    respuestas: respuestasLecturaDos,
+  });
+
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+  assert.equal(r.xpTotal, 80);
+  assert.equal(created["intentos/act3_est1"].lecturaId, "lec2");
+});
+
+test("legacy: un intento previo sin lecturaId cuya actividad es de la misma lectura bloquea el XP", async () => {
+  intentoLegacy("old1");
+  agregarActividad("old1", "lec1");
+  store["usuarios/est1"] = { rol: "estudiante", xp: 40, nivel: 1 };
+
+  const r = await resolver();
+
+  assert.equal(r.xpGanado, 0);
+  assert.equal(r.xpRepetida, true);
+  assert.equal(store["usuarios/est1"].xp, 40);
+  // La actividad legacy se leyó dentro de la transacción, antes de escribir.
+  assert.ok(bitacora.includes("get:actividades/old1"));
+});
+
+test("legacy: si su actividad ya no existe NO bloquea y no lanza", async () => {
+  intentoLegacy("old1"); // no hay actividades/old1
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+});
+
+test("legacy: si su actividad no tiene lecturaId NO bloquea", async () => {
+  intentoLegacy("old1");
+  store["actividades/old1"] = { estado: "asignada", estudiantesAsignados: ["est1"] };
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+});
+
+test("legacy: si su actividad es de otra lectura NO bloquea", async () => {
+  intentoLegacy("old1");
+  agregarActividad("old1", "lec-otra");
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+});
+
+test("legacy: un intento sin actividadId usable no bloquea ni lanza", async () => {
+  store["intentos/x1_est1"] = { estudianteId: "est1", xpGanado: 40 };
+  store["intentos/x2_est1"] = { estudianteId: "est1", actividadId: 42, xpGanado: 40 };
+  store["intentos/x3_est1"] = { estudianteId: "est1", actividadId: "a/b", xpGanado: 40 };
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+  assert.deepEqual(
+    bitacora.filter((op) => /^get:actividades\//.test(op)),
+    ["get:actividades/act1"] // sólo la actividad actual
+  );
+});
+
+test("legacy: los actividadId repetidos se leen una sola vez", async () => {
+  store["intentos/a_est1"] = { estudianteId: "est1", actividadId: "old1", xpGanado: 40 };
+  store["intentos/b_est1"] = { estudianteId: "est1", actividadId: "old1", xpGanado: 40 };
+  agregarActividad("old1", "lec1");
+
+  const r = await resolver();
+
+  assert.equal(r.xpRepetida, true);
+  assert.equal(bitacora.filter((op) => op === "get:actividades/old1").length, 1);
+});
+
+test("la actividad actual nunca cuenta como intento previo de sí misma", async () => {
+  // Un intento legacy raro cuyo actividadId es el de la actividad actual:
+  // no se vuelve a leer ni bloquea.
+  store["intentos/raro_est1"] = { estudianteId: "est1", actividadId: "act1", xpGanado: 40 };
+
+  const r = await resolver();
+
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+  assert.equal(
+    bitacora.filter((op) => op === "get:actividades/act1").length,
+    1
+  );
+});
+
+test("un intento previo con 0 XP (todo mal) NO gasta la oportunidad de ganar XP con esa lectura", async () => {
+  intentoPrevio("act0", { xpGanado: 0, porcentajeAciertos: 0 });
+  agregarActividad("act2", "lec1");
+
+  const r = await resolver("est1", "act2");
+
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+});
+
+test("legacy: un intento viejo con 0 XP tampoco bloquea ni provoca lecturas de su actividad", async () => {
+  intentoLegacy("old1", { xpGanado: 0 });
+  agregarActividad("old1", "lec1");
+
+  const r = await resolver();
+
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+  assert.equal(bitacora.includes("get:actividades/old1"), false);
+});
+
+test("una actividad sin lecturaId válido se rechaza con failed-precondition antes de escribir", async () => {
+  for (const lecturaId of [undefined, null, "", 7]) {
+    store["actividades/act1"] = { ...store["actividades/act1"], lecturaId };
+    await rejects(resolver(), "failed-precondition");
+    assert.deepEqual(created, {});
+    assert.deepEqual(updated, {});
+    assert.deepEqual(seteados, {});
+  }
+});
+
+test("los intentos de otro estudiante no bloquean el XP", async () => {
+  store["intentos/act0_est2"] = {
+    estudianteId: "est2",
+    actividadId: "act0",
+    lecturaId: "lec1",
+    xpGanado: 40,
+  };
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(r.xpRepetida, false);
+});
+
+test("con la lectura repetida el callback reejecutado da siempre 0 XP y las mismas escrituras", async () => {
+  intentoLegacy("old1");
+  agregarActividad("old1", "lec1");
+  store["usuarios/est1"] = { rol: "estudiante", xp: 40, nivel: 1 };
+  reintentos = 2;
+
+  const r = await resolver();
+
+  assert.equal(r.xpGanado, 0);
+  assert.equal(historialIntentos.length, 3);
+  for (const escrituras of historialIntentos) {
+    const intento = escrituras.find((w) => w.path === "intentos/act1_est1");
+    assert.equal(intento.data.xpGanado, 0);
+    assert.equal(intento.data.lecturaId, "lec1");
+  }
+});
+
+test("un error leyendo la configuración sigue abortando antes de escribir, también con lectura repetida", async () => {
+  intentoPrevio("act0");
+  coleccionesQueFallan = new Set(["niveles_config"]);
+  await rejects(resolver(), "unavailable");
+  assert.deepEqual(created, {});
+  assert.deepEqual(seteados, {});
+  assert.deepEqual(updated, {});
+});
+
+test("el duplicado devuelve la respuesta de siempre, sin xpRepetida y sin tocar nada", async () => {
+  store["intentos/act1_est1"] = {
+    porcentajeAciertos: 100,
+    respuestas: [],
+    xpGanado: 0,
+    resueltoEn: ts("2026-10-19T10:00:00Z"),
+  };
+  const r = await resolver();
+  assert.equal(r.duplicado, true);
+  assert.equal("xpRepetida" in r, false);
+  assert.deepEqual(created, {});
+  assert.deepEqual(seteados, {});
+  assert.deepEqual(updated, {});
+  assert.deepEqual(
+    bitacora.filter((op) => /ranking|actividades/.test(op)),
+    []
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/* Ranking: desempate por quién llegó primero a ese XP                 */
+/* ------------------------------------------------------------------ */
+
+const filaPrevia = (extra = {}) => ({
+  estudianteId: "est1",
+  alias: "Lector EST1",
+  xp: 40,
+  nivel: 1,
+  logros: 1,
+  actividades: 1,
+  actualizadoEn: ts("2026-10-01T10:00:00Z"),
+  ...extra,
+});
+
+test("el ranking conserva el actualizadoEn anterior si el xp no cambia", async () => {
+  const fila = filaPrevia();
+  store["ranking/est1"] = fila;
+  store["usuarios/est1"] = { rol: "estudiante", xp: 40, nivel: 1 };
+  intentoPrevio("act0");
+  agregarActividad("act2", "lec1");
+
+  const r = await resolver("est1", "act2");
+
+  assert.equal(r.xpRepetida, true);
+  const nueva = seteados["ranking/est1"];
+  // El MISMO objeto Timestamp, sin tocarlo.
+  assert.strictEqual(nueva.actualizadoEn, fila.actualizadoEn);
+  assert.equal(nueva.xp, 40);
+  assert.equal(nueva.actividades, 2);
+  assert.deepEqual(Object.keys(nueva).sort(), CAMPOS_RANKING);
+});
+
+test("el ranking usa un serverTimestamp nuevo cuando el xp cambia", async () => {
+  store["ranking/est1"] = filaPrevia({ xp: 0, logros: 0, actividades: 0 });
+  const r = await resolver();
+  assert.equal(r.xpGanado, 40);
+  assert.equal(seteados["ranking/est1"].actualizadoEn, "TS");
+  assert.equal(seteados["ranking/est1"].xp, 40);
+});
+
+test("el ranking usa un serverTimestamp nuevo cuando no hay fila previa", async () => {
+  assert.ok(!("ranking/est1" in store));
+  await resolver();
+  assert.equal(seteados["ranking/est1"].actualizadoEn, "TS");
+});
+
+test("si la fila previa no trae un Timestamp válido se usa serverTimestamp aunque el xp no cambie", async () => {
+  store["ranking/est1"] = filaPrevia({ actualizadoEn: "ayer" });
+  store["usuarios/est1"] = { rol: "estudiante", xp: 40, nivel: 1 };
+  intentoPrevio("act0");
+  agregarActividad("act2", "lec1");
+
+  await resolver("est1", "act2");
+
+  assert.equal(seteados["ranking/est1"].actualizadoEn, "TS");
+});
+
+test("la fila de ranking previa se lee dentro de la transacción antes de escribir", async () => {
+  store["ranking/est1"] = filaPrevia({ xp: 0 });
+  await resolver();
+
+  const lectura = bitacora.indexOf("get:ranking/est1");
+  assert.notEqual(lectura, -1);
+  assert.ok(lectura < bitacora.indexOf("create:intentos/act1_est1"));
+  assert.equal(bitacora[bitacora.length - 1], "set:ranking/est1");
+});
+
+test("un intento rechazado no escribe el ranking aunque exista una fila previa", async () => {
+  store["ranking/est1"] = filaPrevia();
+  store["actividades/act1"].estado = "cerrada";
+  await rejects(resolver(), "failed-precondition");
+  assert.deepEqual(seteados, {});
 });
