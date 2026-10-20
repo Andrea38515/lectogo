@@ -78,6 +78,25 @@ const obtenerMensajeErrorEnvio = (err) => {
   return MENSAJES_ERROR_ENVIO[err?.code] || MENSAJE_ERROR_GENERICO;
 };
 
+// Conserva solo lo que la pantalla de resultados muestra y descarta valores
+// inválidos: la función puede responder sin estos campos (versión anterior).
+const resumirGamificacion = (data) => {
+  const numero = (valor) =>
+    typeof valor === "number" && Number.isFinite(valor) ? valor : null;
+
+  return {
+    subioDeNivel: data.subioDeNivel === true,
+    nivel: numero(data.nivel),
+    xpTotal: numero(data.xpTotal),
+    racha: numero(data.racha),
+    logrosNuevos: Array.isArray(data.logrosNuevos)
+      ? data.logrosNuevos.filter(
+          (logro) => logro && typeof logro.nombre === "string" && logro.nombre,
+        )
+      : [],
+  };
+};
+
 // El contenido separa los párrafos con líneas en blanco ("\n\n").
 const dividirParrafos = (contenido) =>
   (contenido || "")
@@ -163,6 +182,9 @@ const FormularioActividad = ({
         xpGanado: data.xpGanado,
         resueltoEn: data.resueltoEn,
         duplicado: Boolean(data.duplicado),
+        // Un reenvío (duplicado) no trae estos datos: el primer envío ya los
+        // concedió y no hay que inventarlos.
+        gamificacion: data.duplicado ? null : resumirGamificacion(data),
       });
     } catch (err) {
       // Se conservan las respuestas del estudiante para que pueda reintentar.
