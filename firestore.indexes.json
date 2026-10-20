@@ -15,6 +15,14 @@
         { "fieldPath": "estudianteId", "order": "ASCENDING" },
         { "fieldPath": "resueltoEn", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "ranking",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "xp", "order": "DESCENDING" },
+        { "fieldPath": "actualizadoEn", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
