@@ -126,7 +126,7 @@ function AppRouter() {
 
       <Route element={<PrivateRoutes />}>
         <Route
-          path="/docente"
+          path="/docente/*"
           element={<ComingSoon title="Panel docente" />}
         />
       </Route>
@@ -137,7 +137,7 @@ function AppRouter() {
 
       <Route element={<AdminRoute />}>
         <Route
-          path="/admin"
+          path="/admin/*"
           element={<ComingSoon title="Panel administrador" />}
         />
       </Route>
