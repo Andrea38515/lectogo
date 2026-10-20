@@ -103,11 +103,39 @@ service cloud.firestore {
         (esDocente() && resource.data.docenteId == request.auth.uid) ||
         (haySesion() && request.auth.uid in resource.data.estudiantesAsignados);
 
-      allow create: if esAdmin() ||
-        (esDocente() && request.resource.data.docenteId == request.auth.uid);
+      // La única vía para crear una actividad es la Cloud Function
+      // asignarActividad (Admin SDK): así siempre quedan la auditoría y la
+      // garantía de que solo se asigna a estudiantes. Por eso el docente ya
+      // no crea desde el cliente, solo puede cambiar el estado de la suya, y
+      // borrar queda para el administrador (no dejar huérfana la
+      // subcolección asignados, que guarda nombres y correos).
+      allow create: if esAdmin();
 
-      allow update, delete: if esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid);
+      allow update: if esAdmin() ||
+        (
+          esDocente() &&
+          resource.data.docenteId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["estado"])
+        );
+
+      allow delete: if esAdmin();
+
+      // Nombre y correo de cada estudiante asignado, para la pantalla de
+      // progreso. Solo los escribe asignarActividad (Admin SDK) y solo los
+      // lee el docente dueño de la actividad (o un administrador): los
+      // estudiantes no ven a sus compañeros.
+      match /asignados/{estudianteId} {
+        allow read: if esAdmin() ||
+          (
+            esDocente() &&
+            get(
+              /databases/$(database)/documents/actividades/$(actividadId)
+            ).data.docenteId == request.auth.uid
+          );
+
+        allow write: if false;
+      }
     }
 
     // Solo los escribe la Cloud Function registrarIntento (Admin SDK).
@@ -153,6 +181,13 @@ service cloud.firestore {
 
     match /config_negocio/{configId} {
       allow read, write: if esAdmin();
+    }
+
+    // Bitácora de acciones sensibles: la escriben las Cloud Functions
+    // (Admin SDK) y solo la lee un administrador.
+    match /auditoria/{auditoriaId} {
+      allow read: if esAdmin();
+      allow write: if false;
     }
 
     match /{document=**} {
