@@ -294,6 +294,91 @@
   font-size: var(--font-size-sm);
 }
 
+/* ===== Progreso del intento: nivel, logros y totales ===== */
+
+.resolver-actividad .resolver-actividad__progreso-intento {
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.resolver-actividad .resolver-actividad__celebracion {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-light);
+}
+
+.resolver-actividad .resolver-actividad__celebracion-icono {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.resolver-actividad .resolver-actividad__celebracion strong {
+  display: block;
+  color: var(--color-primary-hover);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+
+.resolver-actividad .resolver-actividad__celebracion div span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.resolver-actividad .resolver-actividad__logros {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.resolver-actividad .resolver-actividad__logros-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--spacing-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resolver-actividad .resolver-actividad__logro {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-light);
+}
+
+.resolver-actividad .resolver-actividad__logro-icono {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.resolver-actividad .resolver-actividad__logro strong {
+  display: block;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.resolver-actividad .resolver-actividad__logro span:not(.resolver-actividad__logro-icono) {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.resolver-actividad .resolver-actividad__totales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 .resolver-actividad .resolver-actividad__tu-respuesta {
   color: var(--color-text-secondary);
   overflow-wrap: anywhere;
