@@ -66,8 +66,11 @@ service cloud.firestore {
     }
 
     match /categorias/{categoriaId} {
-      allow read: if haySesion() ||
-        resource.data.get("publica", false) == true;
+      // Solo nombre y descripción: no hay nada sensible. Se abre a invitados
+      // para que la biblioteca pública muestre el nombre de cada categoría en
+      // vez de "General". (Antes dependía de un campo `publica` que ninguna
+      // categoría tiene.)
+      allow read: if true;
 
       allow write: if esAdmin();
     }
