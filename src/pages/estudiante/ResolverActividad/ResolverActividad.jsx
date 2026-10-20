@@ -86,6 +86,8 @@ const resumirGamificacion = (data) => {
 
   return {
     subioDeNivel: data.subioDeNivel === true,
+    // La lectura ya había dado XP en otra actividad: el servidor no lo repite.
+    xpRepetida: data.xpRepetida === true,
     nivel: numero(data.nivel),
     xpTotal: numero(data.xpTotal),
     racha: numero(data.racha),
