@@ -37,7 +37,7 @@ function ForgotPassword() {
 	};
 
 	return (
-		<main className="auth-page">
+		<div className="auth-page">
 			<form className="auth-form" onSubmit={handleSubmit}>
 				<h1>LectoGo</h1>
 
@@ -68,7 +68,7 @@ function ForgotPassword() {
 					<Link to="/">Volver a iniciar sesión</Link>
 				</div>
 			</form>
-		</main>
+		</div>
 	);
 }
 

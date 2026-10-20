@@ -72,18 +72,18 @@ const Activity = () => {
 
   if (isLoading) {
     return (
-      <main className="activity">
+      <div className="activity">
         <div className="activity__loading">
           <div className="activity__spinner"></div>
           <p>Cargando actividades...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <main className="activity">
+      <div className="activity">
         <div className="activity__error">
           <div className="activity__error-icon">⚠️</div>
 
@@ -102,12 +102,12 @@ const Activity = () => {
             Intentar nuevamente
           </button>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="activity">
+    <div className="activity">
       <header className="activity__header">
         <div>
           <span className="activity__eyebrow">
@@ -330,7 +330,7 @@ const Activity = () => {
           })}
         </section>
       )}
-    </main>
+    </div>
   );
 };
 

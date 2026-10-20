@@ -65,7 +65,7 @@ function Login() {
 	};
 
 	return (
-		<main className="login-page">
+		<div className="login-page">
 			<section className="login-container">
 				<div className="login-brand">
 					<div className="brand-content">
@@ -194,7 +194,7 @@ function Login() {
 					</div>
 				</div>
 			</section>
-		</main>
+		</div>
 	);
 }
 

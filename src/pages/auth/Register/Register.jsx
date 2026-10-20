@@ -65,7 +65,7 @@ function Register() {
 	};
 
 	return (
-		<main className="auth-page">
+		<div className="auth-page">
 			<form className="auth-form" onSubmit={handleSubmit}>
 				<h1>LectoGo</h1>
 
@@ -118,7 +118,7 @@ function Register() {
 					<Link to="/">Ya tengo cuenta</Link>
 				</div>
 			</form>
-		</main>
+		</div>
 	);
 }
 
