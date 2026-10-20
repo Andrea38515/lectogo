@@ -18,6 +18,11 @@ const {
   clavesDeDia,
   calcularRacha,
   evaluarLogros,
+  generarAlias,
+  contarLogrosDistintos,
+  construirFilaRanking,
+  filaRankingDesdePerfil,
+  decidirFilaBackfill,
 } = require("../src/gamificacion");
 
 // Un Timestamp de Firestore sólo se usa a través de toDate().
@@ -96,6 +101,20 @@ test("calcularXp usa la configuración recibida", () => {
 test("calcularXp con configuración ausente usa los valores por defecto", () => {
   assert.equal(calcularXp(undefined, 2, 100), 40);
   assert.equal(calcularXp(null, 1, 50), 10);
+});
+
+test("calcularXp devuelve siempre un entero (config fraccionaria)", () => {
+  const config = { xpPorRespuestaCorrecta: 2.5, xpBonoActividadCompleta: 0 };
+  // 2.5 * 1 = 2.5 -> 3; 2.5 * 3 = 7.5 -> 8; 2.5 * 2 = 5.
+  assert.equal(calcularXp(config, 1, 50), 3);
+  assert.equal(calcularXp(config, 3, 75), 8);
+  assert.equal(calcularXp(config, 2, 50), 5);
+
+  const conBono = { xpPorRespuestaCorrecta: 2.5, xpBonoActividadCompleta: 10.4 };
+  assert.equal(calcularXp(conBono, 2, 100), 15); // 5 + 10.4 = 15.4 -> 15
+  for (const [correctas, porcentaje] of [[1, 50], [2, 100], [3, 100], [7, 30]]) {
+    assert.ok(Number.isInteger(calcularXp(conBono, correctas, porcentaje)));
+  }
 });
 
 test("calcularXp no lanza con datos basura y devuelve 0", () => {
@@ -521,4 +540,325 @@ test("evaluarLogros devuelve id, nombre, descripcion e iconoUrl (null si falta)"
 test("evaluarLogros no repite un logro duplicado en el catálogo", () => {
   const catalogo = [logro("a1", "actividades", 1), logro("a1", "actividades", 1)];
   assert.deepEqual(ids(evaluarLogros(catalogo, [], contexto())), ["a1"]);
+});
+
+/* ------------------------------------------------------------------ */
+/* Ranking                                                             */
+/* ------------------------------------------------------------------ */
+
+const CAMPOS_RANKING = [
+  "actividades",
+  "actualizadoEn",
+  "alias",
+  "estudianteId",
+  "logros",
+  "nivel",
+  "xp",
+];
+
+test("generarAlias genera 'Lector ' + últimos 4 del uid en mayúsculas", () => {
+  assert.equal(generarAlias("abc12r6z"), "Lector 2R6Z");
+});
+
+test("generarAlias IGNORA cualquier alias de perfil, válido o no", () => {
+  const aliases = [
+    "Lectora Ana",
+    "Ana Pérez",
+    "  Ana  ",
+    "x".repeat(30),
+    "a@b.com",
+    "x/y",
+    "",
+    123,
+    null,
+    undefined,
+  ];
+  for (const alias of aliases) {
+    assert.equal(
+      generarAlias("abc12r6z", alias),
+      "Lector 2R6Z",
+      `alias ${JSON.stringify(alias)}`
+    );
+  }
+});
+
+test("generarAlias es determinista: mismo uid, mismo alias", () => {
+  assert.equal(generarAlias("uidX9k2p"), generarAlias("uidX9k2p"));
+  assert.equal(generarAlias("uidX9k2p"), "Lector 9K2P");
+});
+
+test("generarAlias: dos uids que terminan igual comparten alias (colisión documentada)", () => {
+  // El alias sólo identifica de forma aproximada: el frontend debe usar
+  // estudianteId como clave, nunca el alias.
+  assert.equal(generarAlias("aaaaaa5r6z"), generarAlias("bbbbbb5r6z"));
+  assert.equal(generarAlias("aaaaaa5r6z"), "Lector 5R6Z");
+});
+
+test("generarAlias con uid de menos de 4 caracteres usa el uid completo", () => {
+  assert.equal(generarAlias("ab"), "Lector AB");
+  assert.equal(generarAlias("x"), "Lector X");
+});
+
+test("generarAlias con uid no string o vacío no lanza y queda neutro", () => {
+  for (const uid of [undefined, null, 123, {}, ""]) {
+    assert.equal(generarAlias(uid), "Lector");
+  }
+  // Ni siquiera con un uid basura se usa el alias del perfil.
+  assert.equal(generarAlias(undefined, "Ana"), "Lector");
+});
+
+test("contarLogrosDistintos cuenta ids distintos entre obtenidos y nuevos", () => {
+  assert.equal(contarLogrosDistintos(["a", "b"], ["c"]), 3);
+  // Un logro presente en ambas listas, o repetido, cuenta una sola vez.
+  assert.equal(contarLogrosDistintos(["a", "a", "b"], ["b", "c"]), 3);
+  assert.equal(contarLogrosDistintos(new Set(["a"]), ["a"]), 1);
+});
+
+test("contarLogrosDistintos ignora valores que no son ids y listas ausentes", () => {
+  assert.equal(contarLogrosDistintos([undefined, null, "", 5, "a"], undefined), 1);
+  assert.equal(contarLogrosDistintos(undefined, undefined), 0);
+  assert.equal(contarLogrosDistintos(null, [{ id: "a" }]), 0);
+});
+
+const FILA_BASE = {
+  estudianteId: "abc12r6z",
+  xp: 340,
+  nivel: 3,
+  logros: 2,
+  actividades: 4,
+  actualizadoEn: "TS",
+};
+
+test("construirFilaRanking devuelve exactamente los 7 campos", () => {
+  const fila = construirFilaRanking(FILA_BASE);
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  assert.deepEqual(fila, {
+    estudianteId: "abc12r6z",
+    alias: "Lector 2R6Z",
+    xp: 340,
+    nivel: 3,
+    logros: 2,
+    actividades: 4,
+    actualizadoEn: "TS",
+  });
+});
+
+test("construirFilaRanking ignora cualquier alias que le pasen", () => {
+  assert.equal(
+    construirFilaRanking({
+      ...FILA_BASE,
+      alias: "Ana Pérez",
+      aliasDelPerfil: "Lectora Ana",
+    }).alias,
+    "Lector 2R6Z"
+  );
+});
+
+test("construirFilaRanking nunca copia datos personales aunque lleguen", () => {
+  const fila = construirFilaRanking({
+    ...FILA_BASE,
+    nombre: "Ana Pérez",
+    correo: "ana@example.com",
+    fotoUrl: "https://x/y.png",
+    posicion: 1,
+  });
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  assert.ok(!JSON.stringify(fila).includes("example.com"));
+  assert.ok(!JSON.stringify(fila).includes("Pérez"));
+});
+
+test("construirFilaRanking sanea los contadores a enteros finitos >= 0 y el nivel a >= 1", () => {
+  const fila = construirFilaRanking({
+    ...FILA_BASE,
+    xp: 12.9,
+    nivel: -2,
+    logros: NaN,
+    actividades: Infinity,
+  });
+  assert.equal(fila.xp, 12);
+  assert.equal(fila.nivel, 1);
+  assert.equal(fila.logros, 0);
+  assert.equal(fila.actividades, 0);
+
+  const basura = construirFilaRanking({
+    ...FILA_BASE,
+    xp: "40",
+    nivel: null,
+    logros: undefined,
+    actividades: {},
+  });
+  assert.equal(basura.xp, 0);
+  assert.equal(basura.nivel, 1);
+  assert.equal(basura.logros, 0);
+  assert.equal(basura.actividades, 0);
+});
+
+test("construirFilaRanking: el nivel nunca baja de 1", () => {
+  for (const nivel of [0, -1, NaN, undefined, "3"]) {
+    assert.equal(construirFilaRanking({ ...FILA_BASE, nivel }).nivel, 1);
+  }
+  assert.equal(construirFilaRanking({ ...FILA_BASE, nivel: 4 }).nivel, 4);
+  assert.equal(construirFilaRanking({ ...FILA_BASE, nivel: 2.9 }).nivel, 2);
+});
+
+test("construirFilaRanking no lanza sin argumentos", () => {
+  const fila = construirFilaRanking();
+  assert.equal(fila.xp, 0);
+  assert.equal(fila.alias, "Lector");
+});
+
+test("filaRankingDesdePerfil arma la fila de backfill con valores por defecto", () => {
+  assert.deepEqual(
+    filaRankingDesdePerfil(
+      "abc12r6z",
+      { rol: "estudiante" },
+      { actividades: 3, logros: 2 },
+      "TS"
+    ),
+    {
+      estudianteId: "abc12r6z",
+      alias: "Lector 2R6Z",
+      xp: 0,
+      nivel: 1,
+      logros: 2,
+      actividades: 3,
+      actualizadoEn: "TS",
+    }
+  );
+});
+
+test("filaRankingDesdePerfil usa xp y nivel del perfil, IGNORA su alias y no copia datos personales", () => {
+  const fila = filaRankingDesdePerfil(
+    "abc12r6z",
+    {
+      rol: "estudiante",
+      xp: 60,
+      nivel: 1,
+      alias: "Lectora Ana",
+      nombre: "Ana Pérez",
+      correo: "ana@example.com",
+      fotoUrl: "https://x/y.png",
+    },
+    { actividades: 1, logros: 1 },
+    "TS"
+  );
+  assert.equal(fila.xp, 60);
+  assert.equal(fila.alias, "Lector 2R6Z");
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  assert.ok(!JSON.stringify(fila).includes("example.com"));
+});
+
+test("filaRankingDesdePerfil tolera perfil corrupto o ausente", () => {
+  const fila = filaRankingDesdePerfil(
+    "abc12r6z",
+    { xp: "mucho", nivel: "alto" },
+    {},
+    "TS"
+  );
+  assert.equal(fila.xp, 0);
+  assert.equal(fila.nivel, 1);
+  assert.equal(fila.logros, 0);
+  assert.equal(
+    filaRankingDesdePerfil("abc12r6z", undefined, undefined, "TS").nivel,
+    1
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/* Backfill: decisión por estudiante                                   */
+/* ------------------------------------------------------------------ */
+
+test("decidirFilaBackfill omite al estudiante sin intentos (no crea filas en cero)", () => {
+  for (const actividades of [0, undefined, null, -1, NaN, "3"]) {
+    assert.deepEqual(
+      decidirFilaBackfill(
+        "abc12r6z",
+        { rol: "estudiante", xp: 500 },
+        { actividades, logroIds: ["a"] },
+        "TS"
+      ),
+      { accion: "omitir", motivo: "sin-actividad" },
+      `actividades ${JSON.stringify(actividades)}`
+    );
+  }
+  assert.deepEqual(decidirFilaBackfill("abc12r6z", {}, undefined, "TS"), {
+    accion: "omitir",
+    motivo: "sin-actividad",
+  });
+});
+
+test("decidirFilaBackfill arma la fila correcta para quien sí tiene intentos", () => {
+  assert.deepEqual(
+    decidirFilaBackfill(
+      "abc12r6z",
+      { rol: "estudiante", xp: 60, nivel: 1 },
+      { actividades: 2, logroIds: ["logro-primer-paso"] },
+      "TS"
+    ),
+    {
+      accion: "crear",
+      fila: {
+        estudianteId: "abc12r6z",
+        alias: "Lector 2R6Z",
+        xp: 60,
+        nivel: 1,
+        logros: 1,
+        actividades: 2,
+        actualizadoEn: "TS",
+      },
+    }
+  );
+});
+
+test("decidirFilaBackfill usa xp 0 y nivel 1 si el perfil no los trae", () => {
+  const { accion, fila } = decidirFilaBackfill(
+    "abc12r6z",
+    { rol: "estudiante" },
+    { actividades: 1, logroIds: [] },
+    "TS"
+  );
+  assert.equal(accion, "crear");
+  assert.equal(fila.xp, 0);
+  assert.equal(fila.nivel, 1);
+  assert.equal(fila.logros, 0);
+});
+
+test("decidirFilaBackfill trunca un xp fraccionario del perfil igual que la ruta en vivo", () => {
+  const { fila } = decidirFilaBackfill(
+    "abc12r6z",
+    { xp: 12.9, nivel: 2 },
+    { actividades: 1, logroIds: [] },
+    "TS"
+  );
+  assert.equal(fila.xp, 12);
+  assert.ok(Number.isInteger(fila.xp));
+});
+
+test("decidirFilaBackfill cuenta una sola vez los logros repetidos o sin id", () => {
+  const { fila } = decidirFilaBackfill(
+    "abc12r6z",
+    { xp: 10 },
+    { actividades: 3, logroIds: ["a", "a", "b", undefined, null, ""] },
+    "TS"
+  );
+  assert.equal(fila.logros, 2);
+  assert.equal(fila.actividades, 3);
+});
+
+test("decidirFilaBackfill no copia datos personales ni el alias del perfil", () => {
+  const { fila } = decidirFilaBackfill(
+    "abc12r6z",
+    {
+      xp: 10,
+      alias: "Ana Pérez",
+      nombre: "Ana Pérez",
+      correo: "ana@example.com",
+      fotoUrl: "https://example.com/a.png",
+    },
+    { actividades: 1, logroIds: [] },
+    "TS"
+  );
+  assert.equal(fila.alias, "Lector 2R6Z");
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  assert.ok(!JSON.stringify(fila).includes("example.com"));
 });
