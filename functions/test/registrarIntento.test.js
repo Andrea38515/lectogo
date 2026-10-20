@@ -33,6 +33,7 @@ let store; // { "coleccion/id": data }
 let created; // path -> data, de los create confirmados
 let seteados; // path -> data, de los set confirmados (upsert idempotente)
 let updated; // path -> [data, ...], de los update confirmados
+let historialIntentos; // escrituras de CADA ejecución del callback (también las descartadas)
 let bitacora; // ["get:ruta", "query:col", "create:ruta", ...] de la transacción
 let lecturasTrasEscritura; // lecturas ilegales detectadas
 let transaccionActiva; // { escrituras, escribio } mientras corre el callback
@@ -177,6 +178,10 @@ const db = {
         transaccionActiva = null;
       }
 
+      historialIntentos.push(
+        actual.escrituras.map(({ tipo, ref, data }) => ({ tipo, path: ref.path, data }))
+      );
+
       // Un intento descartado se tira entero, como haría Firestore ante
       // una contención: sus escrituras nunca llegan a confirmarse.
       if (i === intentos - 1) {
@@ -299,6 +304,7 @@ const reset = (s = baseStore()) => {
   seteados = {};
   updated = {};
   bitacora = [];
+  historialIntentos = [];
   lecturasTrasEscritura = [];
   transaccionActiva = null;
   reintentos = 0;
@@ -718,6 +724,7 @@ for (const coleccion of ["config_negocio", "niveles_config"]) {
     assert.deepEqual(created, {});
     assert.deepEqual(seteados, {});
     assert.deepEqual(updated, {});
+    assert.ok(!("ranking/est1" in store));
     assert.equal(store["usuarios/est1"].xp, undefined);
   });
 
@@ -949,7 +956,7 @@ test("catálogo de logros vacío no otorga nada ni falla", async () => {
   }
   const r = await resolver();
   assert.deepEqual(r.logrosNuevos, []);
-  assert.deepEqual(seteados, {});
+  assert.deepEqual(Object.keys(seteados), ["ranking/est1"]);
 });
 
 test("un logro de tipo desconocido en el catálogo se salta sin romper el intento", async () => {
@@ -1085,9 +1092,13 @@ test("las escrituras son intento, usuario y logros, todas después de las lectur
   const escrituras = bitacora.filter((op) => /^(create|set|update):/.test(op));
   assert.equal(escrituras[0], "create:intentos/act1_est1");
   assert.equal(escrituras[1], "update:usuarios/est1");
+  // Después del intento y del perfil: los logros y, al final, el ranking.
   assert.ok(
-    escrituras.slice(2).every((op) => op.startsWith("set:logros_usuario/est1_"))
+    escrituras
+      .slice(2, -1)
+      .every((op) => op.startsWith("set:logros_usuario/est1_"))
   );
+  assert.equal(escrituras[escrituras.length - 1], "set:ranking/est1");
   assert.equal(
     escrituras.filter((op) => op === "update:usuarios/est1").length,
     1
@@ -1113,4 +1124,341 @@ test("si el perfil desaparece dentro de la transacción falla con un error claro
   await rejects(resolver(), "failed-precondition");
   assert.deepEqual(created, {});
   assert.deepEqual(updated, {});
+});
+
+/* ------------------------------------------------------------------ */
+/* Ranking                                                             */
+/* ------------------------------------------------------------------ */
+
+const CAMPOS_RANKING = [
+  "actividades",
+  "actualizadoEn",
+  "alias",
+  "estudianteId",
+  "logros",
+  "nivel",
+  "xp",
+];
+
+test("escribe ranking/{uid} una sola vez con exactamente los 7 campos", async () => {
+  await resolver();
+
+  const escritosEnRanking = Object.keys(seteados).filter((p) =>
+    p.startsWith("ranking/")
+  );
+  assert.deepEqual(escritosEnRanking, ["ranking/est1"]);
+  assert.equal(
+    bitacora.filter((op) => op === "set:ranking/est1").length,
+    1
+  );
+
+  const fila = seteados["ranking/est1"];
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  assert.deepEqual(fila, {
+    estudianteId: "est1",
+    alias: "Lector EST1",
+    xp: 40,
+    nivel: 1,
+    logros: 2, // primer paso + perfeccionista
+    actividades: 1,
+    actualizadoEn: "TS",
+  });
+});
+
+test("el xp del ranking acumula sobre el valor previo", async () => {
+  store["usuarios/est1"] = { rol: "estudiante", xp: 300, nivel: 3 };
+  await resolver();
+  assert.equal(seteados["ranking/est1"].xp, 340);
+  assert.equal(seteados["ranking/est1"].xp, store["usuarios/est1"].xp);
+});
+
+test("el nivel del ranking es el nuevo tras subir de nivel", async () => {
+  store["usuarios/est1"] = { rol: "estudiante", xp: 80, nivel: 1 };
+  await resolver(); // 120
+  assert.equal(seteados["ranking/est1"].nivel, 2);
+  assert.equal(seteados["ranking/est1"].xp, 120);
+});
+
+test("logros del ranking = distintos ya obtenidos + nuevos", async () => {
+  store["logros_usuario/est1_logro-primer-paso"] = {
+    id: "est1_logro-primer-paso",
+    estudianteId: "est1",
+    logroId: "logro-primer-paso",
+    obtenidoEn: "antes",
+  };
+  const r = await resolver(); // sólo gana perfeccionista
+  assert.deepEqual(idsDe(r.logrosNuevos), ["logro-perfeccionista"]);
+  assert.equal(seteados["ranking/est1"].logros, 2);
+});
+
+test("logros del ranking no cuenta dos veces un logro repetido en logros_usuario", async () => {
+  store["logros_usuario/est1_logro-primer-paso"] = {
+    estudianteId: "est1",
+    logroId: "logro-primer-paso",
+  };
+  // Mismo logro bajo otro id de documento.
+  store["logros_usuario/copia-manual"] = {
+    estudianteId: "est1",
+    logroId: "logro-primer-paso",
+  };
+  // Documento sin logroId: no es un id de logro.
+  store["logros_usuario/roto"] = { estudianteId: "est1" };
+
+  await resolver(); // + perfeccionista
+  assert.equal(seteados["ranking/est1"].logros, 2);
+});
+
+test("logros del ranking no cuenta los logros de otro estudiante", async () => {
+  store["logros_usuario/est2_logro-racha-7"] = {
+    estudianteId: "est2",
+    logroId: "logro-racha-7",
+  };
+  await resolver();
+  assert.equal(seteados["ranking/est1"].logros, 2);
+});
+
+test("actividades del ranking = intentos previos + 1", async () => {
+  for (let i = 1; i <= 3; i += 1) {
+    store[`intentos/x${i}_est1`] = { estudianteId: "est1" };
+  }
+  store["intentos/y1_est2"] = { estudianteId: "est2" }; // de otro alumno
+  await resolver();
+  assert.equal(seteados["ranking/est1"].actividades, 4);
+});
+
+test("el ranking nunca guarda nombre, correo, fotoUrl ni otros datos personales", async () => {
+  store["usuarios/est1"] = {
+    rol: "estudiante",
+    nombre: "Ana Pérez",
+    correo: "ana@example.com",
+    fotoUrl: "https://example.com/ana.png",
+    institucion: "Colegio X",
+    uid: "est1",
+  };
+  await resolver();
+
+  const fila = seteados["ranking/est1"];
+  assert.deepEqual(Object.keys(fila).sort(), CAMPOS_RANKING);
+  const texto = JSON.stringify(fila);
+  for (const privado of ["Ana", "Pérez", "example.com", "Colegio"]) {
+    assert.ok(!texto.includes(privado), `contiene ${privado}`);
+  }
+  assert.equal("posicion" in fila, false);
+});
+
+// El ranking lo lee cualquier usuario con sesión: el alias del perfil no es
+// de confianza (hoy ni siquiera existe), así que SIEMPRE se genera uno
+// neutro a partir del uid.
+for (const [nombre, alias] of [
+  ["válido", "  Lectora Ana "],
+  ["con nombre y apellido", "Ana Pérez"],
+  ["un correo", "a@b.com"],
+  ["vacío", ""],
+  ["de 50 caracteres", "x".repeat(50)],
+  ["con barra", "x/y"],
+  ["no string", 42],
+]) {
+  test(`un alias de perfil (${nombre}) se ignora y se usa el generado`, async () => {
+    store["usuarios/est1"] = { rol: "estudiante", alias };
+    await resolver();
+    assert.equal(seteados["ranking/est1"].alias, "Lector EST1");
+  });
+}
+
+test("dos uids que terminan igual obtienen el mismo alias (colisión documentada)", async () => {
+  // El frontend debe usar estudianteId como clave, nunca el alias.
+  for (const uid of ["aaaa-WXYZ", "bbbb-WXYZ"]) {
+    store[`usuarios/${uid}`] = { rol: "estudiante" };
+  }
+  store["actividades/act1"].estudiantesAsignados = ["aaaa-WXYZ", "bbbb-WXYZ"];
+
+  await resolver("aaaa-WXYZ");
+  await resolver("bbbb-WXYZ");
+
+  assert.equal(seteados["ranking/aaaa-WXYZ"].alias, "Lector WXYZ");
+  assert.equal(seteados["ranking/bbbb-WXYZ"].alias, "Lector WXYZ");
+  assert.equal(seteados["ranking/aaaa-WXYZ"].estudianteId, "aaaa-WXYZ");
+  assert.equal(seteados["ranking/bbbb-WXYZ"].estudianteId, "bbbb-WXYZ");
+});
+
+test("sin alias en el perfil el alias generado es siempre el mismo", async () => {
+  await resolver();
+  const primero = seteados["ranking/est1"].alias;
+
+  reset();
+  await resolver();
+  assert.equal(seteados["ranking/est1"].alias, primero);
+});
+
+test("un duplicado no escribe nada en ranking", async () => {
+  store["intentos/act1_est1"] = {
+    porcentajeAciertos: 100,
+    respuestas: [],
+    xpGanado: 40,
+    resueltoEn: ts("2026-10-19T10:00:00Z"),
+  };
+  await resolver();
+  assert.deepEqual(seteados, {});
+  assert.ok(!("ranking/est1" in store));
+  assert.deepEqual(
+    bitacora.filter((op) => /ranking/.test(op)),
+    []
+  );
+});
+
+test("un intento rechazado no escribe en ranking", async () => {
+  delete store["preguntas/p1/solucion/datos"];
+  await rejects(resolver(), "failed-precondition");
+  assert.ok(!("ranking/est1" in store));
+});
+
+test("si Firestore reintenta el callback, el ranking escrito es el mismo", async () => {
+  store["usuarios/est1"] = { rol: "estudiante", xp: 80, nivel: 1 };
+  reintentos = 2; // el callback corre 3 veces; sólo la última se confirma
+
+  await resolver();
+
+  const esperada = {
+    estudianteId: "est1",
+    alias: "Lector EST1",
+    xp: 120,
+    nivel: 2,
+    logros: 2,
+    actividades: 1,
+    actualizadoEn: "TS",
+  };
+
+  // Se comprueba CADA ejecución del callback, no sólo la confirmada.
+  assert.equal(historialIntentos.length, 3);
+  for (const [i, escrituras] of historialIntentos.entries()) {
+    const filas = escrituras.filter((w) => w.path === "ranking/est1");
+    assert.equal(filas.length, 1, `intento ${i + 1}: filas de ranking`);
+    assert.equal(filas[0].tipo, "set");
+    assert.deepEqual(filas[0].data, esperada, `intento ${i + 1}`);
+  }
+  assert.deepEqual(seteados["ranking/est1"], esperada);
+});
+
+test("con una config de XP fraccionaria usuarios.xp y ranking.xp coinciden y son enteros", async () => {
+  store["config_negocio/gamificacion"] = {
+    xpPorRespuestaCorrecta: 2.5,
+    xpBonoActividadCompleta: 0.5,
+  };
+  store["usuarios/est1"] = { rol: "estudiante", xp: 10, nivel: 1 };
+
+  const r = await call("est1", {
+    actividadId: "act1",
+    respuestas: [
+      { preguntaId: "p1", respuestaDada: "a" }, // correcta
+      { preguntaId: "p2", respuestaDada: "Verdadero" }, // incorrecta
+    ],
+  }); // 2.5 -> 3
+
+  assert.equal(r.xpGanado, 3);
+  assert.equal(store["intentos/act1_est1"].xpGanado, 3);
+  assert.equal(store["usuarios/est1"].xp, 13);
+  assert.equal(seteados["ranking/est1"].xp, 13);
+  assert.equal(store["usuarios/est1"].xp, seteados["ranking/est1"].xp);
+  assert.ok(Number.isInteger(store["usuarios/est1"].xp));
+  assert.equal(r.xpTotal, 13);
+});
+
+test("con bono fraccionario al 100 % xp sigue siendo entero y coincide", async () => {
+  store["config_negocio/gamificacion"] = {
+    xpPorRespuestaCorrecta: 2.5,
+    xpBonoActividadCompleta: 10.4,
+  };
+  await resolver(); // 5 + 10.4 = 15.4 -> 15
+  assert.equal(store["usuarios/est1"].xp, 15);
+  assert.equal(seteados["ranking/est1"].xp, 15);
+});
+
+test("el nivel del ranking nunca baja de 1", async () => {
+  for (const clave of Object.keys(store)) {
+    if (clave.startsWith("niveles_config/")) delete store[clave];
+  }
+  store["usuarios/est1"] = { rol: "estudiante", nivel: 0 };
+  await resolver();
+  assert.equal(seteados["ranking/est1"].nivel, 1);
+  assert.equal(store["usuarios/est1"].nivel, 1);
+});
+
+// Rechazos que ocurren dentro de la transacción, algunos tras leer el perfil:
+// no debe quedar ninguna escritura, tampoco la del ranking.
+const rechazos = [
+  [
+    "estudiante no asignado (permission-denied)",
+    () => {
+      store["actividades/act1"].estudiantesAsignados = ["otro"];
+    },
+    "permission-denied",
+  ],
+  [
+    "actividad cerrada (failed-precondition)",
+    () => {
+      store["actividades/act1"].estado = "cerrada";
+    },
+    "failed-precondition",
+  ],
+  [
+    "respuestas incompletas (invalid-argument)",
+    () => {
+      delete store["preguntas/p2/solucion/datos"];
+      store["preguntas/p3"] = {
+        lecturaId: "lec1",
+        tipo: "verdadero_falso",
+        opciones: ["Verdadero", "Falso"],
+      };
+    },
+    "invalid-argument",
+  ],
+  [
+    "perfil desaparecido tras leerlo (failed-precondition)",
+    () => {
+      ocultosEnTransaccion = new Set(["usuarios/est1"]);
+    },
+    "failed-precondition",
+  ],
+];
+
+for (const [nombre, preparar, codigo] of rechazos) {
+  test(`un intento rechazado por ${nombre} no deja ninguna escritura`, async () => {
+    preparar();
+    await rejects(resolver(), codigo);
+    assert.deepEqual(created, {});
+    assert.deepEqual(seteados, {});
+    assert.deepEqual(updated, {});
+    assert.ok(!("ranking/est1" in store));
+    assert.ok(!("intentos/act1_est1" in store));
+    assert.equal(store["usuarios/est1"].xp, undefined);
+    assert.ok(
+      historialIntentos.every((escrituras) => escrituras.length === 0)
+    );
+  });
+}
+
+test("el ranking se escribe al final, después de todas las lecturas", async () => {
+  await resolver();
+
+  const ultimaLectura = bitacora.reduce(
+    (indice, op, i) => (/^(get|query):/.test(op) ? i : indice),
+    -1
+  );
+  const indiceRanking = bitacora.indexOf("set:ranking/est1");
+  assert.ok(indiceRanking > ultimaLectura);
+  assert.equal(indiceRanking, bitacora.length - 1);
+});
+
+test("un error leyendo la configuración sigue abortando antes de escribir el ranking", async () => {
+  coleccionesQueFallan = new Set(["config_negocio"]);
+  await rejects(resolver(), "unavailable");
+  assert.deepEqual(seteados, {});
+  assert.ok(!("ranking/est1" in store));
+});
+
+test("la respuesta del callable no incluye la fila del ranking", async () => {
+  const r = await resolver();
+  for (const campo of ["alias", "actividades", "logros", "actualizadoEn", "ranking"]) {
+    assert.equal(campo in r, false, `no debe incluir ${campo}`);
+  }
 });
