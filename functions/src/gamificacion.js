@@ -71,9 +71,11 @@ const calcularXp = (config, respuestasCorrectas, porcentajeAciertos) => {
     ? respuestasCorrectas
     : 0;
 
-  return (
+  // Siempre entero: así usuarios.xp y ranking.xp (que se trunca a entero)
+  // no pueden diferir aunque un administrador configure un XP fraccionario.
+  return Math.round(
     correctas * xpPorRespuestaCorrecta +
-    (porcentajeAciertos === 100 ? xpBonoActividadCompleta : 0)
+      (porcentajeAciertos === 100 ? xpBonoActividadCompleta : 0)
   );
 };
 
@@ -330,7 +332,142 @@ const evaluarLogros = (catalogo, yaObtenidos, contexto) => {
   return nuevos;
 };
 
+/*
+ * ============================================================
+ * RANKING
+ * ============================================================
+ */
+
+/**
+ * Alias público del estudiante en el ranking, que cualquier usuario con
+ * sesión puede leer. Siempre es neutro y determinista, derivado sólo del
+ * uid: "Lector " + sus últimos 4 caracteres en mayúsculas ("Lector 5R6Z").
+ * Mismo uid, mismo alias; jamás se deriva del nombre ni del correo.
+ *
+ * Es aproximado a propósito: dos uids que terminen igual comparten alias,
+ * así que el frontend debe usar estudianteId como clave, no el alias.
+ *
+ * NO se usa ningún alias guardado en el perfil: hoy ese campo no existe y,
+ * si algún día un estudiante puede elegir el suyo, tendrá que validarse en
+ * el servidor (longitud, caracteres, contenido ofensivo, datos personales)
+ * ANTES de guardarlo o mostrarlo, porque lo lee cualquier usuario con sesión.
+ */
+const generarAlias = (uid) => {
+  const sufijo = typeof uid === "string" ? uid.slice(-4).toUpperCase() : "";
+
+  return sufijo ? `Lector ${sufijo}` : "Lector";
+};
+
+/**
+ * Cuántos logros distintos tiene el estudiante: los ya obtenidos más los
+ * recién otorgados, por id de logro. Contar ids (y no documentos) evita
+ * inflar el ranking si un logro aparece duplicado en logros_usuario.
+ * Acepta listas de ids; lo que no sea un id no vacío se ignora.
+ */
+const contarLogrosDistintos = (yaObtenidos, nuevos) => {
+  const distintos = new Set();
+
+  for (const lista of [yaObtenidos, nuevos]) {
+    if (!Array.isArray(lista) && !(lista instanceof Set)) continue;
+
+    for (const id of lista) {
+      if (typeof id === "string" && id !== "") distintos.add(id);
+    }
+  }
+
+  return distintos.size;
+};
+
+// Entero finito >= 0; cualquier otra cosa (texto, NaN, negativos) es 0.
+const enteroNoNegativo = (valor) =>
+  typeof valor === "number" && Number.isFinite(valor) && valor >= 0
+    ? Math.trunc(valor)
+    : 0;
+
+/**
+ * Fila de ranking/{estudianteId}. Se arma campo a campo y no copiando el
+ * perfil, para que nombre, correo o foto no puedan colarse nunca. No lleva
+ * `posicion`: se calcula al leer. `actualizadoEn` lo pone quien llama
+ * (serverTimestamp), así este módulo sigue sin depender de Firestore.
+ */
+const construirFilaRanking = ({
+  estudianteId,
+  xp,
+  nivel,
+  logros,
+  actividades,
+  actualizadoEn,
+} = {}) => ({
+  estudianteId,
+  alias: generarAlias(estudianteId),
+  xp: enteroNoNegativo(xp),
+  // Como en la ruta en vivo, nadie tiene nivel 0.
+  nivel: Math.max(enteroNoNegativo(nivel), 1),
+  logros: enteroNoNegativo(logros),
+  actividades: enteroNoNegativo(actividades),
+  actualizadoEn,
+});
+
+/**
+ * Fila de ranking de un estudiante ya existente (backfill): xp y nivel
+ * salen del perfil (0 y 1 si faltan o son inválidos) y los contadores los
+ * pasa quien llama tras contar sus intentos y logros.
+ */
+const filaRankingDesdePerfil = (uid, perfil, contadores, actualizadoEn) => {
+  const datos = esObjeto(perfil) ? perfil : {};
+  const conteos = esObjeto(contadores) ? contadores : {};
+
+  return construirFilaRanking({
+    estudianteId: uid,
+    xp: datos.xp,
+    nivel:
+      typeof datos.nivel === "number" &&
+      Number.isInteger(datos.nivel) &&
+      datos.nivel >= 1
+        ? datos.nivel
+        : 1,
+    logros: conteos.logros,
+    actividades: conteos.actividades,
+    actualizadoEn,
+  });
+};
+
+/**
+ * Decisión del backfill para un estudiante: qué fila crear o por qué se
+ * omite. La regla de elegibilidad es la de la ruta en vivo: sólo existe fila
+ * para quien tiene al menos un intento (registrarIntento escribe la fila
+ * después de un intento), así que no se crean filas en cero. `contadores` =
+ * { actividades: cantidad de intentos, logroIds: ids de logro obtenidos }.
+ * El script sólo hace la E/S alrededor de esta función.
+ */
+const decidirFilaBackfill = (uid, perfil, contadores, actualizadoEn) => {
+  const conteos = esObjeto(contadores) ? contadores : {};
+  const actividades = enteroNoNegativo(conteos.actividades);
+
+  if (actividades === 0) {
+    return { accion: "omitir", motivo: "sin-actividad" };
+  }
+
+  return {
+    accion: "crear",
+    fila: filaRankingDesdePerfil(
+      uid,
+      perfil,
+      {
+        actividades,
+        logros: contarLogrosDistintos(conteos.logroIds, []),
+      },
+      actualizadoEn
+    ),
+  };
+};
+
 module.exports = {
+  decidirFilaBackfill,
+  generarAlias,
+  contarLogrosDistintos,
+  construirFilaRanking,
+  filaRankingDesdePerfil,
   ZONA_HORARIA,
   CONFIG_POR_DEFECTO,
   esConfigXpValida,

@@ -17,6 +17,8 @@ const {
   calcularNivel,
   calcularRacha,
   evaluarLogros,
+  contarLogrosDistintos,
+  construirFilaRanking,
 } = require("./gamificacion");
 
 const db = getFirestore();
@@ -605,15 +607,38 @@ const registrarIntento = onCall(async (request) => {
     );
 
     // Este intento aún no existe en la consulta, de ahí el + 1.
+    const actividadesCompletadas = intentosPreviosSnap.size + 1;
+
+    const logrosObtenidosIds = logrosObtenidosSnap.docs.map(
+      (doc) => doc.data().logroId
+    );
+
     const logrosNuevos = evaluarLogros(
       catalogoSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
-      logrosObtenidosSnap.docs.map((doc) => doc.data().logroId),
+      logrosObtenidosIds,
       {
-        actividadesCompletadas: intentosPreviosSnap.size + 1,
+        actividadesCompletadas,
         porcentajeAciertos,
         racha,
       }
     );
+
+    /*
+     * Fila derivada del ranking global, con los valores DESPUÉS de este
+     * intento. Sólo alias (nunca nombre ni correo): cualquier usuario con
+     * sesión puede leer todo el ranking.
+     */
+    const filaRanking = construirFilaRanking({
+      estudianteId,
+      xp: xpTotal,
+      nivel,
+      logros: contarLogrosDistintos(
+        logrosObtenidosIds,
+        logrosNuevos.map((logro) => logro.id)
+      ),
+      actividades: actividadesCompletadas,
+      actualizadoEn: FieldValue.serverTimestamp(),
+    });
 
     /*
      * ==========================================================
@@ -658,6 +683,9 @@ const registrarIntento = onCall(async (request) => {
         }
       );
     }
+
+    // Sobrescritura completa: la fila es derivada, no hay nada que fusionar.
+    transaction.set(db.collection("ranking").doc(estudianteId), filaRanking);
 
     return {
       duplicado: false,
