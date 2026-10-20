@@ -1,0 +1,30 @@
+/* Todos los selectores cuelgan de .docente-en-construccion. Solo usa tokens de
+   src/styles/variables.css. */
+
+.docente-en-construccion {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+:where(.docente-en-construccion) :where(h1, p) {
+  margin: 0;
+}
+
+.docente-en-construccion h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.docente-en-construccion .docente-en-construccion__descripcion {
+  color: var(--color-text-secondary);
+}
+
+.docente-en-construccion .docente-en-construccion__aviso {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
