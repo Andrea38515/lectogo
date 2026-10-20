@@ -13,6 +13,7 @@ import Library from "../pages/estudiante/Library/Library";
 import Reading from "../pages/estudiante/Reading/Reading";
 import Activity from "../pages/estudiante/Activity/Activity";
 import Statistics from "../pages/estudiante/Statistics/Statistics";
+import Ranking from "../pages/estudiante/Ranking/Ranking";
 import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
@@ -96,10 +97,7 @@ function AppRouter() {
             element={<ComingSoon title="Logros" />}
           />
 
-          <Route
-            path="/estudiante/ranking"
-            element={<ComingSoon title="Ranking" />}
-          />
+          <Route path="/estudiante/ranking" element={<Ranking />} />
 
           <Route path="/estudiante/estadisticas" element={<Statistics />} />
 
