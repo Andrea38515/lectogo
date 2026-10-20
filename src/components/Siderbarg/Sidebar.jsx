@@ -8,6 +8,7 @@ import {
 	FiCheckSquare,
 	FiBarChart2,
 	FiAward,
+	FiStar,
 	FiUser,
 	FiUsers,
 	FiFolder,
@@ -44,6 +45,11 @@ function Sidebar({
 			label: "Mi progreso",
 			path: "/estudiante/progreso",
 			icon: <FiBarChart2 />,
+		},
+		{
+			label: "Logros",
+			path: "/estudiante/logros",
+			icon: <FiStar />,
 		},
 		{
 			label: "Ranking",

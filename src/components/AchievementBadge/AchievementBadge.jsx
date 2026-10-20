@@ -39,6 +39,7 @@ function AchievementBadge({
 					<span
 						className="achievement-badge__status
               achievement-badge__status--unlocked"
+						role="img"
 						aria-label="Logro desbloqueado"
 					>
 						<FiCheck />
@@ -47,6 +48,7 @@ function AchievementBadge({
 					<span
 						className="achievement-badge__status
               achievement-badge__status--locked"
+						role="img"
 						aria-label="Logro bloqueado"
 					>
 						<FiLock />
