@@ -1,0 +1,185 @@
+/* Todo el CSS de Vite es global: cada selector cuelga de .student-achievements. */
+
+.student-achievements {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+/* :where() deja la especificidad del reset en la de un selector de elemento:
+   con .student-achievements p le ganaba a .achievement-badge__description y
+   le quitaba el margen inferior a la descripción de cada insignia. */
+:where(.student-achievements) h1,
+:where(.student-achievements) h2,
+:where(.student-achievements) p {
+  margin: 0;
+}
+
+.student-achievements ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ===== Encabezado ===== */
+
+.student-achievements .achievements-header h1 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+}
+
+.student-achievements .achievements-header p {
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* ===== Resumen ===== */
+
+.student-achievements .achievements-summary {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.student-achievements .achievements-summary p {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.student-achievements .achievements-summary__track {
+  height: 10px;
+  overflow: hidden;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.student-achievements .achievements-summary__fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+/* ===== Grupos y grilla ===== */
+
+.student-achievements .achievements-group {
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.student-achievements .achievements-group h2 {
+  font-size: var(--font-size-xl);
+}
+
+.student-achievements .achievements-group h2 span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
+/* min(100%, ...) evita que la columna mínima desborde en pantallas de 375px. */
+.student-achievements .achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: var(--spacing-md);
+}
+
+.student-achievements .achievements-grid > li {
+  display: flex;
+  min-width: 0;
+}
+
+/* Nombres y descripciones largos no deben empujar la tarjeta fuera de la grilla. */
+.student-achievements .achievement-badge__title,
+.student-achievements .achievement-badge__description {
+  overflow-wrap: anywhere;
+}
+
+.student-achievements .achievement-badge__icon {
+  overflow: hidden;
+}
+
+.student-achievements .achievement-badge__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== Mensajes (vacío, error, aviso) ===== */
+
+.student-achievements .achievements-message {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+}
+
+.student-achievements .achievements-message--error {
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.student-achievements .achievements-message--warning {
+  background: var(--color-warning-light);
+  border: 1px solid var(--color-warning);
+  color: var(--color-text);
+}
+
+.student-achievements .achievements-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.student-achievements .achievements-button:hover {
+  background: var(--color-primary-hover);
+}
+
+.student-achievements .achievements-button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 600px) {
+  .student-achievements .achievements-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .student-achievements .achievements-summary {
+    padding: var(--spacing-md);
+  }
+
+  .student-achievements .achievements-message {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-achievements .achievements-summary__fill,
+  .student-achievements .achievements-button {
+    transition: none;
+  }
+}

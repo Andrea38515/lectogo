@@ -6,6 +6,7 @@ import XpBar from "../../../components/XpBar/XpBar";
 import { useAuth } from "../../../hooks/useAuth";
 import { useDashboardEstudiante } from "../../../hooks/useDashboardEstudiante";
 import { formatearFecha } from "../../../utils/formatearFecha";
+import { rachaVigente } from "../../../utils/racha";
 import "./StudentDashboard.css";
 
 const NO_DISPONIBLE = "—";
@@ -29,6 +30,9 @@ const StudentDashboard = () => {
 
   // Guarda la URL que falló para no reintentar una foto rota en cada render.
   const [fotoFallida, setFotoFallida] = useState(null);
+
+  // Se fija al montar para que el render siga puro; ver rachaVigente.
+  const [ahora] = useState(() => new Date());
 
   // El perfil del contexto se lee una sola vez al iniciar sesión: sin esto, XP,
   // nivel y racha quedarían desactualizados después de resolver una actividad
@@ -64,7 +68,7 @@ const StudentDashboard = () => {
   const nombre = user?.nombre?.trim().split(/\s+/)[0] || "Estudiante";
   const nivel = obtenerNivel(user);
   const xp = Math.max(Number(user?.xp) || 0, 0);
-  const racha = Math.max(Number(user?.rachaActual) || 0, 0);
+  const racha = rachaVigente(user, ahora);
   const mostrarFoto = Boolean(user?.fotoUrl) && fotoFallida !== user.fotoUrl;
 
   const actividades = datos?.actividades ?? null;

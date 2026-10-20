@@ -12,6 +12,7 @@ import StudentDashboard from "../pages/estudiante/StudentDashboard/StudentDashbo
 import Library from "../pages/estudiante/Library/Library";
 import Reading from "../pages/estudiante/Reading/Reading";
 import Activity from "../pages/estudiante/Activity/Activity";
+import Achievements from "../pages/estudiante/Achievements/Achievements";
 import Statistics from "../pages/estudiante/Statistics/Statistics";
 import Ranking from "../pages/estudiante/Ranking/Ranking";
 import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
@@ -92,10 +93,7 @@ function AppRouter() {
             element={<ResolverActividad />}
           />
 
-          <Route
-            path="/estudiante/logros"
-            element={<ComingSoon title="Logros" />}
-          />
+          <Route path="/estudiante/logros" element={<Achievements />} />
 
           <Route path="/estudiante/ranking" element={<Ranking />} />
 
