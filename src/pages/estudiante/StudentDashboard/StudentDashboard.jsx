@@ -46,22 +46,22 @@ const StudentDashboard = () => {
 
   if (cargandoPerfil || isLoading) {
     return (
-      <main className="student-dashboard">
+      <div className="student-dashboard">
         <Loading message="Cargando tu panel..." />
-      </main>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className="student-dashboard">
+      <div className="student-dashboard">
         <div className="dashboard-empty dashboard-error" role="alert">
           <p>
             No pudimos cargar tu perfil. Cierra sesión e inicia de nuevo para
             continuar.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -81,7 +81,7 @@ const StudentDashboard = () => {
   const porcentajeCompletado = actividades?.porcentajeCompletado ?? 0;
 
   return (
-    <main className="student-dashboard">
+    <div className="student-dashboard">
       {/* =========================
           HEADER
       ========================= */}
@@ -464,7 +464,7 @@ const StudentDashboard = () => {
           </Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 };
 

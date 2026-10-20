@@ -28,7 +28,7 @@ function Library() {
   };
 
   return (
-    <main className="library-page">
+    <div className="library-page">
       {/* Encabezado */}
       <section className="library-header">
         <div>
@@ -279,7 +279,7 @@ function Library() {
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 }
 

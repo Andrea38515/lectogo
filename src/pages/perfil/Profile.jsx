@@ -96,7 +96,7 @@ function Profile() {
 	};
 
 	return (
-		<main className="profile-page">
+		<div className="profile-page">
 			<form className="profile-form" onSubmit={handleSubmitDatos}>
 				<h2>Mi perfil</h2>
 
@@ -174,7 +174,7 @@ function Profile() {
 					{guardandoPassword ? "Guardando..." : "Cambiar contraseña"}
 				</Button>
 			</form>
-		</main>
+		</div>
 	);
 }
 
