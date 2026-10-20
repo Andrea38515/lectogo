@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import StudentLayout from "../layouts/StudentLayout";
+import DocenteLayout from "../layouts/DocenteLayout";
 
 import Login from "../pages/auth/Login/Login";
 import Register from "../pages/auth/Register/Register";
@@ -16,8 +17,11 @@ import Achievements from "../pages/estudiante/Achievements/Achievements";
 import Statistics from "../pages/estudiante/Statistics/Statistics";
 import Ranking from "../pages/estudiante/Ranking/Ranking";
 import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
+import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
+import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
+import DocenteRoute from "./DocenteRoute";
 
 const ComingSoon = ({ title }) => {
   return (
@@ -119,14 +123,58 @@ function AppRouter() {
       </Route>
 
       {/* =====================================
-            DOCENTE (requiere sesión)
+            DOCENTE (requiere sesión + rol docente)
            ===================================== */}
 
-      <Route element={<PrivateRoutes />}>
-        <Route
-          path="/docente/*"
-          element={<ComingSoon title="Panel docente" />}
-        />
+      <Route element={<DocenteRoute />}>
+        <Route element={<DocenteLayout />}>
+          <Route path="/docente" element={<DocenteInicio />} />
+
+          <Route
+            path="/docente/lecturas"
+            element={
+              <EnConstruccion
+                titulo="Lecturas"
+                descripcion="Creá y organizá los textos que leerán tus estudiantes."
+              />
+            }
+          />
+
+          <Route
+            path="/docente/preguntas"
+            element={
+              <EnConstruccion
+                titulo="Preguntas"
+                descripcion="Armá el banco de preguntas de comprensión lectora."
+              />
+            }
+          />
+
+          <Route
+            path="/docente/actividades"
+            element={
+              <EnConstruccion
+                titulo="Actividades"
+                descripcion="Combiná lecturas y preguntas en actividades para asignar."
+              />
+            }
+          />
+
+          <Route
+            path="/docente/progreso"
+            element={
+              <EnConstruccion
+                titulo="Progreso"
+                descripcion="Seguí cómo avanzan tus estudiantes."
+              />
+            }
+          />
+
+          <Route
+            path="/docente/*"
+            element={<Navigate to="/docente" replace />}
+          />
+        </Route>
       </Route>
 
       {/* =====================================

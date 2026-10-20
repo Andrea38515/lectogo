@@ -1,0 +1,178 @@
+/* Todos los selectores cuelgan de .docente-layout (el CSS de Vite es global).
+   Solo usa tokens de src/styles/variables.css. Los reseteos van dentro de
+   :where() para quedar con especificidad 0 y no pisar a las páginas. */
+
+.docente-layout {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+}
+
+:where(.docente-layout) :where(p, ul) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.docente-layout) :where(ul) {
+  list-style: none;
+}
+
+/* ===== Cabecera ===== */
+
+.docente-layout .docente-layout__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-dropdown);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.docente-layout .docente-layout__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+}
+
+.docente-layout .docente-layout__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.docente-layout .docente-layout__brand-lecto {
+  color: var(--color-primary);
+}
+
+.docente-layout .docente-layout__brand-go {
+  color: var(--color-secondary);
+}
+
+.docente-layout .docente-layout__brand-tag {
+  margin-left: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-layout .docente-layout__user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.docente-layout .docente-layout__user-name {
+  min-width: 0;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-layout .docente-layout__logout {
+  flex-shrink: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.docente-layout .docente-layout__logout:hover {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+/* ===== Navegación ===== */
+
+.docente-layout .docente-layout__nav {
+  padding: 0 var(--spacing-lg);
+  overflow-x: auto;
+}
+
+.docente-layout .docente-layout__nav-list {
+  display: flex;
+  gap: var(--spacing-xs);
+  width: max-content;
+  min-width: 100%;
+}
+
+.docente-layout .docente-layout__link {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.docente-layout .docente-layout__link:hover {
+  color: var(--color-primary);
+}
+
+.docente-layout .docente-layout__link--active {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-layout .docente-layout__logout:focus-visible,
+.docente-layout .docente-layout__link:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* ===== Contenido ===== */
+
+.docente-layout .docente-layout__content {
+  min-width: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* ===== Móvil ===== */
+
+@media (max-width: 767px) {
+  .docente-layout .docente-layout__bar {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .docente-layout .docente-layout__nav {
+    padding: 0 var(--spacing-md);
+  }
+
+  .docente-layout .docente-layout__user-name {
+    max-width: 110px;
+  }
+
+  .docente-layout .docente-layout__content {
+    padding: var(--spacing-md);
+  }
+}
