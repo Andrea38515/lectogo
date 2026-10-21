@@ -177,6 +177,14 @@ const Lectures = () => {
                       Editar
                     </Link>
 
+                    <Link
+                      to={`/docente/lecturas/${lectura.id}/preguntas`}
+                      className="docente-lecturas__boton"
+                      aria-label={`Preguntas de "${lectura.titulo}"`}
+                    >
+                      Preguntas
+                    </Link>
+
                     {acciones.map((accion) => (
                       <button
                         key={accion.estado}
