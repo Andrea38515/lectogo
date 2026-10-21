@@ -53,12 +53,15 @@ const FormularioCategoria = ({
   ocupado,
   limpiarAlExito = false,
   autoFocusNombre = false,
+  exitos = 0,
   onEnviar,
   onCancelar,
 }) => {
   const [valores, setValores] = useState(inicial);
   const [errores, setErrores] = useState({});
-  const [errorGeneral, setErrorGeneral] = useState("");
+  // El error se guarda con el contador de acciones exitosas del momento: si
+  // después ocurre otra acción que sí salió bien, el error viejo deja de verse.
+  const [errorGeneral, setErrorGeneral] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
   const cambiar = (campo) => (evento) => {
@@ -79,7 +82,7 @@ const FormularioCategoria = ({
 
     if (ocupado || enviando) return;
 
-    setErrorGeneral("");
+    setErrorGeneral(null);
 
     const resultado = validarCategoria(valores);
 
@@ -96,7 +99,7 @@ const FormularioCategoria = ({
     const mensaje = await onEnviar(resultado.datos);
 
     if (mensaje) {
-      setErrorGeneral(mensaje);
+      setErrorGeneral({ texto: mensaje, exitos });
     } else if (limpiarAlExito) {
       setValores(inicial);
     }
@@ -144,9 +147,9 @@ const FormularioCategoria = ({
         )}
       </Campo>
 
-      {errorGeneral && (
+      {errorGeneral && errorGeneral.exitos === exitos && (
         <p role="alert" className="admin-categorias__error-general">
-          {errorGeneral}
+          {errorGeneral.texto}
         </p>
       )}
 
@@ -183,6 +186,9 @@ const Categorias = () => {
   const [editandoId, setEditandoId] = useState(null);
   const [confirmandoId, setConfirmandoId] = useState(null);
   const [errorFila, setErrorFila] = useState(null);
+  // Cuenta las acciones que salieron bien: los errores de los formularios
+  // anteriores a la última dejan de mostrarse.
+  const [exitos, setExitos] = useState(0);
 
   // Ejecuta una acción del servidor. Devuelve "" si salió bien o el mensaje de
   // error; nunca lanza, para que cada llamador decida dónde mostrarlo.
@@ -195,6 +201,7 @@ const Categorias = () => {
       const datos = await gestionarCategoria(payload);
 
       setAviso(avisoExito(datos));
+      setExitos((actual) => actual + 1);
       recargar();
       return "";
     } catch (err) {
@@ -284,6 +291,7 @@ const Categorias = () => {
           inicial={VALORES_VACIOS}
           etiquetaEnviar="Crear categoría"
           ocupado={ocupado}
+          exitos={exitos}
           limpiarAlExito
           onEnviar={crear}
         />
@@ -341,6 +349,7 @@ const Categorias = () => {
                           }}
                           etiquetaEnviar="Guardar cambios"
                           ocupado={ocupado}
+                          exitos={exitos}
                           autoFocusNombre
                           onEnviar={(datos) => editar(categoria, datos)}
                           onCancelar={() => setEditandoId(null)}
