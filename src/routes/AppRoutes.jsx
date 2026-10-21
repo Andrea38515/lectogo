@@ -23,6 +23,8 @@ import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
 import Activities from "../pages/docente/Activities/Activities";
 import ActivityForm from "../pages/docente/Activities/ActivityForm";
+import StudentProgress from "../pages/docente/StudentProgress/StudentProgress";
+import ProgresoActividad from "../pages/docente/StudentProgress/ProgresoActividad";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
 import DocenteRoute from "./DocenteRoute";
@@ -160,14 +162,11 @@ function AppRouter() {
             element={<ActivityForm />}
           />
 
+          <Route path="/docente/progreso" element={<StudentProgress />} />
+
           <Route
-            path="/docente/progreso"
-            element={
-              <EnConstruccion
-                titulo="Progreso"
-                descripcion="Seguí cómo avanzan tus estudiantes."
-              />
-            }
+            path="/docente/progreso/:actividadId"
+            element={<ProgresoActividad />}
           />
 
           <Route
