@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout";
 import StudentLayout from "../layouts/StudentLayout";
 import DocenteLayout from "../layouts/DocenteLayout";
+import AdminLayout from "../layouts/AdminLayout";
 
 import Login from "../pages/auth/Login/Login";
 import Register from "../pages/auth/Register/Register";
@@ -21,6 +22,10 @@ import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
 import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
+import AdminInicio from "../pages/admin/AdminInicio/AdminInicio";
+import Categorias from "../pages/admin/Categorias/Categorias";
+import Usuarios from "../pages/admin/Usuarios/Usuarios";
+import Auditoria from "../pages/admin/Auditoria/Auditoria";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
 import DocenteRoute from "./DocenteRoute";
@@ -183,10 +188,17 @@ function AppRouter() {
            ===================================== */}
 
       <Route element={<AdminRoute />}>
-        <Route
-          path="/admin/*"
-          element={<ComingSoon title="Panel administrador" />}
-        />
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminInicio />} />
+
+          <Route path="/admin/categorias" element={<Categorias />} />
+
+          <Route path="/admin/usuarios" element={<Usuarios />} />
+
+          <Route path="/admin/auditoria" element={<Auditoria />} />
+
+          <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+        </Route>
       </Route>
 
       {/* =====================================

@@ -1,0 +1,82 @@
+/* Todos los selectores cuelgan de .admin-inicio. Solo usa tokens de
+   src/styles/variables.css. */
+
+.admin-inicio {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.admin-inicio) :where(h1, h2, p, ul) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.admin-inicio) :where(ul) {
+  list-style: none;
+}
+
+.admin-inicio .admin-inicio__bienvenida {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.admin-inicio h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.admin-inicio .admin-inicio__bienvenida p {
+  color: var(--color-text-secondary);
+}
+
+.admin-inicio .admin-inicio__atajos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--spacing-md);
+}
+
+.admin-inicio .admin-inicio__tarjeta {
+  display: grid;
+  gap: var(--spacing-xs);
+  height: 100%;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.admin-inicio .admin-inicio__tarjeta:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-inicio .admin-inicio__tarjeta:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.admin-inicio .admin-inicio__tarjeta h2 {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
+.admin-inicio .admin-inicio__tarjeta p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-inicio * {
+    transition: none !important;
+  }
+}
