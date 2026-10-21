@@ -1,0 +1,251 @@
+/* Todos los selectores cuelgan de .docente-lecturas. Solo usa tokens de
+   src/styles/variables.css. Mobile-first: el layout de escritorio entra con
+   min-width. */
+
+.docente-lecturas {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.docente-lecturas) :where(h1, h2, p, ul) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.docente-lecturas) :where(ul) {
+  list-style: none;
+}
+
+/* ===== Encabezado ===== */
+
+.docente-lecturas .docente-lecturas__encabezado {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.docente-lecturas .docente-lecturas__titulos {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.docente-lecturas h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.docente-lecturas .docente-lecturas__titulos p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Botones (también los enlaces con aspecto de botón) ===== */
+
+.docente-lecturas .docente-lecturas__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.docente-lecturas .docente-lecturas__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.docente-lecturas .docente-lecturas__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.docente-lecturas .docente-lecturas__boton--primario:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.docente-lecturas .docente-lecturas__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.docente-lecturas .docente-lecturas__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Avisos y estados ===== */
+
+.docente-lecturas .docente-lecturas__aviso {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  background-color: var(--color-success-light);
+  font-size: var(--font-size-sm);
+}
+
+.docente-lecturas .docente-lecturas__estado-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  text-align: center;
+}
+
+.docente-lecturas .docente-lecturas__estado-vacio h2 {
+  font-size: var(--font-size-lg);
+}
+
+.docente-lecturas .docente-lecturas__estado-vacio p {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-lecturas .docente-lecturas__estado-vacio .docente-lecturas__boton {
+  margin-top: var(--spacing-sm);
+}
+
+/* ===== Lista de lecturas ===== */
+
+.docente-lecturas .docente-lecturas__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--spacing-md);
+}
+
+.docente-lecturas .docente-lecturas__lista > li {
+  display: flex;
+  min-width: 0;
+}
+
+.docente-lecturas .docente-lecturas__tarjeta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-lecturas .docente-lecturas__tarjeta-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.docente-lecturas .docente-lecturas__categoria {
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docente-lecturas .docente-lecturas__estado {
+  padding: 2px var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-lecturas .docente-lecturas__estado--borrador {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.docente-lecturas .docente-lecturas__estado--publicada {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+}
+
+.docente-lecturas .docente-lecturas__tarjeta h2 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.docente-lecturas .docente-lecturas__nivel {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-lecturas .docente-lecturas__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: auto;
+  padding-top: var(--spacing-sm);
+}
+
+/* ===== Confirmación y error de una acción ===== */
+
+.docente-lecturas .docente-lecturas__confirmacion {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+  font-size: var(--font-size-sm);
+}
+
+.docente-lecturas .docente-lecturas__confirmacion .docente-lecturas__acciones {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.docente-lecturas .docente-lecturas__error {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Escritorio ===== */
+
+@media (min-width: 768px) {
+  .docente-lecturas .docente-lecturas__encabezado {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docente-lecturas * {
+    transition: none !important;
+  }
+}
