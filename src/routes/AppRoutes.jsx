@@ -21,6 +21,8 @@ import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
 import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
+import Activities from "../pages/docente/Activities/Activities";
+import ActivityForm from "../pages/docente/Activities/ActivityForm";
 import PrivateRoutes from "./PrivateRoutes";
 import AdminRoute from "./AdminRoute";
 import DocenteRoute from "./DocenteRoute";
@@ -151,14 +153,11 @@ function AppRouter() {
             }
           />
 
+          <Route path="/docente/actividades" element={<Activities />} />
+
           <Route
-            path="/docente/actividades"
-            element={
-              <EnConstruccion
-                titulo="Actividades"
-                descripcion="Combiná lecturas y preguntas en actividades para asignar."
-              />
-            }
+            path="/docente/actividades/nueva"
+            element={<ActivityForm />}
           />
 
           <Route
