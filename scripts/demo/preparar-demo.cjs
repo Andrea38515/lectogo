@@ -81,6 +81,14 @@ async function crearActividades(db) {
   if (estudiantes.length === 0) throw new Error("No hay ninguna cuenta demo-estudiante*.");
   const asignados = estudiantes.map((e) => e.uid);
 
+  // Nombre y correo que asignarActividad copia a actividades/{id}/asignados:
+  // la pantalla de progreso del docente los lee de ahí.
+  const perfiles = new Map();
+  for (const { email, uid } of estudiantes) {
+    const perfil = await db.collection("usuarios").doc(uid).get();
+    perfiles.set(uid, { nombre: perfil.data()?.nombre || email, correo: perfil.data()?.correo || email });
+  }
+
   for (const actividad of ACTIVIDADES) {
     const lectura = await db.collection("lecturas").doc(actividad.lecturaId).get();
     if (!lectura.exists || lectura.data().estado !== "publicada") {
@@ -98,6 +106,7 @@ async function crearActividades(db) {
       if (faltan.length && aplicar) {
         await ref.update({ estudiantesAsignados: admin.firestore.FieldValue.arrayUnion(...faltan) });
       }
+      await asegurarAsignados(ref, asignados, perfiles);
       continue;
     }
     console.log(`  ${aplicar ? "CREA   " : "crearía"} ${actividad.id}  (${etiqueta}, ${asignados.length} estudiantes)`);
@@ -111,6 +120,27 @@ async function crearActividades(db) {
       esDemo: true,
       creadoEn: admin.firestore.FieldValue.serverTimestamp(),
     });
+    await asegurarAsignados(ref, asignados, perfiles);
+  }
+}
+
+// Crea los subdocumentos asignados/{uid} que falten, sin tocar los que ya
+// existen (create falla con ALREADY_EXISTS, código 6, y se ignora).
+async function asegurarAsignados(ref, uids, perfiles) {
+  for (const uid of uids) {
+    const destino = ref.collection("asignados").doc(uid);
+    if ((await destino.get()).exists) continue;
+    console.log(`            ${aplicar ? "agrega" : "agregaría"} asignados/${uid} (${perfiles.get(uid).nombre})`);
+    if (!aplicar) continue;
+    try {
+      await destino.create({
+        estudianteId: uid,
+        ...perfiles.get(uid),
+        asignadoEn: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (error) {
+      if (error.code !== 6) throw error;
+    }
   }
 }
 
