@@ -1,0 +1,171 @@
+/* Todos los selectores cuelgan de .admin-auditoria. Solo usa tokens de
+   src/styles/variables.css. Mobile-first: la tabla se desplaza dentro de su
+   propio contenedor, la página nunca scrollea en horizontal. */
+
+.admin-auditoria {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.admin-auditoria) :where(h1, p) {
+  margin: 0;
+}
+
+:where(.admin-auditoria) :where(table) {
+  border-collapse: collapse;
+}
+
+/* ===== Encabezado ===== */
+
+.admin-auditoria .admin-auditoria__encabezado {
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.admin-auditoria .admin-auditoria__titulos {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.admin-auditoria h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.admin-auditoria .admin-auditoria__titulos p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Botones ===== */
+
+.admin-auditoria .admin-auditoria__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-auditoria .admin-auditoria__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.admin-auditoria .admin-auditoria__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-auditoria .admin-auditoria__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Estados ===== */
+
+.admin-auditoria .admin-auditoria__estado-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+/* ===== Tabla ===== */
+
+.admin-auditoria .admin-auditoria__tabla-contenedor {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-auditoria .admin-auditoria__tabla-contenedor:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.admin-auditoria .admin-auditoria__tabla {
+  width: 100%;
+  min-width: 680px;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.admin-auditoria .admin-auditoria__tabla caption {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  text-align: left;
+}
+
+.admin-auditoria .admin-auditoria__tabla :is(th, td) {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.admin-auditoria .admin-auditoria__tabla thead th {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-auditoria .admin-auditoria__fecha {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.admin-auditoria .admin-auditoria__actor {
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.admin-auditoria .admin-auditoria__detalle {
+  overflow-wrap: anywhere;
+}
+
+/* ===== Escritorio ===== */
+
+@media (min-width: 768px) {
+  .admin-auditoria .admin-auditoria__encabezado {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-auditoria * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,317 @@
+/* Todos los selectores cuelgan de .admin-usuarios. Solo usa tokens de
+   src/styles/variables.css. Mobile-first: la tabla se desplaza dentro de su
+   propio contenedor, la página nunca scrollea en horizontal. */
+
+.admin-usuarios {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.admin-usuarios) :where(h1, p) {
+  margin: 0;
+}
+
+:where(.admin-usuarios) :where(table) {
+  border-collapse: collapse;
+}
+
+/* ===== Encabezado ===== */
+
+.admin-usuarios .admin-usuarios__encabezado {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.admin-usuarios h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.admin-usuarios .admin-usuarios__encabezado p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Avisos y estados ===== */
+
+.admin-usuarios .admin-usuarios__aviso {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  background-color: var(--color-success-light);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.admin-usuarios .admin-usuarios__estado-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+/* ===== Controles (búsqueda, filtro, correos) ===== */
+
+.admin-usuarios .admin-usuarios__controles {
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.admin-usuarios .admin-usuarios__campo {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.admin-usuarios .admin-usuarios__campo label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.admin-usuarios :is(input[type="search"], select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+.admin-usuarios :is(input[type="search"], select):focus-visible {
+  border-color: var(--color-primary);
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 0;
+}
+
+.admin-usuarios select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-usuarios .admin-usuarios__interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 44px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.admin-usuarios .admin-usuarios__interruptor input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.admin-usuarios .admin-usuarios__interruptor input:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.admin-usuarios .admin-usuarios__cantidad {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Tabla ===== */
+
+.admin-usuarios .admin-usuarios__tabla-contenedor {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-usuarios .admin-usuarios__tabla-contenedor:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.admin-usuarios .admin-usuarios__tabla {
+  width: 100%;
+  min-width: 720px;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.admin-usuarios .admin-usuarios__tabla caption {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  text-align: left;
+}
+
+.admin-usuarios .admin-usuarios__tabla :is(th, td) {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.admin-usuarios .admin-usuarios__tabla thead th {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-usuarios .admin-usuarios__nombre {
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.admin-usuarios .admin-usuarios__propio {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.admin-usuarios .admin-usuarios__correo {
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+/* Es una <td>: no se le cambia el display, los hijos se separan con margen. */
+.admin-usuarios .admin-usuarios__acciones-celda {
+  min-width: 260px;
+}
+
+.admin-usuarios .admin-usuarios__acciones-celda > * + * {
+  margin-top: var(--spacing-sm);
+}
+
+.admin-usuarios .admin-usuarios__nota {
+  color: var(--color-text-secondary);
+}
+
+.admin-usuarios .admin-usuarios__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.admin-usuarios .admin-usuarios__acciones select {
+  flex: 1 1 130px;
+  width: auto;
+  font-size: var(--font-size-sm);
+}
+
+/* Texto solo para lectores de pantalla. */
+.admin-usuarios .admin-usuarios__oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ===== Botones ===== */
+
+.admin-usuarios .admin-usuarios__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-usuarios .admin-usuarios__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.admin-usuarios .admin-usuarios__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.admin-usuarios .admin-usuarios__boton--primario:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.admin-usuarios .admin-usuarios__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-usuarios .admin-usuarios__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Confirmación y error de una fila ===== */
+
+.admin-usuarios .admin-usuarios__confirmacion {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+}
+
+.admin-usuarios .admin-usuarios__error {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+/* ===== Escritorio ===== */
+
+@media (min-width: 768px) {
+  .admin-usuarios .admin-usuarios__controles {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+    align-items: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-usuarios * {
+    transition: none !important;
+  }
+}
