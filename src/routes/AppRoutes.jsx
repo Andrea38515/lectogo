@@ -21,6 +21,9 @@ import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
 import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
+import Questions from "../pages/docente/Questions/Questions";
+import QuestionsLectura from "../pages/docente/Questions/QuestionsLectura";
+import QuestionsEditor from "../pages/docente/Questions/QuestionsEditor";
 import Activities from "../pages/docente/Activities/Activities";
 import ActivityForm from "../pages/docente/Activities/ActivityForm";
 import PrivateRoutes from "./PrivateRoutes";
@@ -143,14 +146,21 @@ function AppRouter() {
             element={<LectureForm />}
           />
 
+          <Route path="/docente/preguntas" element={<Questions />} />
+
           <Route
-            path="/docente/preguntas"
-            element={
-              <EnConstruccion
-                titulo="Preguntas"
-                descripcion="Armá el banco de preguntas de comprensión lectora."
-              />
-            }
+            path="/docente/lecturas/:lecturaId/preguntas"
+            element={<QuestionsLectura />}
+          />
+
+          <Route
+            path="/docente/lecturas/:lecturaId/preguntas/nueva"
+            element={<QuestionsEditor />}
+          />
+
+          <Route
+            path="/docente/lecturas/:lecturaId/preguntas/:preguntaId/editar"
+            element={<QuestionsEditor />}
           />
 
           <Route path="/docente/actividades" element={<Activities />} />
