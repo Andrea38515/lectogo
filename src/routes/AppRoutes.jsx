@@ -18,7 +18,6 @@ import Statistics from "../pages/estudiante/Statistics/Statistics";
 import Ranking from "../pages/estudiante/Ranking/Ranking";
 import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
 import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
-import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
 import Questions from "../pages/docente/Questions/Questions";
