@@ -19,12 +19,15 @@ import Statistics from "../pages/estudiante/Statistics/Statistics";
 import Ranking from "../pages/estudiante/Ranking/Ranking";
 import ResolverActividad from "../pages/estudiante/ResolverActividad/ResolverActividad";
 import DocenteInicio from "../pages/docente/DocenteInicio/DocenteInicio";
-import EnConstruccion from "../pages/docente/EnConstruccion/EnConstruccion";
 import Lectures from "../pages/docente/Lectures/Lectures";
 import LectureForm from "../pages/docente/Lectures/LectureForm";
 import Questions from "../pages/docente/Questions/Questions";
 import QuestionsLectura from "../pages/docente/Questions/QuestionsLectura";
 import QuestionsEditor from "../pages/docente/Questions/QuestionsEditor";
+import Activities from "../pages/docente/Activities/Activities";
+import ActivityForm from "../pages/docente/Activities/ActivityForm";
+import StudentProgress from "../pages/docente/StudentProgress/StudentProgress";
+import ProgresoActividad from "../pages/docente/StudentProgress/ProgresoActividad";
 import AdminInicio from "../pages/admin/AdminInicio/AdminInicio";
 import Categorias from "../pages/admin/Categorias/Categorias";
 import Usuarios from "../pages/admin/Usuarios/Usuarios";
@@ -166,24 +169,18 @@ function AppRouter() {
             element={<QuestionsEditor />}
           />
 
-          <Route
-            path="/docente/actividades"
-            element={
-              <EnConstruccion
-                titulo="Actividades"
-                descripcion="Combiná lecturas y preguntas en actividades para asignar."
-              />
-            }
-          />
+          <Route path="/docente/actividades" element={<Activities />} />
 
           <Route
-            path="/docente/progreso"
-            element={
-              <EnConstruccion
-                titulo="Progreso"
-                descripcion="Seguí cómo avanzan tus estudiantes."
-              />
-            }
+            path="/docente/actividades/nueva"
+            element={<ActivityForm />}
+          />
+
+          <Route path="/docente/progreso" element={<StudentProgress />} />
+
+          <Route
+            path="/docente/progreso/:actividadId"
+            element={<ProgresoActividad />}
           />
 
           <Route
