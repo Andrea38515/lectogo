@@ -1,0 +1,273 @@
+/* Todos los selectores cuelgan de .docente-actividad-form. Solo usa tokens de
+   src/styles/variables.css. Mobile-first. */
+
+.docente-actividad-form {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  max-width: 720px;
+  color: var(--color-text);
+}
+
+:where(.docente-actividad-form) :where(h1, h2, h3, p, ul) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.docente-actividad-form) :where(ul) {
+  list-style: none;
+}
+
+.docente-actividad-form h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.docente-actividad-form .docente-actividad-form__encabezado {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.docente-actividad-form .docente-actividad-form__encabezado p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Formulario ===== */
+
+.docente-actividad-form .docente-actividad-form__formulario {
+  display: grid;
+  gap: var(--spacing-md);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__campo {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.docente-actividad-form .docente-actividad-form__campo label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-actividad-form .docente-actividad-form__campo :is(input, select, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+.docente-actividad-form .docente-actividad-form__campo textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.docente-actividad-form .docente-actividad-form__campo :is(input, select, textarea):focus-visible {
+  border-color: var(--color-primary);
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 0;
+}
+
+.docente-actividad-form .docente-actividad-form__campo :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.docente-actividad-form .docente-actividad-form__ayuda {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__nota {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.docente-actividad-form .docente-actividad-form__nota--aviso {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-left: 3px solid var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.docente-actividad-form .docente-actividad-form__error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.docente-actividad-form .docente-actividad-form__error-general {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Acciones ===== */
+
+.docente-actividad-form .docente-actividad-form__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.docente-actividad-form .docente-actividad-form__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.docente-actividad-form .docente-actividad-form__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.docente-actividad-form .docente-actividad-form__boton--primario:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.docente-actividad-form .docente-actividad-form__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.docente-actividad-form .docente-actividad-form__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Cargando, error y sin lecturas asignables ===== */
+
+.docente-actividad-form .docente-actividad-form__mensaje {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.docente-actividad-form .docente-actividad-form__mensaje h2 {
+  font-size: var(--font-size-lg);
+}
+
+.docente-actividad-form .docente-actividad-form__mensaje p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Resultado de la asignación ===== */
+
+.docente-actividad-form .docente-actividad-form__resultado {
+  display: grid;
+  gap: var(--spacing-md);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__resultado:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+}
+
+.docente-actividad-form .docente-actividad-form__exito {
+  display: grid;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  background-color: var(--color-success-light);
+}
+
+.docente-actividad-form .docente-actividad-form__exito h2 {
+  font-size: var(--font-size-lg);
+}
+
+.docente-actividad-form .docente-actividad-form__exito p {
+  font-size: var(--font-size-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__bloque {
+  display: grid;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.docente-actividad-form .docente-actividad-form__bloque h3 {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+}
+
+.docente-actividad-form .docente-actividad-form__bloque--aparte {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+}
+
+.docente-actividad-form .docente-actividad-form__lista {
+  display: grid;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.docente-actividad-form .docente-actividad-form__lista li {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .docente-actividad-form .docente-actividad-form__formulario,
+  .docente-actividad-form .docente-actividad-form__resultado {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docente-actividad-form * {
+    transition: none !important;
+  }
+}
