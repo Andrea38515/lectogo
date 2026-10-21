@@ -196,6 +196,11 @@
   font-weight: var(--font-weight-medium);
 }
 
+.docente-actividades .docente-actividades__tarjeta .docente-actividades__boton {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
 /* ===== Escritorio ===== */
 
 @media (min-width: 768px) {

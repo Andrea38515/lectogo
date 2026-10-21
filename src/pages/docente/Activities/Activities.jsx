@@ -107,6 +107,13 @@ const Activities = () => {
                       <dd>{textoEstudiantes(actividad.estudiantesAsignados.length)}</dd>
                     </div>
                   </dl>
+
+                  <Link
+                    to={`/docente/progreso/${actividad.id}`}
+                    className="docente-actividades__boton"
+                  >
+                    Ver progreso
+                  </Link>
                 </article>
               </li>
             );

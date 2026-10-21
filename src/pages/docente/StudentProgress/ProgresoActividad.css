@@ -1,0 +1,279 @@
+/* Todos los selectores cuelgan de .docente-progreso-detalle. Solo usa tokens de
+   src/styles/variables.css. Mobile-first: el layout de escritorio entra con
+   min-width. La tabla scrollea dentro de su contenedor: la página nunca. */
+
+.docente-progreso-detalle {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.docente-progreso-detalle) :where(h1, p, dl, dd) {
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Navegación y encabezado ===== */
+
+.docente-progreso-detalle .docente-progreso-detalle__volver {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__volver:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__encabezado {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__titulos {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.docente-progreso-detalle h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__titulos p {
+  color: var(--color-text-secondary);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__aviso {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Solo para lectores de pantalla */
+.docente-progreso-detalle .docente-progreso-detalle__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ===== Botones (también los enlaces con aspecto de botón) ===== */
+
+.docente-progreso-detalle .docente-progreso-detalle__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__boton:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__boton--primario:hover:not(:disabled) {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__boton:focus-visible,
+.docente-progreso-detalle .docente-progreso-detalle__volver:focus-visible,
+.docente-progreso-detalle .docente-progreso-detalle__tabla-contenedor:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Mensajes (cargando, error, no encontrada, sin estudiantes) ===== */
+
+.docente-progreso-detalle .docente-progreso-detalle__mensaje {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  text-align: center;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__mensaje h1 {
+  font-size: var(--font-size-xl);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__mensaje p {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__mensaje .docente-progreso-detalle__acciones {
+  justify-content: center;
+}
+
+/* ===== Resumen ===== */
+
+.docente-progreso-detalle .docente-progreso-detalle__resumen {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__resumen > div {
+  display: grid;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__resumen dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__resumen dd {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== Tabla ===== */
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla-contenedor {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla caption {
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla :where(th, td) {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla thead th {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__tabla tbody th {
+  font-weight: var(--font-weight-regular);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__nombre {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__correo {
+  display: block;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+/* El estado nunca depende solo del color: lleva texto. */
+.docente-progreso-detalle .docente-progreso-detalle__estado {
+  display: inline-block;
+  padding: 2px var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__estado--resolvio {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+}
+
+.docente-progreso-detalle .docente-progreso-detalle__estado--pendiente {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+/* ===== Escritorio ===== */
+
+@media (min-width: 768px) {
+  .docente-progreso-detalle .docente-progreso-detalle__encabezado {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .docente-progreso-detalle .docente-progreso-detalle__resumen {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docente-progreso-detalle * {
+    transition: none !important;
+  }
+}

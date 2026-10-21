@@ -1,0 +1,203 @@
+/* Todos los selectores cuelgan de .docente-progreso. Solo usa tokens de
+   src/styles/variables.css. Mobile-first: el layout de escritorio entra con
+   min-width. */
+
+.docente-progreso {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.docente-progreso) :where(h1, h2, p, ul, dl, dd) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.docente-progreso) :where(ul) {
+  list-style: none;
+}
+
+/* ===== Encabezado ===== */
+
+.docente-progreso .docente-progreso__titulos {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.docente-progreso h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.docente-progreso .docente-progreso__titulos p {
+  color: var(--color-text-secondary);
+}
+
+/* ===== Botones (también los enlaces con aspecto de botón) ===== */
+
+.docente-progreso .docente-progreso__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.docente-progreso .docente-progreso__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.docente-progreso .docente-progreso__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.docente-progreso .docente-progreso__boton--primario:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.docente-progreso .docente-progreso__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Estados vacíos ===== */
+
+.docente-progreso .docente-progreso__estado-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  text-align: center;
+}
+
+.docente-progreso .docente-progreso__estado-vacio h2 {
+  font-size: var(--font-size-lg);
+}
+
+.docente-progreso .docente-progreso__estado-vacio p {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-progreso .docente-progreso__estado-vacio .docente-progreso__boton {
+  margin-top: var(--spacing-sm);
+}
+
+/* ===== Lista de actividades ===== */
+
+.docente-progreso .docente-progreso__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--spacing-md);
+}
+
+.docente-progreso .docente-progreso__lista > li {
+  display: flex;
+  min-width: 0;
+}
+
+.docente-progreso .docente-progreso__tarjeta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-progreso .docente-progreso__tarjeta-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.docente-progreso .docente-progreso__estado {
+  padding: 2px var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-progreso .docente-progreso__estado--vigente {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+}
+
+.docente-progreso .docente-progreso__estado--vencida {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.docente-progreso .docente-progreso__tarjeta h2 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.docente-progreso .docente-progreso__datos {
+  display: grid;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.docente-progreso .docente-progreso__datos > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-sm);
+}
+
+.docente-progreso .docente-progreso__datos dt {
+  color: var(--color-text-secondary);
+}
+
+.docente-progreso .docente-progreso__datos dd {
+  font-weight: var(--font-weight-medium);
+}
+
+.docente-progreso .docente-progreso__tarjeta .docente-progreso__boton {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docente-progreso * {
+    transition: none !important;
+  }
+}
