@@ -72,7 +72,10 @@ service cloud.firestore {
       // categoría tiene.)
       allow read: if true;
 
-      allow write: if esAdmin();
+      // Solo se modifican desde la Cloud Function gestionarCategoria (Admin
+      // SDK): así cada cambio queda auditado con su autor. El cliente no
+      // escribe, ni siquiera un administrador.
+      allow write: if false;
     }
 
     // Aquí solo vive lo que el estudiante puede ver (enunciado, opciones).
