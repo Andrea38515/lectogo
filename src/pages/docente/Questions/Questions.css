@@ -1,0 +1,332 @@
+/* Todos los selectores cuelgan de .docente-preguntas (banco de preguntas y
+   lista de preguntas de una lectura). Solo usa tokens de
+   src/styles/variables.css. Mobile-first: el layout de escritorio entra con
+   min-width. */
+
+.docente-preguntas {
+  display: grid;
+  gap: var(--spacing-lg);
+  min-width: 0;
+  color: var(--color-text);
+}
+
+:where(.docente-preguntas) :where(h1, h2, p, ul, ol) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.docente-preguntas) :where(ul, ol) {
+  list-style: none;
+}
+
+/* ===== Encabezado ===== */
+
+.docente-preguntas .docente-preguntas__encabezado {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.docente-preguntas .docente-preguntas__titulos {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.docente-preguntas h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.docente-preguntas .docente-preguntas__titulos p {
+  color: var(--color-text-secondary);
+}
+
+.docente-preguntas .docente-preguntas__contexto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.docente-preguntas .docente-preguntas__volver {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-preguntas .docente-preguntas__volver:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Botones (también los enlaces con aspecto de botón) ===== */
+
+.docente-preguntas .docente-preguntas__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.docente-preguntas .docente-preguntas__boton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.docente-preguntas .docente-preguntas__boton--primario {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.docente-preguntas .docente-preguntas__boton--primario:hover {
+  border-color: var(--color-primary-hover);
+  background-color: var(--color-primary-hover);
+  color: var(--color-surface);
+}
+
+.docente-preguntas .docente-preguntas__boton--peligro {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger);
+  color: var(--color-surface);
+}
+
+.docente-preguntas .docente-preguntas__boton--peligro:hover {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger);
+  color: var(--color-surface);
+  opacity: 0.9;
+}
+
+.docente-preguntas .docente-preguntas__boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.docente-preguntas .docente-preguntas__boton:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== Avisos y estados ===== */
+
+.docente-preguntas .docente-preguntas__aviso {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  background-color: var(--color-success-light);
+  font-size: var(--font-size-sm);
+}
+
+.docente-preguntas .docente-preguntas__nota {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+  font-size: var(--font-size-sm);
+}
+
+.docente-preguntas .docente-preguntas__estado-vacio {
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  text-align: center;
+}
+
+.docente-preguntas .docente-preguntas__estado-vacio h1,
+.docente-preguntas .docente-preguntas__estado-vacio h2 {
+  font-size: var(--font-size-lg);
+}
+
+.docente-preguntas .docente-preguntas__estado-vacio p {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.docente-preguntas .docente-preguntas__estado-vacio .docente-preguntas__boton {
+  margin-top: var(--spacing-sm);
+}
+
+/* ===== Tarjetas (lecturas y preguntas) ===== */
+
+.docente-preguntas .docente-preguntas__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--spacing-md);
+}
+
+.docente-preguntas .docente-preguntas__preguntas {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.docente-preguntas .docente-preguntas__lista > li,
+.docente-preguntas .docente-preguntas__preguntas > li {
+  display: flex;
+  min-width: 0;
+}
+
+.docente-preguntas .docente-preguntas__tarjeta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.docente-preguntas .docente-preguntas__tarjeta-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.docente-preguntas .docente-preguntas__categoria {
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docente-preguntas .docente-preguntas__estado {
+  padding: 2px var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-preguntas .docente-preguntas__estado--borrador,
+.docente-preguntas .docente-preguntas__estado--sin-respuesta {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.docente-preguntas .docente-preguntas__estado--publicada {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+}
+
+.docente-preguntas .docente-preguntas__tarjeta h2 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.docente-preguntas .docente-preguntas__enunciado {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.docente-preguntas .docente-preguntas__opciones {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.docente-preguntas .docente-preguntas__opcion {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+/* La opción correcta se marca con texto "(correcta)"; el color solo refuerza. */
+.docente-preguntas .docente-preguntas__opcion--correcta {
+  border-color: var(--color-success);
+  background-color: var(--color-success-light);
+  font-weight: var(--font-weight-semibold);
+}
+
+.docente-preguntas .docente-preguntas__explicacion {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.docente-preguntas .docente-preguntas__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: auto;
+  padding-top: var(--spacing-sm);
+}
+
+/* ===== Confirmación y error de una acción ===== */
+
+.docente-preguntas .docente-preguntas__confirmacion {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+  font-size: var(--font-size-sm);
+}
+
+.docente-preguntas .docente-preguntas__confirmacion .docente-preguntas__acciones {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.docente-preguntas .docente-preguntas__error {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Escritorio ===== */
+
+@media (min-width: 768px) {
+  .docente-preguntas .docente-preguntas__encabezado {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docente-preguntas * {
+    transition: none !important;
+  }
+}
