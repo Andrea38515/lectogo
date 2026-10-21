@@ -88,10 +88,23 @@ service cloud.firestore {
         (esDocente() && resource.data.autorId == request.auth.uid);
 
       match /solucion/{solucionId} {
-        allow read, write: if esAdmin() ||
+        allow read, update, delete: if esAdmin() ||
           (
             esDocente() &&
             get(
+              /databases/$(database)/documents/preguntas/$(preguntaId)
+            ).data.autorId == request.auth.uid
+          );
+
+        // get() ve el estado ANTERIOR al lote: crear la pregunta y su solución
+        // en un mismo writeBatch fallaría porque la pregunta aún no existe.
+        // getAfter() ve el estado posterior, así que sirve para crear ambas a
+        // la vez y sigue exigiendo que la pregunta sea del docente. Para
+        // borrar se mantiene get(): la pregunta todavía existe antes del lote.
+        allow create: if esAdmin() ||
+          (
+            esDocente() &&
+            getAfter(
               /databases/$(database)/documents/preguntas/$(preguntaId)
             ).data.autorId == request.auth.uid
           );
