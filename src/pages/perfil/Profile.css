@@ -69,3 +69,27 @@
 	color: var(--color-success);
 	font-size: var(--font-size-sm);
 }
+
+/* Tarjeta "Sesión": botón secundario (borde), para no competir con las acciones de guardado. */
+.profile-sesion__ayuda {
+	margin: 0;
+	color: var(--color-text-secondary, inherit);
+	font-size: var(--font-size-sm);
+}
+
+.profile-sesion button {
+	min-height: 44px;
+	border: 1px solid var(--color-danger);
+	background-color: transparent;
+	color: var(--color-danger);
+}
+
+.profile-sesion button:hover:not(:disabled) {
+	background-color: var(--color-danger);
+	color: #fff;
+}
+
+.profile-sesion button:focus-visible {
+	outline: 2px solid var(--color-danger);
+	outline-offset: 2px;
+}

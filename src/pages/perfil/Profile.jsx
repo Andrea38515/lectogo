@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../hooks/useAuth";
+import { logout } from "../../services/authServices";
 import * as userService from "../../services/userService";
 import * as storageService from "../../services/storageService";
 import { esPasswordSegura } from "../../utils/validators";
@@ -10,6 +12,12 @@ import "./Profile.css";
 
 function Profile() {
 	const { user, refreshUser } = useAuth();
+	const navigate = useNavigate();
+
+	// En pantallas angostas el menú lateral (que trae "Cerrar sesión") se oculta
+	// y la barra inferior no lo incluye: el Perfil es la vía para salir desde el móvil.
+	const [cerrandoSesion, setCerrandoSesion] = useState(false);
+	const [sesionError, setSesionError] = useState("");
 
 	const [nombre, setNombre] = useState(user.nombre ?? "");
 	const [institucion, setInstitucion] = useState(user.institucion ?? "");
@@ -95,6 +103,22 @@ function Profile() {
 		}
 	};
 
+	const handleLogout = async () => {
+		if (cerrandoSesion) return;
+
+		setSesionError("");
+		setCerrandoSesion(true);
+
+		try {
+			await logout();
+			navigate("/login", { replace: true });
+		} catch (error) {
+			console.error("Error cerrando sesión:", error);
+			setSesionError("No pudimos cerrar la sesión. Probá de nuevo.");
+			setCerrandoSesion(false);
+		}
+	};
+
 	return (
 		<div className="profile-page">
 			<form className="profile-form" onSubmit={handleSubmitDatos}>
@@ -174,6 +198,22 @@ function Profile() {
 					{guardandoPassword ? "Guardando..." : "Cambiar contraseña"}
 				</Button>
 			</form>
+
+			<section className="profile-form profile-sesion" aria-labelledby="profile-sesion-titulo">
+				<h2 id="profile-sesion-titulo">Sesión</h2>
+
+				<p className="profile-sesion__ayuda">Salí de LectoGo en este dispositivo.</p>
+
+				{sesionError && (
+					<p className="profile-error" role="alert">
+						{sesionError}
+					</p>
+				)}
+
+				<button type="button" onClick={handleLogout} disabled={cerrandoSesion}>
+					{cerrandoSesion ? "Cerrando sesión..." : "Cerrar sesión"}
+				</button>
+			</section>
 		</div>
 	);
 }
