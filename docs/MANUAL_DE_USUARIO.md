@@ -79,10 +79,11 @@ Si una persona intenta abrir la dirección del área de docente o de administrad
 
 ### 2.4 Cerrar sesión
 
-- Estudiante: seleccione **Cerrar sesión**, al final del menú lateral.
+- Estudiante en una pantalla ancha: seleccione **Cerrar sesión**, al final del menú lateral.
+- Estudiante en cualquier pantalla, incluido el teléfono: abra **Perfil**, baje hasta la tarjeta **Sesión** y seleccione **Cerrar sesión**.
 - Docente y administrador: seleccione **Cerrar sesión**, en la esquina superior derecha de la barra superior.
 
-Importante: en pantallas estrechas (menos de 768 píxeles) el menú lateral del estudiante no se muestra y la barra inferior no incluye **Cerrar sesión**. Para cerrar la sesión de un estudiante, use una ventana o un dispositivo más ancho.
+En pantallas estrechas (menos de 768 píxeles) el menú lateral del estudiante no se muestra y la barra inferior no incluye **Cerrar sesión**; por eso en el teléfono se usa la tarjeta **Sesión** del perfil. Mientras se procesa, el botón dice **Cerrando sesión...** y queda deshabilitado. Si no se puede cerrar la sesión, aparece **No pudimos cerrar la sesión. Probá de nuevo.**; vuelva a seleccionar el botón. Al terminar, la aplicación lo lleva a la pantalla de inicio de sesión.
 
 ### 2.5 Perfil
 
@@ -101,6 +102,8 @@ En la sección **Cambiar contraseña**:
 1. Escriba la **Contraseña actual**.
 2. Escriba la **Contraseña nueva** y repítala en **Confirmar contraseña nueva**. Debe tener al menos 8 caracteres, con letras y números.
 3. Seleccione **Cambiar contraseña**. Si todo sale bien aparece **Contraseña actualizada correctamente.**
+
+Al final de la pantalla, la tarjeta **Sesión** (**Salí de LectoGo en este dispositivo.**) tiene el botón **Cerrar sesión** (sección 2.4).
 
 ### 2.6 Biblioteca pública (sin iniciar sesión)
 
@@ -432,7 +435,7 @@ Las acciones que se registran son: **Cambio de rol** (detalle con el nombre de l
 | Aparece **No pudimos enviar tus respuestas. Revisa tu conexión e inténtalo de nuevo; tus respuestas siguen en esta pantalla.** | Falla de conexión. | Revise la conexión y vuelva a seleccionar **Enviar respuestas**. |
 | Aparece **Actividad cerrada** o **Actividad sin preguntas** | La actividad ya no admite envíos o su lectura no tiene preguntas. | Consulte a su docente. |
 | Aparece **Lectura no disponible** | La lectura se archivó, pasó a borrador o no existe. | Consulte a su docente o elija otra lectura de la biblioteca. |
-| Estoy en el teléfono y no encuentro **Cerrar sesión** | La barra inferior no incluye esa opción. | Use una ventana o un dispositivo más ancho para cerrar la sesión. |
+| Estoy en el teléfono y no encuentro **Cerrar sesión** | La barra inferior no incluye esa opción. | Abra **Perfil**, baje hasta la tarjeta **Sesión** y seleccione **Cerrar sesión**. |
 | El ícono de campana no hace nada | Las notificaciones aún no están disponibles. | No requiere ninguna acción. |
 | No aparezco en el ranking | Solo entra quien resolvió al menos una actividad. | Resuelva una actividad. |
 | Docente: no puedo agregar ni eliminar preguntas | La lectura está publicada. | Pásela a borrador desde **Lecturas**, haga el cambio y publíquela de nuevo. |
